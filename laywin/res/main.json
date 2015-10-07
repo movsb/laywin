@@ -1,0 +1,32 @@
+_T(R"laywin(
+{
+	"meta":{
+		"font":[
+			{
+				"default": true,
+				"family": "Consolas",
+				"size": "13",
+			},
+		]
+	},
+
+	"window":{
+		"title": "io",
+		"size": "700,400",
+		"children":[
+			{
+				"type": "vertical",
+				"inset": "5,5,5,5",
+				"children":[
+					{
+						"type": "edit",
+						"name": "output",
+						"style": "multiline,vscroll,hscroll",
+						"exstyle": "clientedge",
+					}
+				]
+			}
+		]
+	}
+}
+)laywin")
