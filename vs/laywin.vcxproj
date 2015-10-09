@@ -41,9 +41,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>../bin/$(Configuration)\</OutDir>
+    <IntDir>../build/$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>../bin/$(Configuration)\</OutDir>
+    <IntDir>../build/$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -81,25 +85,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="lw_control.h" />
-    <ClInclude Include="lw_laywin.h" />
-    <ClInclude Include="lw_parser.h" />
-    <ClInclude Include="lw_syscontrols.h" />
-    <ClInclude Include="lw_util.h" />
-    <ClInclude Include="lw_manager.h" />
-    <ClInclude Include="lw_window.h" />
-    <ClInclude Include="stdio_redirector.h" />
+    <ClInclude Include="..\src\lw_control.h" />
+    <ClInclude Include="..\src\lw_laywin.h" />
+    <ClInclude Include="..\src\lw_parser.h" />
+    <ClInclude Include="..\src\lw_syscontrols.h" />
+    <ClInclude Include="..\src\lw_util.h" />
+    <ClInclude Include="..\src\lw_manager.h" />
+    <ClInclude Include="..\src\lw_window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lw_control.cpp" />
-    <ClCompile Include="lw_laywin.cpp" />
-    <ClCompile Include="lw_parser.cpp" />
-    <ClCompile Include="lw_syscontrols.cpp" />
-    <ClCompile Include="lw_util.cpp" />
-    <ClCompile Include="lw_manager.cpp" />
-    <ClCompile Include="lw_window.cpp" />
-    <ClCompile Include="Source.cpp" />
-    <ClCompile Include="stdio_redirector.cpp" />
+    <ClCompile Include="..\src\lw_control.cpp" />
+    <ClCompile Include="..\src\lw_laywin.cpp" />
+    <ClCompile Include="..\src\lw_parser.cpp" />
+    <ClCompile Include="..\src\lw_syscontrols.cpp" />
+    <ClCompile Include="..\src\lw_util.cpp" />
+    <ClCompile Include="..\src\lw_manager.cpp" />
+    <ClCompile Include="..\src\lw_window.cpp" />
+    <ClCompile Include="..\src\Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

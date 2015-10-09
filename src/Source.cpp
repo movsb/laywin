@@ -8,23 +8,6 @@
 #include "lw_laywin.h"
 #include <commctrl.h>
 
-#include "stdio_redirector.h"
-
-class X : public stdio_redirector {
-public:
-	X(laywin::edit* pe) {
-		_pe = pe;
-	}
-private:
-	laywin::edit* _pe;
-protected:
-	void write_stdout(LPCTSTR pszOutput) override {
-		auto hwnd = _pe->hwnd();
-		int len = ::GetWindowTextLength(hwnd);
-		::SendMessage(hwnd, EM_SETSEL, len, len);
-		::SendMessage(hwnd, EM_REPLACESEL, 0, LPARAM(pszOutput));
-	}
-};
 class TW : public laywin::window_creator
 {
 public:
@@ -35,23 +18,18 @@ protected:
 	virtual LPCTSTR get_skin_json() const
 	{
 		LPCTSTR json =
-#include "res/main.json"
+#include "../res/main.json"
 			;
 		return json;
 	}
 
 	virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled) override
 	{
-		static X* px;
 		switch(umsg)
 		{
 		case WM_CREATE:
 		{
 			center();
-
-			static X x(dynamic_cast<laywin::edit*>(_layout->find("output")));
-			px = &x;
-			x.open(".\\shadowsocks-local.exe -s=sss.twofei.com -p 5820 -k ssfwycfkdj -l=5820 -d");
 
 			handled = true;
 			return 0;

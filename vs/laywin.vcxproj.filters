@@ -15,57 +15,51 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lw_control.cpp">
+    <ClCompile Include="..\src\lw_control.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lw_util.cpp">
+    <ClCompile Include="..\src\lw_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lw_manager.cpp">
+    <ClCompile Include="..\src\lw_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lw_window.cpp">
+    <ClCompile Include="..\src\lw_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source.cpp">
+    <ClCompile Include="..\src\Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lw_parser.cpp">
+    <ClCompile Include="..\src\lw_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lw_laywin.cpp">
+    <ClCompile Include="..\src\lw_laywin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lw_syscontrols.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stdio_redirector.cpp">
+    <ClCompile Include="..\src\lw_syscontrols.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lw_control.h">
+    <ClInclude Include="..\src\lw_control.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="lw_util.h">
+    <ClInclude Include="..\src\lw_util.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="lw_manager.h">
+    <ClInclude Include="..\src\lw_manager.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="lw_window.h">
+    <ClInclude Include="..\src\lw_window.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="lw_parser.h">
+    <ClInclude Include="..\src\lw_parser.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="lw_laywin.h">
+    <ClInclude Include="..\src\lw_laywin.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="lw_syscontrols.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdio_redirector.h">
+    <ClInclude Include="..\src\lw_syscontrols.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

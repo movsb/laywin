@@ -1,7 +1,3 @@
-/Debug/
-/Release/
-*.sdf
-*.opensdf
-*.user
-*.suo
+/bin/
+/build/
 
