@@ -34,11 +34,11 @@ namespace laywin{
 		_default_font = ::CreateFontIndirect(&lf);
 	}
 
-	HFONT manager::add_font(LPCTSTR name, int size, bool bold, bool underline, bool italic)
+	HFONT manager::add_font(LPCTSTR name, LPCTSTR face, int size, bool bold, bool underline, bool italic)
 	{
 		LOGFONT lf = { 0 };
 		::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
-		_tcsncpy(lf.lfFaceName, name, LF_FACESIZE);
+		_tcsncpy(lf.lfFaceName, face, LF_FACESIZE);
 		lf.lfCharSet = DEFAULT_CHARSET;
 		lf.lfHeight = -size;
 		if (bold) lf.lfWeight += FW_BOLD;
@@ -47,30 +47,12 @@ namespace laywin{
 		HFONT hFont = ::CreateFontIndirect(&lf);
 		if (hFont == NULL) return NULL;
 
-		if (!_fonts.add(hFont)){
-			::DeleteObject(hFont);
-			return NULL;
-		}
+        _fonts[name] = hFont;
 		return hFont;
-	}
-
-	bool manager::remove_font(HFONT hFont)
-	{
-		for (int i = 0; i < _fonts.size(); i++){
-			if(_fonts[i] == hFont){
-				::DeleteObject(hFont);
-				return _fonts.remove(i);
-			}
-		}
-		return false;
 	}
 
 	void manager::remove_all_fonts()
 	{
-		for (int i = 0; i < _fonts.size(); i++){
-			::DeleteObject(_fonts[i]);
-		}
-		_fonts.empty();
-	}
 
+	}
 }

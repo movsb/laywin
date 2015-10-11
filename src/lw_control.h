@@ -13,6 +13,10 @@ namespace laywin{
 		control();
 		virtual ~control();
 
+        virtual void create(HWND parent) {
+            
+        }
+
 		virtual bool is_container() const { return false; }
 
 		virtual LPCTSTR get_class() const { return get_class_static(); }
@@ -91,6 +95,9 @@ namespace laywin{
 		virtual csize estimate_size(const csize& available);
 
 		virtual void attribute(LPCTSTR name, LPCTSTR value, bool inited = false);
+        virtual void set_attr(LPCTSTR name, LPCTSTR value, bool inited = false) {
+            return attribute(name, value, inited);
+        }
 
 		virtual void manager_(manager* mgr){
 			_mgr = mgr;
@@ -120,11 +127,6 @@ namespace laywin{
 		}
 
 		virtual void need_parent_update();
-
-		virtual void font(int id);
-		virtual int font() const {
-			return _font;
-		}
 
 		void user_data(void* ud){
 			_ud = ud;
@@ -179,7 +181,6 @@ namespace laywin{
 		int _font;
 
 		void* _ud;
-		string _text;
 	};
 
 	class container : public control
@@ -236,8 +237,6 @@ namespace laywin{
 
 		virtual control* find(LPCTSTR n) override;
 		virtual control* find(HWND h) override;
-
-		virtual void font(int id) override;
 
 	protected:
 		array<control*> _items;

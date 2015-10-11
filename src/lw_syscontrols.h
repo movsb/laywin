@@ -30,6 +30,10 @@ namespace laywin{
 			return s;
 		}
 
+        void create(HWND parent) {
+            _hwnd = ::CreateWindowEx(_dwExStyle, get_control_class(), "", WS_CHILD | WS_VISIBLE | _dwStyle, 0, 0, 0, 0, parent, nullptr, nullptr, nullptr);
+        }
+
 	protected:
 		virtual void init() override;
 		virtual LPCTSTR get_control_class() const = 0;

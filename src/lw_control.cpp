@@ -59,15 +59,6 @@ namespace laywin{
 		return n == _name ? this : NULL;
 	}
 
-	void control::font(int id)
-	{
-		if (id != -2) _font = id;
-		if (::IsWindow(_hwnd) && _mgr){
-			HFONT hFont = _font == -1 ? _mgr->default_font() : _mgr->font(_font);
-			::SendMessage(_hwnd, WM_SETFONT, WPARAM(hFont), MAKELPARAM(TRUE, 0));
-		}
-	}
-
 	void control::need_parent_update()
 	{
 		if (_b_inited){
@@ -85,10 +76,7 @@ namespace laywin{
 		if(_tcscmp(name, _T("name")) == 0){
 			_name = value;
 		}
-		else if(_tcscmp(name, _T("text")) == 0){
-			_text = value;
-		}
-		else if(_tcscmp(name, _T("inset")) == 0){
+		else if(_tcscmp(name, _T("padding")) == 0){
 			int l, t, r, b;
 			if(_stscanf(value, _T("%d,%d,%d,%d"), &l, &t, &r, &b) == 4){
 				_inset = {l, t, r, b};
@@ -109,6 +97,22 @@ namespace laywin{
 		else if(_tcscmp(name, _T("minheight")) == 0){
 			_min_height = _tstoi(value);
 		}
+        else if(_tcscmp(name, _T("maxwidth")) == 0) {
+            _max_width = _tstoi(value);
+        }
+        else if(_tcscmp(name, _T("maxheight")) == 0) {
+            _max_height = _tstoi(value);
+        }
+        else if(_tcscmp(name, _T("size")) == 0) {
+            int width, height;
+            if(_stscanf(value, _T("%d,%d"), &width, &height) == 2) {
+                _width = width;
+                _height = height;
+            }
+        }
+        else if(_tcscmp(name, _T("text")) == 0) {
+            ::SetWindowText(_hwnd, value);
+        }
 		else{
 			::MessageBox(NULL, value, name, MB_ICONERROR);
 		}
@@ -140,7 +144,8 @@ namespace laywin{
 		rct.right -= _inset.right;
 		rct.bottom -= _inset.bottom;
 
-		::SetWindowPos(_hwnd, 0, rct.left, rct.top, rct.width(), rct.height(), SWP_NOZORDER);
+        if(!is_container())
+		    ::SetWindowPos(_hwnd, 0, rct.left, rct.top, rct.width(), rct.height(), SWP_NOZORDER);
 	}
 	
 	void container::pos(const rect& rc)
@@ -214,15 +219,6 @@ namespace laywin{
 		}
 
 		return NULL;
-	}
-
-	void container::font(int id)
-	{
-		control::font(id);
-
-		for(int i = 0; i < _items.size(); i++){
-			_items[i]->font(id);
-		}
 	}
 
 	void horizontal::pos(const rect& rc)
@@ -411,7 +407,7 @@ namespace laywin{
 	void window_container::attribute(LPCTSTR name, LPCTSTR value, bool inited /*= false*/)
 	{
 		if(_tcscmp(name, _T("title")) == 0){
-			_text = value;
+
 		}
 		else if(_tcscmp(name, _T("size")) == 0){
 			int w, h;
@@ -427,7 +423,6 @@ namespace laywin{
 	void window_container::init()
 	{
 		__super::init();
-		::SetWindowText(_hwnd, _text.c_str());
 		::SetWindowPos(_hwnd, NULL, 0, 0,
 			_init_size.cx, _init_size.cy,
 			SWP_NOMOVE | SWP_NOZORDER);

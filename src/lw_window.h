@@ -73,7 +73,7 @@ namespace laywin{
 		HWND hwnd() const { return _hwnd; }
 		operator HWND() const { return hwnd(); }
 
-		HWND create(HWND hParent=NULL, DWORD dwStyle=0, DWORD dwExStyle=0, HMENU hMenu = NULL);
+		virtual HWND create(HWND hParent=NULL, DWORD dwStyle=0, DWORD dwExStyle=0, HMENU hMenu = NULL);
 		void close();
 
 		bool do_modal(HWND owner);

@@ -18,7 +18,7 @@ namespace laywin{
 		container* root() const { return _root; }
 		container* operator->(){ return _root; }
 
-	protected:
+	public:
 		container* _root;
 		manager _mgr;
 	};
@@ -26,6 +26,7 @@ namespace laywin{
 	class window_creator : public window
 	{
 	public:
+		virtual HWND create(HWND hParent=NULL, DWORD dwStyle=0, DWORD dwExStyle=0, HMENU hMenu = NULL);
 
 	protected:
 		virtual LPCTSTR get_skin_json() const;

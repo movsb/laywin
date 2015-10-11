@@ -17,9 +17,23 @@ public:
 protected:
 	virtual LPCTSTR get_skin_json() const
 	{
-		LPCTSTR json =
-#include "../res/main.json"
-			;
+        LPCTSTR json = R"(
+<window>
+    <res>
+        <font name="yahei12" face="微软雅黑" size="12" default/>
+    </res>
+    <root size="500,500">
+        <horizontal>
+            <button text="t1" size="100,100"/>
+            <button text="t2"/>
+            <horizontal>
+                <edit text="edit1" exstyle="clientedge" maxwidth="100"/>
+                <edit text="说得好像真的一样，然而并没有什么卵用。" exstyle="clientedge"/>
+            </horizontal>
+        </horizontal>
+    </root>
+</window>
+)";
 		return json;
 	}
 

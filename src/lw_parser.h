@@ -1,5 +1,9 @@
-#ifndef __laywin_parser_h__
-#define __laywin_parser_h__
+#pragma once
+
+#include <string>
+#include <vector>
+#include <map>
+#include <functional>
 
 #include "lw_util.h"
 #include "lw_control.h"
@@ -7,31 +11,73 @@
 #include "lw_manager.h"
 
 namespace laywin{
-	class parser {
-	public:
-		container* parse(LPCTSTR json, manager* mgr);
+    namespace parser {
+        class PARSER_OBJECT {
+        public:
+            void set_attr(const char* name, const char* value) {
+                _attrs[name] = value;
+            }
 
-	private:
-		void _parse_meta();
-		void _parse_meta_font();
-		void _parse_control(container* parent);
+            void append_child(PARSER_OBJECT* c) {
+                _children.push_back(c);
+            }
 
-	private:
-		inline bool _valid_ptr();
-		inline bool _valid_suffix();
-		void _skip_ws();
-		string _read_key();
-		string _read_value();
-		void _skip_to_value();
-		void _skip_to_next();
+        public:
+            void dump_attr(std::function<void(const char* name, const char* value)> dumper) {
+                auto it = _attrs.cbegin();
+                while(it != _attrs.cend()) {
+                    dumper(it->first.c_str(), it->second.c_str());
+                    it++;
+                }
+            }
 
+            void dump_children(std::function<void(PARSER_OBJECT* c)> dumper) {
+                auto it = _children.cbegin();
+                while(it != _children.cend()) {
+                    dumper(*it);
+                    it++;
+                }
+            }
 
-	private:
-		manager* _manager;
-		container* _container;
-		LPCTSTR _p;
-		int _line;
-	};
+            std::string get_attr(const char* name, const char* def = "") {
+                if(_attrs.count(name))
+                    return _attrs[name];
+
+                if(!def) def = "";
+                return def;
+            }
+
+            bool has_attr(const char* name) {
+                return _attrs.count(name) > 0;
+            }
+
+            void remove_attr(const char* name) {
+                _attrs.erase(name);
+            }
+
+            int count_attrs() const {
+                return (int)_attrs.size();
+            }
+
+            int count_children() const {
+                return (int)_children.size();
+            }
+
+            PARSER_OBJECT* first_child() const {
+                if(count_children())
+                    return _children[0];
+                return nullptr;
+            }
+
+        public:
+            std::string tag;
+
+        protected:
+            std::map<std::string, std::string>  _attrs;
+            std::vector<PARSER_OBJECT*>         _children;
+        };
+
+        PARSER_OBJECT* parse(char* xml, manager* mgr);
+        PARSER_OBJECT* parse(const char* xml, manager* mgr);
+    }
 }
-
-#endif //__laywin_parser_h__

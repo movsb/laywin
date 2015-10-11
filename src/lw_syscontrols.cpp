@@ -70,7 +70,7 @@ namespace laywin{
 	void syscontrol::manager_(manager* mgr)
 	{
 		_mgr = mgr;
-		_hwnd = ::CreateWindowEx(_dwExStyle, get_control_class(), _text.c_str(), _dwStyle,
+		_hwnd = ::CreateWindowEx(_dwExStyle, get_control_class(), "", _dwStyle,
 			0, 0, 0, 0, mgr->hwnd(), HMENU(_id), GetModuleHandle(0), NULL);
 		assert(_hwnd);
 	}
@@ -78,7 +78,6 @@ namespace laywin{
 	void syscontrol::init()
 	{
 		__super::init();
-		::SetWindowText(_hwnd, _text.c_str());
 	}
 
 	void syscontrol::attribute(LPCTSTR name, LPCTSTR value, bool inited /* = false */)
