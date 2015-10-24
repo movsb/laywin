@@ -132,7 +132,15 @@ namespace laywin{
         if(!is_container())
 		    ::SetWindowPos(_hwnd, 0, rct.left, rct.top, rct.width(), rct.height(), SWP_NOZORDER);
 	}
-	
+
+    void control::create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) {
+        decltype(attrs.begin()) it;
+
+        for(auto it = attrs.cbegin(); it != attrs.cend(); it++)
+            set_attr(it->first.c_str(), it->second.c_str());
+    }
+
+    //////////////////////////////////////////////////////////////////////////
 	void container::pos(const rect& rc)
 	{
 		__super::pos(rc);

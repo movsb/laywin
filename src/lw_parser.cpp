@@ -1,13 +1,10 @@
-#include <iostream>
 #include <cctype>
 #include <cstring>
-#include <functional>
 
 #include <cstring>
 #include <memory>
 
 #include "lw_parser.h"
-#include "lw_control.h"
 
 #include <map>
 #include <vector>
@@ -209,7 +206,7 @@ namespace laywin {
             }
         }
 
-        PARSER_OBJECT* parse(char* xml, resmgr* mgr) {
+        PARSER_OBJECT* parse(char* xml) {
             PARSER_OBJECT po;
 
             try {
@@ -222,11 +219,11 @@ namespace laywin {
             return po.first_child();
         }
 
-        PARSER_OBJECT* parse(const char* xml, resmgr* mgr) {
+        PARSER_OBJECT* parse(const char* xml) {
             int len = (int)::strlen(xml) + 1;
             std::unique_ptr<char> x(new char[len]);
             ::memcpy(x.get(), xml, len);
-            return parse(x.get(), mgr);
+            return parse(x.get());
         }
 
     }

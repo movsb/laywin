@@ -17,11 +17,13 @@ namespace laywin{
             else if(tag == "horizontal")    ctl = new horizontal;
             else if(tag == "vertical")      ctl = new vertical;
 
-            //else if(tag == "group")         ctl = new group;
             else if(tag == "button")        ctl = new button;
-            //else if(tag == "edit")          ctl = new edit;
             else if(tag == "option")        ctl = new option;
-            //else if(tag == "static")        ctl = new static_;
+            else if(tag == "check")         ctl = new check;
+            else if(tag == "label")         ctl = new label;
+            else if(tag == "group")         ctl = new group;
+            else if(tag == "edit")          ctl = new edit;
+            else if(tag == "listview")      ctl = new listview;
 
             else                            ctl = nullptr;
 
@@ -31,6 +33,10 @@ namespace laywin{
             }
 
             ctl->create(p->hwnd(), c->attrs(), *mgr);
+
+            // set this
+            if(ctl->hwnd())
+                ::SetWindowLongPtr(ctl->hwnd(), GWL_USERDATA, LONG(ctl));
 
             p->add(ctl);
 
@@ -51,7 +57,7 @@ namespace laywin{
         delete _root;
     }
 
-	LPCTSTR window_creator::get_skin_json() const
+	LPCTSTR window_creator::get_skin_xml() const
 	{
 		return _T("");
 	}
@@ -75,7 +81,7 @@ namespace laywin{
 			int code = HIWORD(wparam);
 
             if(hwnd) { // from control message
-                control* pc = _root->find(hwnd);   // TODO
+                control* pc = (control*)::GetWindowLongPtr(hwnd, GWL_USERDATA);
                 if(pc) {
                     return on_notify(hwnd, pc, code, nullptr);
                 }
@@ -89,14 +95,14 @@ namespace laywin{
 		case WM_NOTIFY:
 		{
 			NMHDR* hdr = reinterpret_cast<NMHDR*>(lparam);
-			control* pc = _root->find(hdr->hwndFrom); // TODO set window extra to pc/name
+            control* pc = (control*)::GetWindowLongPtr(hdr->hwndFrom, GWL_USERDATA);
 			if(!hdr || !pc) break;
 			return on_notify(hdr->hwndFrom, pc, hdr->code, hdr);
 		}
         case WM_CREATE:
         {
             using namespace parser;
-            PARSER_OBJECT* p = parser::parse(get_skin_json(), nullptr);
+            PARSER_OBJECT* p = parser::parse(get_skin_xml());
             if(!p) break;
 
             if(p->tag == "window") {

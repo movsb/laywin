@@ -1,14 +1,15 @@
+/* taoxml: the simple, stupid xml parser
+ *  written by: movsb
+ *  written in: Oct 11, 2015
+ *  https://github.com/movsb/taoxml
+ **/
+
 #pragma once
 
 #include <string>
 #include <vector>
 #include <map>
 #include <functional>
-
-#include "lw_util.h"
-#include "lw_control.h"
-#include "lw_syscontrols.h"
-#include "lw_resmgr.h"
 
 namespace laywin{
     namespace parser {
@@ -59,7 +60,7 @@ namespace laywin{
                 return (int)_attrs.size();
             }
 
-            std::map<string, string>& attrs() {
+            std::map<std::string, std::string>& attrs() {
                 return _attrs;
             }
 
@@ -81,7 +82,7 @@ namespace laywin{
             std::vector<PARSER_OBJECT*>         _children;
         };
 
-        PARSER_OBJECT* parse(char* xml, resmgr* mgr);
-        PARSER_OBJECT* parse(const char* xml, resmgr* mgr);
+        PARSER_OBJECT* parse(char* xml);
+        PARSER_OBJECT* parse(const char* xml);
     }
 }

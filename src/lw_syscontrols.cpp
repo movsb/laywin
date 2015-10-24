@@ -23,9 +23,6 @@ namespace laywin{
                     }
                 }
             }
-            else{
-                n++;
-            }
         }
         return n;
     }
@@ -42,10 +39,14 @@ namespace laywin{
 
     void syscontrol::create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) {
         syscontrol_metas metas;
-        get_metas(metas, attrs, nullptr, nullptr);
+        create_metas(metas, attrs);
         _hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
             0, 0, 0, 0, parent, nullptr, nullptr, this);
         assert(_hwnd);
+        if(!_hwnd) return;
+
+        if(metas.after_created)
+            metas.after_created();
 
         decltype(attrs.begin()) it;
 
@@ -59,7 +60,6 @@ namespace laywin{
 
         it = attrs.find("text");
         if(it != attrs.end()) {
-            ::SetWindowText(_hwnd, it->second.c_str());
             attrs.erase(it);
         }
 
@@ -67,47 +67,45 @@ namespace laywin{
             set_attr(it->first.c_str(), it->second.c_str());
     }
 
-    void syscontrol::get_metas(syscontrol_metas& metas, std::map<string,string>& attrs, 
-        style_map* known_styles, style_map* known_ex_styles) 
-    {
-		static style_map __known_styles[] =
-		{
-			{WS_BORDER, _T("border")},
-			{WS_CAPTION, _T("caption")},
-			{WS_CHILD, _T("child")},
-			{WS_CLIPSIBLINGS, _T("clipsiblings")},
-			{WS_CLIPCHILDREN, _T("clipchildren")},
-			{WS_DISABLED, _T("disabled")},
-			{WS_GROUP, _T("group")},
-			{WS_HSCROLL, _T("hscroll")},
-			{WS_TABSTOP, _T("tabstop")},
-			{WS_VSCROLL, _T("vscroll")},
-			{0, nullptr}
-		};
+    void syscontrol::create_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+        static style_map __known_styles[] =
+        {
+            {WS_BORDER, _T("border")},
+            {WS_CAPTION, _T("caption")},
+            {WS_CHILD, _T("child")},
+            {WS_CLIPSIBLINGS, _T("clipsiblings")},
+            {WS_CLIPCHILDREN, _T("clipchildren")},
+            {WS_DISABLED, _T("disabled")},
+            {WS_GROUP, _T("group")},
+            {WS_HSCROLL, _T("hscroll")},
+            {WS_TABSTOP, _T("tabstop")},
+            {WS_VSCROLL, _T("vscroll")},
+            {0, nullptr}
+        };
 
-		static style_map __known_ex_styles[] =
-		{
-			{WS_EX_ACCEPTFILES, _T("acceptfiles")},
-			{WS_EX_CLIENTEDGE, _T("clientedge")},
-			{WS_EX_STATICEDGE, _T("staticedge")},
-			{WS_EX_TOOLWINDOW, _T("toolwindow")},
-			{WS_EX_TOPMOST, _T("topmost")},
-			{WS_EX_TRANSPARENT, _T("transparent")},
-			{0, nullptr}
-		};
-
-        metas.style = WS_CHILD | WS_VISIBLE;
-        metas.exstyle = 0;
-
+        static style_map __known_ex_styles[] =
+        {
+            {WS_EX_ACCEPTFILES, _T("acceptfiles")},
+            {WS_EX_CLIENTEDGE, _T("clientedge")},
+            {WS_EX_STATICEDGE, _T("staticedge")},
+            {WS_EX_TOOLWINDOW, _T("toolwindow")},
+            {WS_EX_TOPMOST, _T("topmost")},
+            {WS_EX_TRANSPARENT, _T("transparent")},
+            {0, nullptr}
+        };
+        
+        get_metas(metas, attrs);        
+        
         decltype(attrs.begin()) it;
 
         if((it = attrs.find("style")) != attrs.end()) {
             std::vector<string> styles;
             split_string(&styles, it->second.c_str());
 
-            int mapped = __map_style(&metas.style, &__known_styles[0], styles);
-            if(known_styles)
-                mapped += __map_style(&metas.style, known_styles, styles);
+            int mapped = 0;
+            if(metas.known_styles)
+                mapped += __map_style(&metas.style, metas.known_styles, styles);
+            mapped += __map_style(&metas.style, &__known_styles[0], styles);
 
             assert(mapped == styles.size());
             attrs.erase(it);
@@ -117,9 +115,10 @@ namespace laywin{
             std::vector<string> exstyles;
             split_string(&exstyles, it->second.c_str());
 
-            int mapped = __map_style(&metas.exstyle, &__known_ex_styles[0], exstyles);
-            if(known_ex_styles)
-                mapped += __map_style(&metas.exstyle, known_ex_styles, exstyles);
+            int mapped = 0;
+            if(metas.known_ex_styles)
+                mapped += __map_style(&metas.exstyle, metas.known_ex_styles, exstyles);
+            mapped += __map_style(&metas.exstyle, &__known_ex_styles[0], exstyles);
 
             assert(mapped == exstyles.size());
             attrs.erase(it);
@@ -128,23 +127,21 @@ namespace laywin{
         if((it = attrs.find("text")) != attrs.end()) {
             auto& text = it->second;
             metas.caption = text.c_str();   // TODO ALERT text is not local!
+            // DO not erase it.
         }
     }
 
+
     //////////////////////////////////////////////////////////////////////////
-    void button::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) {
+    void button::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
         static style_map __known_styles[] =
         {
             {BS_MULTILINE, _T("multiline")},
             {0, nullptr}
         };
 
-        static style_map __known_ex_styles[] =
-        {
-            {0, nullptr}
-        };
-
-        __super::get_metas(metas, attrs, __known_styles, __known_ex_styles);
+        metas.known_styles = &__known_styles[0];
+        metas.known_ex_styles = nullptr;
         metas.classname = WC_BUTTON;
     }
 
@@ -154,23 +151,13 @@ namespace laywin{
 	{
 	}
 
-    void option::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) {
-        __super::get_metas(metas, attrs, known_styles, known_ex_styles);
+    void option::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
         metas.classname = WC_BUTTON;
         metas.style |= BS_AUTORADIOBUTTON;
     }
 
     //////////////////////////////////////////////////////////////////////////
-	check::check()
-	{
-	}
-
-	void check::init()
-	{
-	}
-
-    void check::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) {
-        __super::get_metas(metas, attrs, known_styles, known_ex_styles);
+    void check::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
         metas.classname = WC_BUTTON;
         metas.style |= BS_AUTOCHECKBOX;
     }
@@ -184,77 +171,51 @@ namespace laywin{
 		else return __super::set_attr(name, value);
 	}
 
-    /*
     //////////////////////////////////////////////////////////////////////////
-	LPCTSTR static_::get_control_class() const
-	{
-		return WC_STATIC;
-	}
+    void label::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+        metas.classname = WC_STATIC;
+    }
 
+    //////////////////////////////////////////////////////////////////////////
+    void group::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+        metas.style |= BS_GROUPBOX;
+        metas.classname = WC_BUTTON;
+    }
 
-	group::group()
-	{
-		_dwStyle |= BS_GROUPBOX;
-	}
+    //////////////////////////////////////////////////////////////////////////
+    void edit::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+        static style_map __known_styles[] =
+        {
+            {ES_CENTER, _T("center")},
+            {ES_MULTILINE, _T("multiline")},
+            {ES_NOHIDESEL, _T("nohidesel")},
+            {ES_NUMBER, _T("number")},
+            {ES_READONLY, _T("readonly")},
+            {ES_WANTRETURN, _T("wantreturn")},
+            {0, nullptr}
+        };
 
-	LPCTSTR group::get_control_class() const
-	{
-		return WC_BUTTON;
-	}
+        metas.classname = WC_EDIT;
+        metas.style |= ES_AUTOHSCROLL | ES_AUTOVSCROLL;
+        metas.known_styles = &__known_styles[0];
+    }
 
+    //////////////////////////////////////////////////////////////////////////
+    void listview::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+        static style_map __known_styles[] = {
+            {LVS_SINGLESEL, "singlesel"},
+        };
 
-	edit::edit()
-	{
-		_dwStyle |= ES_AUTOHSCROLL | ES_AUTOVSCROLL;
-	}
+        metas.classname = WC_LISTVIEW;
+        metas.style |= LVS_REPORT;
+        metas.known_styles = &__known_styles[0];
+        metas.after_created = [&]() {
+            DWORD dw = ListView_GetExtendedListViewStyle(_hwnd);
+            ListView_SetExtendedListViewStyle(_hwnd, dw | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+        };
+    }
 
-	LPCTSTR edit::get_control_class() const
-	{
-		return WC_EDIT;
-	}
-
-	void edit::set_style(std::vector<string>& styles, bool bex)
-	{
-		static style_map known_styles[] =
-		{
-			{ES_CENTER, _T("center")},
-			{ES_MULTILINE, _T("multiline")},
-			{ES_NOHIDESEL, _T("nohidesel")},
-			{ES_NUMBER, _T("number")},
-			{ES_READONLY, _T("readonly")},
-			{ES_WANTRETURN, _T("wantreturn")},
-			{0, nullptr}
-		};
-
-		static style_map known_ex_styles[] =
-		{
-			{0, nullptr}
-		};
-
-		auto ks = bex ? &known_ex_styles[0] : &known_styles[0];
-		auto& thestyle = bex ? _dwExStyle : _dwStyle;
-		if(!map_style(&thestyle, ks, styles)){
-			return __super::set_style(styles, bex);
-		}
-	}
-
-
-	listview::listview()
-	{
-		_dwStyle |= LVS_REPORT;
-	}
-
-	LPCTSTR listview::get_control_class() const
-	{
-		return WC_LISTVIEW;
-	}
-
-	void listview::set_style(std::vector<string>& styles, bool bex)
-	{
-		return __super::set_style(styles, bex);
-	}
-
-	int listview::insert_item(LPCTSTR str, LPARAM param)
+	int listview::insert_item(LPCTSTR str, LPARAM param, int i)
 	{
 		LVITEM lvi = {0};
 		lvi.mask = LVIF_TEXT | LVIF_PARAM;
@@ -273,13 +234,6 @@ namespace laywin{
 		lvc.cx = cx;
 		
 		return ListView_InsertColumn(_hwnd, i, &lvc);
-	}
-
-	void listview::init()
-	{
-		__super::init();
-		DWORD dw = ListView_GetExtendedListViewStyle(_hwnd);
-		ListView_SetExtendedListViewStyle(_hwnd, dw | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 	}
 
 	void listview::format_columns(const string& fmt)
@@ -318,5 +272,9 @@ namespace laywin{
 	{
 		return !!ListView_DeleteItem(_hwnd, i);
 	}
-    */
+
+    int listview::get_column_count() {
+        HWND header = ListView_GetHeader(_hwnd);
+        return Header_GetItemCount(header);
+    }
 }

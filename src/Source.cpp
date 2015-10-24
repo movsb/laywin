@@ -2,7 +2,6 @@
 #include <commctrl.h>
 
 #include "../src/lw_laywin.h"
-#pragma comment(lib, "../bin/debug/laywin.lib")
 
 class TW : public laywin::window_creator
 {
@@ -11,21 +10,23 @@ public:
 	{}
 
 protected:
-	virtual LPCTSTR get_skin_json() const
+	virtual LPCTSTR get_skin_xml() const override
 	{
         LPCTSTR json = R"tw(
 <window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
     <res>
         <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
-        <font name="1" face="Î¢ÈíÑÅºÚ" size="24"/>
+        <font name="1" face="Î¢ÈíÑÅºÚ" size="12"/>
     </res>
     <root>
         <vertical padding="5,5,5,5">
             <button name="nothing" text="È¡Ïû" font="1"/>
             <button name="nothing" text="È¡Ïû" font="1"/>
+            <listview name="lv" style="singlesel" exstyle="clientedge">  </listview>
             <horizontal>
                 <button name="nothing" text="È¡Ïû" font="1" width="100" maxheight="300"/>
                 <button name="t1" text="ÄÚ±ß¾àºÇºÇßÕ" padding="5,5,5,5" style="multiline" font="1" maxwidth="200"/>
+                <button name="t1" text="ÄÚ±ß¾àºÇºÇßÕ" padding="5,5,5,5" font="1" maxwidth="200"/>
                 <button name="nothing" text="È¡Ïû" font="1"/>
             </horizontal>
         </vertical>
@@ -42,7 +43,13 @@ protected:
 		case WM_CREATE:
 		{
 			center();
-
+            auto lv = _root->find<laywin::listview>("lv");
+            lv->insert_column("c1", 50, 0);
+            lv->insert_column("c2", 50, 1);
+            lv->insert_column("c3", 50, 2);
+            lv->insert_item("line1");
+            lv->insert_item("line2");
+            lv->insert_item("line3");
 			return 0;
 		}
         case WM_CLOSE:

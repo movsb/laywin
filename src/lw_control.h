@@ -16,9 +16,7 @@ namespace laywin{
 		control();
 		virtual ~control();
 
-        virtual void create(HWND parent, std::map<string,string>& attrs, resmgr& mgr) {
-            
-        }
+        virtual void create(HWND parent, std::map<string, string>& attrs, resmgr& mgr);
 
         HWND hwnd() const {
             return _hwnd;
@@ -167,6 +165,14 @@ namespace laywin{
 
 		virtual control* find(LPCTSTR n) override;
 		virtual control* find(HWND h) override;
+        template<class T>
+        T* find(LPCTSTR n) {
+            return static_cast<T*>(find(n));
+        }
+        template<class T>
+        T* find(HWND n) {
+            return static_cast<T*>(find(n));
+        }
 
 	protected:
 		array<control*> _items;
