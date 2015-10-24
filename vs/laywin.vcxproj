@@ -90,7 +90,7 @@
     <ClInclude Include="..\src\lw_parser.h" />
     <ClInclude Include="..\src\lw_syscontrols.h" />
     <ClInclude Include="..\src\lw_util.h" />
-    <ClInclude Include="..\src\lw_manager.h" />
+    <ClInclude Include="..\src\lw_resmgr.h" />
     <ClInclude Include="..\src\lw_window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -99,7 +99,7 @@
     <ClCompile Include="..\src\lw_parser.cpp" />
     <ClCompile Include="..\src\lw_syscontrols.cpp" />
     <ClCompile Include="..\src\lw_util.cpp" />
-    <ClCompile Include="..\src\lw_manager.cpp" />
+    <ClCompile Include="..\src\lw_resmgr.cpp" />
     <ClCompile Include="..\src\lw_window.cpp" />
     <ClCompile Include="..\src\Source.cpp" />
   </ItemGroup>

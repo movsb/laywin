@@ -11,7 +11,6 @@ namespace laywin{
 	{
 	public:
 		syscontrol();
-		virtual void manager_(manager* mgr) override;
 
 	public:
 		bool set_window_text(LPCTSTR str)
@@ -31,13 +30,13 @@ namespace laywin{
 		}
 
         void create(HWND parent) {
-            _hwnd = ::CreateWindowEx(_dwExStyle, get_control_class(), "", WS_CHILD | WS_VISIBLE | _dwStyle, 0, 0, 0, 0, parent, nullptr, nullptr, nullptr);
+            _hwnd = ::CreateWindowEx(_dwExStyle, get_control_class(), "", WS_CHILD | WS_VISIBLE | _dwStyle |WS_TABSTOP, 0, 0, 0, 0, parent, nullptr, nullptr, nullptr);
         }
 
 	protected:
 		virtual void init() override;
 		virtual LPCTSTR get_control_class() const = 0;
-		virtual void attribute(LPCTSTR name, LPCTSTR value, bool inited /* = false */) override;
+		virtual void set_attr(const char* name, const char* value) override;
 		virtual void set_style(std::vector<string>& styles, bool bex = false);
 
 	protected:
@@ -73,7 +72,7 @@ namespace laywin{
 	protected:
 		virtual void init() override;
 		virtual LPCTSTR get_control_class() const override;
-		virtual void attribute(LPCTSTR name, LPCTSTR value, bool inited) override;
+		virtual void set_attr(const char* name, const char* value) override;
 
 	protected:
 		bool _b_check;

@@ -18,11 +18,11 @@ protected:
 	virtual LPCTSTR get_skin_json() const
 	{
         LPCTSTR json = R"(
-<window>
+<window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
     <res>
-        <font name="yahei12" face="Î¢ÈíÑÅºÚ" size="12" default/>
+        <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
     </res>
-    <root size="500,500">
+    <root>
         <horizontal>
             <button text="t1" size="100,100"/>
             <button text="t2"/>
@@ -41,6 +41,12 @@ protected:
 	{
 		switch(umsg)
 		{
+        case WM_LBUTTONUP:
+        {
+            auto tw = new TW();
+            tw->domodal({"", "taowin", WS_OVERLAPPEDWINDOW, 0}, _hwnd);
+            return 0;
+        }
 		case WM_CREATE:
 		{
 			center();
@@ -51,7 +57,7 @@ protected:
 		default:
 			break;
 		}
-		return 0;
+        return __super::handle_message(umsg, wparam, lparam, handled);
 	}
 
 	virtual LRESULT on_notify_ctrl(HWND hwnd, laywin::control* pc, int code, NMHDR* hdr) override
@@ -66,12 +72,18 @@ int main()
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 #endif
 {
+    laywin::register_window_classes();
+
+    printf("running...\n");
+
 	try{
 		TW tw1;
 		tw1.create();
 		tw1.show();
 
-		laywin::window_manager::message_loop();
+
+        laywin::window_manager window_manager;
+        window_manager.loop_message();
 	}
 	catch(LPCTSTR e){
 		std::wcout << e << std::endl;

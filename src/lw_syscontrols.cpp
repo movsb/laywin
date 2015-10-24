@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "lw_control.h"
-#include "lw_manager.h"
+#include "lw_resmgr.h"
 #include "lw_syscontrols.h"
 
 namespace laywin{
@@ -67,20 +67,12 @@ namespace laywin{
 
 	}
 
-	void syscontrol::manager_(manager* mgr)
-	{
-		_mgr = mgr;
-		_hwnd = ::CreateWindowEx(_dwExStyle, get_control_class(), "", _dwStyle,
-			0, 0, 0, 0, mgr->hwnd(), HMENU(_id), GetModuleHandle(0), NULL);
-		assert(_hwnd);
-	}
-
 	void syscontrol::init()
 	{
 		__super::init();
 	}
 
-	void syscontrol::attribute(LPCTSTR name, LPCTSTR value, bool inited /* = false */)
+    void syscontrol::set_attr(const char* name, const char* value)
 	{
 		if(0);
 
@@ -94,7 +86,7 @@ namespace laywin{
 			split_string(&exstyles, value, ',');
 			set_style(exstyles, true);
 		}
-		else __super::attribute(name, value, inited);
+		else __super::set_attr(name, value);
 	}
 
 	void syscontrol::set_style(std::vector<string>& styles, bool bex /*= false*/)
@@ -193,10 +185,10 @@ namespace laywin{
 		return WC_BUTTON;
 	}
 
-	void check::attribute(LPCTSTR name, LPCTSTR value, bool inited)
+	void check::set_attr(const char* name, const char* value)
 	{
 		if(_tcscmp(name, _T("checked")) == 0) _b_check = _tcscmp(value, _T("true")) == 0;
-		else return __super::attribute(name, value, inited);
+		else return __super::set_attr(name, value);
 	}
 
 

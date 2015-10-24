@@ -5,7 +5,7 @@
 #include "lw_control.h"
 #include "lw_syscontrols.h"
 #include "lw_window.h"
-#include "lw_manager.h"
+#include "lw_resmgr.h"
 
 namespace laywin{
 	class laywin{
@@ -20,7 +20,7 @@ namespace laywin{
 
 	public:
 		container* _root;
-		manager _mgr;
+		resmgr _mgr;
 	};
 
 	class window_creator : public window
@@ -31,8 +31,6 @@ namespace laywin{
 	protected:
 		virtual LPCTSTR get_skin_json() const;
 		virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled);
-		virtual void on_first_message(HWND hwnd) override;
-		virtual void on_final_message(HWND hwnd) override;
 		virtual LRESULT on_menu(int id) { return 0; }
 		virtual LRESULT on_command_ctrl(HWND hwnd, control* pc, int code) { return 0; }
 		virtual LRESULT on_notify_ctrl(HWND hwnd, control* pc, int code, NMHDR* hdr) { return 0; }

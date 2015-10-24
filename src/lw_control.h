@@ -1,20 +1,34 @@
-#ifndef __laywin_control_h__
-#define __laywin_control_h__
+#pragma once
 
 #include "lw_util.h"
 
 namespace laywin{
 
-	class manager;
+	class resmgr;
 	class container;
 
 	class control {
+        friend class container;
+        friend class horizontal;
+        friend class vertical;
 	public:
 		control();
 		virtual ~control();
 
         virtual void create(HWND parent) {
             
+        }
+
+        HWND hwnd() const {
+            return _hwnd;
+        }
+
+        void hwnd(HWND hwnd_) {
+            _hwnd = hwnd_;
+        }
+
+        virtual void set_resmgr(resmgr* mgr) {
+            _mgr = mgr;
         }
 
 		virtual bool is_container() const { return false; }
@@ -25,58 +39,22 @@ namespace laywin{
 		virtual void init();
 		virtual bool focus();
 
-		virtual const rect& pos() const {
-			return _pos;
-		}
 		virtual void pos(const rect& rc);
-
-		virtual const csize& post_size() const { return _post_size; }
-		virtual void post_size(const csize& sz) { _post_size = sz; }
 
 		virtual int		width() const { return _pos.right - _pos.left; }
 		virtual int		height() const { return _pos.bottom - _pos.top; }
 
-		virtual void	fixed_width(int cx) {
-			_width = cx;
-		}
-		virtual int		fixed_width() const {
-			return _width;
-		}
-		virtual void	fixed_height(int cy) {
-			_height = cy;
-		}
-		virtual int		fixed_height() {
-			return _height;
-		}
-		
-		virtual int		min_width() const { return _min_width; }
-		virtual void	min_width(int cx) {}
-		virtual int		max_width() const { return _max_width; }
-		virtual void	max_width(int cx) {}
-
-		virtual int		min_height() const { return _min_height; }
-		virtual void	min_height(int cy) {}
-		virtual int		max_height() const { return _max_height; }
-		virtual void	max_height(int cy) {}
-
-		virtual void	inset(const rect& rc){
-			_inset = rc;
-		}
-		virtual const rect& inset() const{
-			return _inset;
-		}
-
-		virtual bool	visible() const {
+		bool    is_visible() const {
 			return _b_visible && _b_visible_by_parent;
 		}
 
-		virtual void visible(bool visible_){
+		virtual void set_visible(bool visible_){
 			_b_visible = visible_;
 			displayed(displayed());
 			need_parent_update();
 		}
 
-		virtual void visible_by_parent(bool visible_){
+		virtual void set_visible_by_parent(bool visible_){
 			_b_visible_by_parent = visible_;
 			displayed(displayed());
 		}
@@ -88,52 +66,19 @@ namespace laywin{
 		virtual void displayed(bool displayed_){
 			_b_displayed = displayed_;
 			if (::IsWindow(_hwnd)){
-				::ShowWindow(_hwnd, visible() ? SW_SHOW : SW_HIDE);
+				::ShowWindow(_hwnd, is_visible() ? SW_SHOW : SW_HIDE);
 			}
 		}
 
 		virtual csize estimate_size(const csize& available);
 
-		virtual void attribute(LPCTSTR name, LPCTSTR value, bool inited = false);
-        virtual void set_attr(LPCTSTR name, LPCTSTR value, bool inited = false) {
-            return attribute(name, value, inited);
-        }
-
-		virtual void manager_(manager* mgr){
-			_mgr = mgr;
-		}
-
-		virtual void hwnd(HWND hwnd_){
-			_hwnd = hwnd_;
-		}
-		virtual HWND hwnd() const{
-			return _hwnd;
-		}
-		operator HWND() const{
-			return hwnd();
-		}
-
-		virtual void id(int id_){
-			_id = id_;
-		}
-		virtual int id() const {
-			return _id;
-		}
+        virtual void set_attr(const char* name, const char* value);
 
 		virtual void need_update(){
-			if (_b_inited){
-				pos(pos());
-			}
+            pos(_pos);
 		}
 
 		virtual void need_parent_update();
-
-		void user_data(void* ud){
-			_ud = ud;
-		}
-		void* user_data() const {
-			return _ud;
-		}
 
 		virtual container* parent() const{
 			return reinterpret_cast<container*>(_parent);
@@ -142,45 +87,34 @@ namespace laywin{
 			_parent = reinterpret_cast<control*>(pa);
 		}
 
-		virtual void name(LPCTSTR n){
-			_name = n;
-		}
-		virtual const string& name() const {
-			return _name;
-		}
-
 		virtual control* find(LPCTSTR n);
 		virtual control* find(HWND h);
 
 	protected:
-		string _name;
-		int _id;
-		HWND _hwnd;
+        string          _name;      // 控件的名字，不要重复
+		HWND            _hwnd;      // 所绑定的控件的句柄
 
-		rect _pos;
-		csize _post_size;
+		rect            _pos;       // 在界面上的位置
+		rect            _padding;   // 内边距
 
-		int _width;
-		int _height;
-		int _min_width;
-		int _max_width;
-		int _min_height;
-		int _max_height;
+		int             _width;     // 设置的宽度，默认为0
+		int             _height;    // 设置的高度，默认为0
+		int             _min_width; // 最小宽度
+		int             _max_width; // 最大宽度
+		int             _min_height;// 最小高度
+		int             _max_height;// 最大高度
 
-		rect _inset;
 
-		bool _b_visible;
-		bool _b_visible_by_parent;
-		bool _b_displayed;
+		bool            _b_visible;             // 此控件的显示属性，隐藏时也会占空间
+		bool            _b_visible_by_parent;   // 父控件所设置的显示属性
+		bool            _b_displayed;           // 同CSS，false时不占空间
 
-		manager* _mgr;
-		control* _parent;
+		resmgr*         _mgr;       // 资源管理器
+		control*        _parent;    // 父控件
 
-		bool _b_inited;
+		string          _font;      // 控件字体
 
-		int _font;
-
-		void* _ud;
+		void*           _ud;        // 用户数据
 	};
 
 	class container : public control
@@ -194,6 +128,7 @@ namespace laywin{
 			remove_all();
 		}
 
+        virtual void set_resmgr(resmgr* mgr) override;
 		virtual bool is_container() const override { return true; }
 
 		static LPCTSTR get_class_static() { return _T("container"); }
@@ -230,10 +165,8 @@ namespace laywin{
 
 		virtual void pos(const rect& rc) override;
 
-		virtual void visible(bool visible_) override;
+		virtual void set_visible(bool visible_) override;
 		virtual void displayed(bool displayed_) override;
-
-		virtual void manager_(manager* mgr) override;
 
 		virtual control* find(LPCTSTR n) override;
 		virtual control* find(HWND h) override;
@@ -263,17 +196,16 @@ namespace laywin{
 
 	class window_container : public container
 	{
+        friend class window_creator;
 	public:
 		window_container();
 
 	protected:
 		virtual void init() override;
-		void manager_(manager* mgr);
-		virtual void attribute(LPCTSTR name, LPCTSTR value, bool inited = false) override;
+		void resmgr_(resmgr* mgr);
+		virtual void set_attr(const char* name, const char* value) override;
 
-	private:
+    private:
 		csize _init_size;
 	};
 }
-
-#endif // __laywin_control_h__

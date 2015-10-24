@@ -209,7 +209,7 @@ namespace laywin {
             }
         }
 
-        PARSER_OBJECT* parse(char* xml, manager* mgr) {
+        PARSER_OBJECT* parse(char* xml, resmgr* mgr) {
             PARSER_OBJECT po;
 
             try {
@@ -222,7 +222,7 @@ namespace laywin {
             return po.first_child();
         }
 
-        PARSER_OBJECT* parse(const char* xml, manager* mgr) {
+        PARSER_OBJECT* parse(const char* xml, resmgr* mgr) {
             int len = (int)::strlen(xml) + 1;
             std::unique_ptr<char> x(new char[len]);
             ::memcpy(x.get(), xml, len);

@@ -21,9 +21,6 @@
     <ClCompile Include="..\src\lw_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\lw_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\lw_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,15 +36,15 @@
     <ClCompile Include="..\src\lw_syscontrols.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\lw_resmgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\lw_control.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\lw_util.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\lw_manager.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\lw_window.h">
@@ -60,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\lw_syscontrols.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lw_resmgr.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

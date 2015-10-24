@@ -3,14 +3,13 @@
 #include <string>
 
 #include "lw_util.h"
-#include "lw_manager.h"
+#include "lw_resmgr.h"
 #include "lw_control.h"
 
 namespace laywin{
 	
 	control::control()
-		: _id(0)
-		, _hwnd(NULL)
+		: _hwnd(nullptr)
 		, _width(0)
 		, _height(0)
 		, _min_width(0)
@@ -20,11 +19,9 @@ namespace laywin{
 		, _b_visible(true)
 		, _b_displayed(true)
 		, _b_visible_by_parent(true)
-		, _mgr(NULL)
-		, _parent(NULL)
-		, _b_inited(false)
-		, _font(-1)
-		, _ud(NULL)
+		, _mgr(nullptr)
+		, _parent(nullptr)
+		, _ud(nullptr)
 	{
 
 	}
@@ -36,7 +33,6 @@ namespace laywin{
 
 	void control::init()
 	{
-		_b_inited = true;
 	}
 
 	bool control::focus()
@@ -61,17 +57,15 @@ namespace laywin{
 
 	void control::need_parent_update()
 	{
-		if (_b_inited){
-			if (_parent){
-				_parent->need_update();
-			}
-			else{
-				need_update(); // root only
-			}
-		}
+        if (_parent){
+            _parent->need_update();
+        }
+        else{
+            need_update(); // root only
+        }
 	}
 
-	void control::attribute(LPCTSTR name, LPCTSTR value, bool inited /*= false*/)
+	void control::set_attr(const char* name, const char* value)
 	{
 		if(_tcscmp(name, _T("name")) == 0){
 			_name = value;
@@ -79,7 +73,7 @@ namespace laywin{
 		else if(_tcscmp(name, _T("padding")) == 0){
 			int l, t, r, b;
 			if(_stscanf(value, _T("%d,%d,%d,%d"), &l, &t, &r, &b) == 4){
-				_inset = {l, t, r, b};
+				_padding = {l, t, r, b};
 			}
 		}
 		else if(_tcscmp(name, _T("font")) == 0){
@@ -129,20 +123,18 @@ namespace laywin{
 		if(_pos.right < _pos.left) _pos.right = _pos.left;
 		if(_pos.bottom < _pos.top)  _pos.bottom = _pos.top;
 
-		if(!_b_inited) return;
-
 		csize tmpsz = {_pos.width(), _pos.height()};
-		post_size(tmpsz);
+//		post_size(tmpsz);
 
 		if(!IsWindow(_hwnd))
 			return;
 
 		rect rct = _pos;
 
-		rct.left += _inset.left;
-		rct.top += _inset.top;
-		rct.right -= _inset.right;
-		rct.bottom -= _inset.bottom;
+		rct.left    += _padding.left;
+		rct.top     += _padding.top;
+		rct.right   -= _padding.right;
+		rct.bottom  -= _padding.bottom;
 
         if(!is_container())
 		    ::SetWindowPos(_hwnd, 0, rct.left, rct.top, rct.width(), rct.height(), SWP_NOZORDER);
@@ -155,24 +147,24 @@ namespace laywin{
 		if(_items.size() == 0) return;
 
 		rect r = _pos;
-		r.left += _inset.left;
-		r.top += _inset.top;
-		r.right -= _inset.right;
-		r.bottom -= _inset.bottom;
+		r.left      += _padding.left;
+		r.top       += _padding.top;
+		r.right     -= _padding.right;
+		r.bottom    -= _padding.bottom;
 
 		for(int i = 0; i < _items.size(); i++){
 			control* c = _items[i];
-			if(!c->visible()) continue;
+			if(!c->is_visible()) continue;
 			c->pos(r);
 		}
 	}
 
-	void container::visible(bool visible_)
+	void container::set_visible(bool visible_)
 	{
 		_b_visible = visible_;
 
 		for(int i = 0; i < _items.size(); i++){
-			_items[i]->visible_by_parent(control::visible());
+			_items[i]->set_visible_by_parent(control::is_visible());
 		}
 
 		need_parent_update();
@@ -183,18 +175,18 @@ namespace laywin{
 		_b_displayed = displayed_;
 
 		for(int i = 0; i < _items.size(); i++){
-			_items[i]->visible_by_parent(control::visible());
+			_items[i]->set_visible_by_parent(control::is_visible());
 		}
 
 		need_update();
 	}
 
-	void container::manager_(manager* mgr)
+	void container::set_resmgr(resmgr* mgr)
 	{
-		__super::manager_(mgr);
+		__super::set_resmgr(mgr);
 
 		for(int c = size(), i = 0; i < c; i++){
-			_items[i]->manager_(mgr);
+			_items[i]->set_resmgr(mgr);
 		}
 	}
 
@@ -228,10 +220,10 @@ namespace laywin{
 		if(_items.size() == 0) return;
 
 		rect r = _pos;
-		r.left += _inset.left;
-		r.top += _inset.top;
-		r.right -= _inset.right;
-		r.bottom -= _inset.bottom;
+        r.left      += _padding.left;
+		r.top       += _padding.top;
+		r.right     -= _padding.right;
+		r.bottom    -= _padding.bottom;
 
 		csize szAvailable = {r.width(), r.height()};
 
@@ -241,15 +233,15 @@ namespace laywin{
 
 		for(int i = 0; i < _items.size(); i++){
 			control* pc = _items[i];
-			if(!pc->visible()) continue;
+			if(!pc->is_visible()) continue;
 
 			csize sz = pc->estimate_size(szAvailable);
 			if(sz.cx == 0){
 				nAdjustables++;
 			}
 			else{
-				if(sz.cx < pc->min_width()) sz.cx = pc->min_width();
-				if(sz.cx > pc->max_width()) sz.cx = pc->max_width();
+				if(sz.cx < pc->_min_width) sz.cx = pc->_min_width;
+				if(sz.cx > pc->_max_width) sz.cx = pc->_max_width;
 			}
 
 			cxFixed += sz.cx;
@@ -269,7 +261,7 @@ namespace laywin{
 
 		for(int i = 0; i < _items.size(); i++){
 			control* pc = _items[i];
-			if(!pc->visible()) continue;
+			if(!pc->is_visible()) continue;
 
 			csize sz = pc->estimate_size(szRemaining);
 			if(sz.cx == 0){
@@ -280,21 +272,21 @@ namespace laywin{
 					sz.cx = max(0, szRemaining.cx - cxFixedRemaining);
 				}
 
-				if(sz.cx < pc->min_width()) sz.cx = pc->min_width();
-				if(sz.cx > pc->max_width()) sz.cx = pc->max_width();
+				if(sz.cx < pc->_min_width) sz.cx = pc->_min_width;
+				if(sz.cx > pc->_max_width) sz.cx = pc->_max_width;
 			}
 			else{
-				if(sz.cx < pc->min_width()) sz.cx = pc->min_width();
-				if(sz.cx > pc->max_width()) sz.cx = pc->max_width();
+				if(sz.cx < pc->_min_width) sz.cx = pc->_min_width;
+				if(sz.cx > pc->_max_width) sz.cx = pc->_max_width;
 
 				cxFixedRemaining -= sz.cx;
 			}
 
-			sz.cy = pc->fixed_height();
+			sz.cy = pc->_height;
 			if(sz.cy == 0) sz.cy = r.height();
 			if(sz.cy < 0) sz.cy = 0;
-			if(sz.cy < pc->min_height()) sz.cy = pc->min_height();
-			if(sz.cy > pc->max_height()) sz.cy = pc->max_height();
+			if(sz.cy < pc->_min_height) sz.cy = pc->_min_height;
+			if(sz.cy > pc->_max_height) sz.cy = pc->_max_height;
 
 			rect rct = {iPosX, r.top, iPosX + sz.cx, r.top + sz.cy};
 			pc->pos(rct);
@@ -305,7 +297,7 @@ namespace laywin{
 
 		csize sztmp = {cxNeeded, _pos.height()};
 		sztmp.cx += _pos.left + _pos.right;
-		post_size(sztmp);
+		//post_size(sztmp);
 	}
 
 
@@ -316,10 +308,10 @@ namespace laywin{
 		if(_items.size() == 0) return;
 
 		rect r = _pos;
-		r.left += _inset.left;
-		r.top += _inset.top;
-		r.right -= _inset.right;
-		r.bottom -= _inset.bottom;
+        r.left      += _padding.left;
+		r.top       += _padding.top;
+		r.right     -= _padding.right;
+		r.bottom    -= _padding.bottom;
 
 		csize szAvailable = {r.width(), r.height()};
 
@@ -329,15 +321,15 @@ namespace laywin{
 
 		for(int i = 0; i < _items.size(); i++){
 			control* pc = _items[i];
-			if(!pc->visible()) continue;
+			if(!pc->is_visible()) continue;
 
 			csize sz = pc->estimate_size(szAvailable);
 			if(sz.cy == 0){
 				nAdjustables++;
 			}
 			else{
-				if(sz.cy < pc->min_height()) sz.cy = pc->min_height();
-				if(sz.cy > pc->max_height()) sz.cy = pc->max_height();
+				if(sz.cy < pc->_min_height) sz.cy = pc->_min_height;
+				if(sz.cy > pc->_max_height) sz.cy = pc->_max_height;
 			}
 
 			cyFixed += sz.cy;
@@ -358,7 +350,7 @@ namespace laywin{
 
 		for(int i = 0; i < _items.size(); i++){
 			control* pc = _items[i];
-			if(!pc->visible()) continue;
+			if(!pc->is_visible()) continue;
 
 			csize sz = pc->estimate_size(szRemaining);
 			if(sz.cy == 0){
@@ -369,21 +361,21 @@ namespace laywin{
 					sz.cy = max(0, szRemaining.cy - cyFixedRemaining);
 				}
 
-				if(sz.cy < pc->min_height()) sz.cy = pc->min_height();
-				if(sz.cy > pc->max_height()) sz.cy = pc->max_height();
+				if(sz.cy < pc->_min_height) sz.cy = pc->_min_height;
+				if(sz.cy > pc->_max_height) sz.cy = pc->_max_height;
 			}
 			else{
-				if(sz.cy < pc->min_height()) sz.cy = pc->min_height();
-				if(sz.cy > pc->max_height()) sz.cy = pc->max_height();
+				if(sz.cy < pc->_min_height) sz.cy = pc->_min_height;
+				if(sz.cy > pc->_max_height) sz.cy = pc->_max_height;
 
 				cyFixedRemaining -= sz.cy;
 			}
 
-			sz.cx = pc->fixed_width();
+			sz.cx = pc->_width;
 			if(sz.cx == 0) sz.cx = szAvailable.cx;
 			if(sz.cx < 0) sz.cx = 0;
-			if(sz.cx < pc->min_height()) sz.cx = pc->min_width();
-			if(sz.cx > pc->max_height()) sz.cx = pc->max_width();
+			if(sz.cx < pc->_min_height) sz.cx = pc->_min_width;
+			if(sz.cx > pc->_max_height) sz.cx = pc->_max_width;
 
 			rect rct = {iPosX, iPosY, iPosX + sz.cx, iPosY + sz.cy};
 			pc->pos(rct);
@@ -395,7 +387,7 @@ namespace laywin{
 
 		csize sztmp = {_pos.width(), cyNeeded};
 		sztmp.cy += _pos.top + _pos.bottom;
-		post_size(sztmp);
+		//post_size(sztmp);
 	}
 
 	window_container::window_container()
@@ -404,10 +396,10 @@ namespace laywin{
 		_init_size.cy = 480;
 	}
 
-	void window_container::attribute(LPCTSTR name, LPCTSTR value, bool inited /*= false*/)
+	void window_container::set_attr(const char* name, const char* value)
 	{
 		if(_tcscmp(name, _T("title")) == 0){
-
+            ::SetWindowText(_hwnd, value);
 		}
 		else if(_tcscmp(name, _T("size")) == 0){
 			int w, h;
@@ -417,7 +409,7 @@ namespace laywin{
 			}
 		}
 		else
-			return __super::attribute(name, value, inited);
+			return __super::set_attr(name, value);
 	}
 
 	void window_container::init()
@@ -428,10 +420,9 @@ namespace laywin{
 			SWP_NOMOVE | SWP_NOZORDER);
 	}
 
-	void window_container::manager_(manager* mgr)
+	void window_container::resmgr_(resmgr* mgr)
 	{
-		__super::manager_(mgr);
-		_hwnd = mgr->hwnd();
+		__super::set_resmgr(mgr);
+		_hwnd = mgr->get_hwnd();
 	}
-
 }

@@ -8,7 +8,7 @@
 #include "lw_util.h"
 #include "lw_control.h"
 #include "lw_syscontrols.h"
-#include "lw_manager.h"
+#include "lw_resmgr.h"
 
 namespace laywin{
     namespace parser {
@@ -77,7 +77,7 @@ namespace laywin{
             std::vector<PARSER_OBJECT*>         _children;
         };
 
-        PARSER_OBJECT* parse(char* xml, manager* mgr);
-        PARSER_OBJECT* parse(const char* xml, manager* mgr);
+        PARSER_OBJECT* parse(char* xml, resmgr* mgr);
+        PARSER_OBJECT* parse(const char* xml, resmgr* mgr);
     }
 }

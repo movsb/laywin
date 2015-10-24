@@ -1,5 +1,4 @@
-#ifndef __laywin_window_h__
-#define __laywin_window_h__
+#pragma once
 
 #include <assert.h>
 #include <windows.h>
@@ -8,64 +7,121 @@
 namespace laywin{
 	class i_message_filter{
 	public:
-		virtual bool filter_message(HWND hChild, UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
-	};
-
-	class i_accelerator_translator{
-	public:
-		virtual bool translate_accelerator(MSG* pmsg) = 0;
+        virtual HWND filter_hwnd() = 0;
+		virtual bool filter_message(MSG* msg) = 0;
 	};
 
 	class window_manager{
 	public:
-		window_manager();
-		virtual ~window_manager();
+        window_manager() {}
+        ~window_manager() {}
 
-		HWND hwnd() { return _hwnd; }
+        void loop_message()
+        {
+            MSG msg;
+            while(::GetMessage(&msg, NULL, 0, 0)){
+                if(!filter_message(&msg)){
+                    ::TranslateMessage(&msg);
+                    ::DispatchMessage(&msg);
+                }
+            }
+        }
 
-		void init(HWND hwnd, i_message_filter* flt, i_accelerator_translator* trans);
-		void deinit();
+        bool filter_message(MSG* msg) {
+            if(_message_filters.size() == 0)
+                return false;
 
-		bool filter_message(MSG* pmsg);
-		i_message_filter* message_filter() const { return _message_filter; }
-		void message_filter(i_message_filter* flt) { _message_filter = flt; }
+            if(msg->message == WM_KEYDOWN) {
+                msg = msg;
+            }
+            HWND parent = msg->hwnd;
+            while(parent && ::GetWindowLongPtr(parent, GWL_STYLE) & WS_CHILD)
+                parent = ::GetParent(parent);
 
-		bool translate_accelerator(MSG* pmsg);
-		i_accelerator_translator* accelerator_translator() const { return _accelerator_translator; }
-		void accelerator_translator(i_accelerator_translator* trans) { _accelerator_translator = trans; }
+            for(int i = 0; i < _message_filters.size(); i++) {
+                auto flt = _message_filters[i];
+                if(parent == flt->filter_hwnd() && flt->filter_message(msg)) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
-		static void message_loop();
-		static bool translate_meesage(MSG* pmsg);
+        void add_message_filter(i_message_filter* filter) {
+            _message_filters.add(filter);
+        }
 
-		bool add_window_manager(window_manager* pwm){
-			return _window_managers.add(pwm);
-		}
-		bool remove_window_manager(window_manager* pwm){
-			bool b = _window_managers.remove(pwm);
-			if(_window_managers.size() == 0){
-				::PostQuitMessage(0);
-			}
-			return b;
-		}
+        void remove_message_filter(i_message_filter* filter) {
+            _message_filters.remove(filter);
+        }
 
-	protected:
-		HWND _hwnd;
-		i_message_filter* _message_filter;
-		i_accelerator_translator* _accelerator_translator;
+        void quit(int code = 0) {
+            ::PostQuitMessage(code);
+        }
 
-		static array<window_manager*> _window_managers;
+	public:
+		static array<i_message_filter*> _message_filters;
 	};
+
+    class dialog_manager{
+    public:
+        dialog_manager(i_message_filter*  this_) {
+            _this = this_;
+            _hwnd = _this->filter_hwnd();
+        }
+
+        int run() {
+            MSG msg;
+            while(::GetMessage(&msg, NULL, 0, 0)) {
+                if(!filter_message(&msg)) {
+                    ::TranslateMessage(&msg);
+                    ::DispatchMessage(&msg);
+                }
+            }
+
+            if(msg.message == WM_QUIT)
+                return (int)msg.wParam;
+
+            return 0x80000000;
+        }
+    private:
+        bool filter_message(MSG* msg) {
+            HWND parent = msg->hwnd;
+            while(parent && ::GetWindowLongPtr(parent, GWL_STYLE) & WS_CHILD)
+                parent = ::GetParent(parent);
+
+            return _hwnd == parent && _this->filter_message(msg);
+        }
+    private:
+        i_message_filter*   _this;
+        HWND                _hwnd;
+    };
+
+    void register_window_classes();
+
+    struct window_extra_t {
+
+    };
 
 	class window
 		: public i_message_filter
-		, public i_accelerator_translator
 	{
-	public:
-		enum class window_type{
-			normal,
-			modal_dialog,
-			modeless_dialog,
-		};
+        struct window_meta_t {
+            const char*     caption;
+            const char*     classname;
+            DWORD           style;
+            DWORD           exstyle;
+
+            window_meta_t(const char* caption_ = "", const char* classname_ = "",
+                DWORD style_ = WS_OVERLAPPEDWINDOW, DWORD exstyle_ = 0) 
+            {
+                caption = caption_;
+                classname = classname_;
+                style = style_;
+                exstyle = exstyle_;
+            }
+        };
+
 	public:
 		window();
 		virtual ~window();
@@ -73,12 +129,9 @@ namespace laywin{
 		HWND hwnd() const { return _hwnd; }
 		operator HWND() const { return hwnd(); }
 
-		virtual HWND create(HWND hParent=NULL, DWORD dwStyle=0, DWORD dwExStyle=0, HMENU hMenu = NULL);
+        HWND create(const window_meta_t& meta);
+        int  domodal(const window_meta_t& meta, HWND owner=nullptr);
 		void close();
-
-		bool do_modal(HWND owner);
-		bool do_modeless(HWND owner);
-
 		void show(bool show = true, bool focus = true);
 		void center();
 
@@ -89,55 +142,38 @@ namespace laywin{
 			return ::PostMessage(_hwnd, umsg, wparam, lparam);
 		}
 
-		virtual bool filter_message(HWND hChild, UINT uMsg, WPARAM wParam, LPARAM lParam){
-			if(uMsg == WM_KEYDOWN){
-				switch(wParam)
+        virtual HWND filter_hwnd() override {
+            return _hwnd;
+        }
+
+		virtual bool filter_message(MSG* msg) override {
+			if(msg->message == WM_KEYDOWN){
+				switch(msg->wParam)
 				{
-				case VK_RETURN:
-				case VK_ESCAPE:
-					return response_default_key_event(hChild, wParam);
-				default:
-					break;
+                case VK_ESCAPE:
+                    close();
+                    return true;
+                default:
+                    // I don't want IsDialogMessage to process VK_ESCAPE, because it produces a WM_COMMAND
+                    // menu message with id == 2. It is undocumented.
+                    // and, this function call doesn't care the variable _is_dialog.
+                    if(::IsDialogMessage(_hwnd, msg))
+                        return true;
+                    break;
 				}
 			}
 			return false;
 		}
 
-		virtual bool translate_accelerator(MSG* pmsg){
-			return false;
-		}
-
-	protected:
-		bool register_window_class();
-		bool register_super_class();
-		HWND subclass(HWND hwnd);
-		void unsubclass();
-
-		virtual LPCTSTR get_window_class_name() const { return _T("laywin_class"); }
-		virtual LPCTSTR get_super_class_name() const { return NULL; }
-		virtual UINT get_class_style() const{ return CS_HREDRAW | CS_VREDRAW; }
-		virtual HBRUSH get_class_brush() const{ return (HBRUSH)(COLOR_WINDOW); }
-		virtual DWORD get_window_style() const{ return WS_OVERLAPPEDWINDOW; }
-		virtual DWORD get_window_extended_style(){ return 0; }
-		virtual LPCTSTR get_window_name() const{ return _T("laywin_window"); }
-		
-		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled);
-		virtual void on_first_message(HWND hwnd);
-		virtual void on_final_message(HWND hwnd);
-		virtual bool response_default_key_event(HWND hChild, WPARAM wParam);
-
+    public:
 		static LRESULT __stdcall __window_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
-		static LRESULT __stdcall __control_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
-		static INT_PTR __stdcall __dialog_procedure(HWND  hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
+	protected:
+		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled);
+		virtual void on_first_message();
+		virtual void on_final_message();
 
 	protected:
-		HWND _hwnd;
-		window_type _type;
-		WNDPROC _old_wnd_proc;
-		bool _b_subclassed;
-		window_manager _wndmgr;
-		bool _b_has_mgr;
+		HWND    _hwnd;
+        bool    _is_dialog;
 	};
 }
-
-#endif//__laywin_window_h__

@@ -1,5 +1,4 @@
-#ifndef __laywin_util_h__
-#define __laywin_util_h__
+#pragma once
 
 #include <windows.h>
 #include <string>
@@ -20,16 +19,16 @@ namespace laywin{
 			empty();
 		}
 		rect(const tagRECT& r){
-			left = r.left;
-			top = r.top;
-			right = r.right;
-			bottom = r.bottom;
+			left    = r.left;
+			top     = r.top;
+			right   = r.right;
+			bottom  = r.bottom;
 		}
 		rect(int l, int t, int r, int b){
-			left = l;
-			top = t;
-			right = r;
-			bottom = b;
+			left    = l;
+			top     = t;
+			right   = r;
+			bottom  = b;
 		}
 
 		void empty(){
@@ -45,10 +44,10 @@ namespace laywin{
 		}
 
 		void join(const tagRECT& rc){
-			if (rc.left < left) left = rc.left;
-			if (rc.top < top) top = rc.top;
-			if (rc.right > right) right = rc.right;
-			if (rc.bottom > bottom) bottom = rc.bottom;
+			if (rc.left     < left)     left    = rc.left;
+			if (rc.top      < top)      top     = rc.top;
+			if (rc.right    > right)    right   = rc.right;
+			if (rc.bottom   > bottom)   bottom  = rc.bottom;
 		}
 
 		void offset(int cx, int cy){
@@ -151,10 +150,8 @@ namespace laywin{
 		}
 
 	protected:
-		T* _pt;
-		int _count;
-		int _alloc;
+		T*      _pt;
+		int     _count;
+		int     _alloc;
 	};
 }
-
-#endif // __laywin_util_h__

@@ -23,7 +23,7 @@ namespace laywin{
 		_root = parser::parse(json, &_mgr);
 
 		_mgr.hwnd(hwnd);
-		_root->manager_(&_mgr);
+		_root->resmgr_(&_mgr);
 
 		_root->font(-2);
 		_root->visible(_root->control::visible());
@@ -58,6 +58,7 @@ namespace laywin{
 			break;
 		case WM_CREATE:
 			try{
+                _layout._mgr.set_hwnd(_hwnd);
 				_layout.set_layout(get_skin_json(), _hwnd);
 			}
 			catch(LPCTSTR e){
@@ -71,14 +72,7 @@ namespace laywin{
 			int code = HIWORD(wparam);
 
 			if(hwnd == 0 && code == 0){
-				if(id == 2){
-					response_default_key_event(_hwnd, VK_ESCAPE);
-					return 0;
-				}
-				else if(id == 1){
-					response_default_key_event(_hwnd, VK_RETURN);
-					return 0;
-				}
+
 			}
 
 			if(hwnd){
@@ -106,17 +100,7 @@ namespace laywin{
 		return handle_message(umsg, wparam, lparam, handled);
 	}
 
-	void window_creator::on_first_message(HWND hwnd)
-	{
-		__super::on_first_message(hwnd);
-	}
-
-	void window_creator::on_final_message(HWND hwnd)
-	{
-		return __super::on_final_message(hwnd);
-	}
-
-    static void _create_children(container* p, parser::PARSER_OBJECT* o, manager* mgr) {
+    static void _create_children(container* p, parser::PARSER_OBJECT* o, resmgr* mgr) {
         o->dump_children([&](parser::PARSER_OBJECT* c) {
             control* ctl = nullptr;
             auto& tag = c->tag;
@@ -147,7 +131,7 @@ namespace laywin{
             });
 
             if(!c->has_attr("font"))
-                ::SendMessage(ctl->hwnd(), WM_SETFONT, WPARAM(mgr->default_font()), TRUE);
+                ::SendMessage(ctl->hwnd(), WM_SETFONT, WPARAM(mgr->get_font("default")), TRUE);
 
             p->add(ctl);
 
@@ -162,18 +146,17 @@ namespace laywin{
         using namespace parser;
         PARSER_OBJECT* p = parser::parse(get_skin_json(), nullptr);
 
-        container* window = nullptr;
-
         if(p->tag == "window") {
-            window = new container;
+            __super::create({"","taowin", WS_OVERLAPPEDWINDOW, 0});
+            auto window = new window_container;
+            window->_hwnd = _hwnd;
             p->dump_attr([&](const char* a, const char* v) {
                 window->set_attr(a, v);
             });
 
-            register_window_class();
-            _hwnd = ::CreateWindowEx(0, get_window_class_name(), "test", WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, nullptr, nullptr, nullptr, this);
-            rect rc {100, 100, 256, 240};
+            rect rc {0, 0, window->_init_size.cx, window->_init_size.cy};
             ::AdjustWindowRectEx(&rc, WS_OVERLAPPEDWINDOW|WS_VISIBLE, FALSE, 0);
+            rc.offset(-rc.left, -rc.top);
             ::SetWindowPos(_hwnd, nullptr, rc.left, rc.top, rc.width(), rc.height(), SWP_NOZORDER);
 
             p->dump_children([&](PARSER_OBJECT* c) {
@@ -183,12 +166,7 @@ namespace laywin{
                             std::string name = c->get_attr("name");
                             std::string face = c->get_attr("face");
                             int size = std::stoi(c->get_attr("size", "12"));
-
-                            _layout._mgr.add_font(name.c_str(), face.c_str(), size, false, false, false);
-
-                            std::string s = c->get_attr("default", "false");
-                            if(!s.size() || s == "true")
-                                _layout._mgr.default_font(face.c_str(), size, false, false, false);
+                            _layout._mgr.add_font(name.c_str(), face.c_str(), size);
                         }
                     });
                 } else if(c->tag == "root") {
