@@ -109,7 +109,7 @@ namespace laywin{
 
     };
 
-    class __declspec(dllexport) window
+    class window
 		: public i_message_filter
 	{
         struct window_meta_t {

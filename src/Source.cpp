@@ -1,10 +1,3 @@
-#include <iostream>
-#include <process.h>
-#include <string>
-#include <memory>
-#include <functional>
-#include <fstream>
-
 #include <windows.h>
 #include <commctrl.h>
 
@@ -87,8 +80,8 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 
         laywin::loop_message();
 	}
-	catch(LPCTSTR e){
-		std::wcout << e << std::endl;
+	catch(LPCTSTR){
+
 	}
 	
 	return 0;

@@ -9,9 +9,7 @@
 
 namespace laywin{
 
-#define laywin_export __declspec(dllexport)
-
-    class laywin_export window_creator : public window
+    class window_creator : public window
 	{
     public:
         window_creator();
@@ -31,8 +29,8 @@ namespace laywin{
         resmgr      _mgr;
 	};
 
-    laywin_export void init();
-    laywin_export int loop_message();
+    void init();
+    int loop_message();
 }
 
 #endif//__laywin_h__
