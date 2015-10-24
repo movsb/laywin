@@ -27,6 +27,10 @@ namespace laywin{
             _hwnd = hwnd_;
         }
 
+        const string& name() {
+            return _name;
+        }
+
         virtual void set_resmgr(resmgr* mgr) {
             _mgr = mgr;
         }

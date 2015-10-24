@@ -13,10 +13,8 @@ namespace laywin{
 		laywin();
 		virtual ~laywin();
 
-		void set_layout(LPCTSTR json, HWND hwnd);
 		void set_size(int cx, int cy);
 		container* root() const { return _root; }
-		container* operator->(){ return _root; }
 
 	public:
 		container* _root;
@@ -25,22 +23,21 @@ namespace laywin{
 
 	class window_creator : public window
 	{
-	public:
-		virtual HWND create(HWND hParent=NULL, DWORD dwStyle=0, DWORD dwExStyle=0, HMENU hMenu = NULL);
-
 	protected:
 		virtual LPCTSTR get_skin_json() const;
-		virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled);
-		virtual LRESULT on_menu(int id) { return 0; }
-		virtual LRESULT on_command_ctrl(HWND hwnd, control* pc, int code) { return 0; }
-		virtual LRESULT on_notify_ctrl(HWND hwnd, control* pc, int code, NMHDR* hdr) { return 0; }
+		virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);
+		virtual LRESULT on_menu(int id, bool is_accel = false) { return 0; }
+		virtual LRESULT on_notify(HWND hwnd, control* pc, int code, NMHDR* hdr) { return 0; }
 
 	private:
-		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled) override;
+		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam) override;
 
 	protected:
 		laywin _layout;
 	};
+
+    void init();
+    int loop_message();
 }
 
 #endif//__laywin_h__

@@ -24,7 +24,7 @@ protected:
     </res>
     <root>
         <horizontal>
-            <button text="t1" size="100,100"/>
+            <button name="t1" text="t1" size="100,100"/>
             <button text="t2"/>
             <horizontal>
                 <edit text="edit1" exstyle="clientedge" maxwidth="100"/>
@@ -37,33 +37,41 @@ protected:
 		return json;
 	}
 
-	virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled) override
+	virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam) override
 	{
 		switch(umsg)
 		{
         case WM_LBUTTONUP:
         {
             auto tw = new TW();
-            tw->domodal({"", "taowin", WS_OVERLAPPEDWINDOW, 0}, _hwnd);
+            int r = tw->domodal({"", "taowin", WS_OVERLAPPEDWINDOW, 0}, _hwnd);
             return 0;
         }
 		case WM_CREATE:
 		{
 			center();
 
-			handled = true;
 			return 0;
 		}
+        case WM_CLOSE:
+            if(MessageBox(_hwnd, "ȷ�Ϲرգ�", "", MB_OKCANCEL) != IDOK) {
+                return 0;
+            }
 		default:
 			break;
 		}
-        return __super::handle_message(umsg, wparam, lparam, handled);
+        return __super::handle_message(umsg, wparam, lparam);
 	}
 
-	virtual LRESULT on_notify_ctrl(HWND hwnd, laywin::control* pc, int code, NMHDR* hdr) override
-	{
-		return __super::on_notify_ctrl(hwnd, pc, code, hdr);
-	}
+    virtual LRESULT on_notify(HWND hwnd, laywin::control* pc, int code, NMHDR* hdr) override {
+        if(pc->name() == "t1") {
+            if(code == BN_CLICKED) {
+                MessageBox(_hwnd, "t1 clicked", "", MB_OK);
+                return 0;
+            }
+        }
+        return 0;
+    }
 };
 
 #ifdef _DEBUG
@@ -72,18 +80,17 @@ int main()
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 #endif
 {
-    laywin::register_window_classes();
+    laywin::init();
 
     printf("running...\n");
 
 	try{
 		TW tw1;
-		tw1.create();
+        tw1.create({ "test", "taowin", WS_OVERLAPPEDWINDOW, 0});
 		tw1.show();
 
 
-        laywin::window_manager window_manager;
-        window_manager.loop_message();
+        laywin::loop_message();
 	}
 	catch(LPCTSTR e){
 		std::wcout << e << std::endl;

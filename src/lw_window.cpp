@@ -2,11 +2,12 @@
 
 namespace laywin{
 
-	array<i_message_filter*> window_manager::_message_filters;
+    window_manager __window_manager;
 
 	window::window()
 		: _hwnd(NULL)
         , _is_dialog(false)
+        , _return_code(0)
 	{
 
 	}
@@ -19,21 +20,20 @@ namespace laywin{
 	HWND window::create(const window_meta_t& meta)
 	{
 		_hwnd = ::CreateWindowEx(0, meta.classname, meta.caption, WS_OVERLAPPEDWINDOW,
-            0, 0, 100, 100, nullptr, nullptr, nullptr, this);
+            0, 0, 300, 250, nullptr, nullptr, nullptr, this);
 		assert(_hwnd);
 		return _hwnd;
 	}
 
 	int window::domodal(const window_meta_t& meta, HWND owner)
 	{
+        assert(owner != nullptr);
         _is_dialog = true;
 		_hwnd = ::CreateWindowEx(meta.exstyle, meta.classname, meta.caption, meta.style,
-            0, 0, 100, 100, owner, nullptr, nullptr, this);
+            0, 0, 300, 250, owner, nullptr, nullptr, this);
 		assert(_hwnd);
         show();
-        ::EnableWindow(owner, FALSE);
-
-        return dialog_manager(this).run();
+        return dialog_manager(this, owner).run();
 	}
 
 	void window::show(bool show /*= true*/, bool focus /*= true*/)
@@ -82,17 +82,17 @@ namespace laywin{
 		::SetWindowPos(_hwnd, NULL, xLeft, yTop, -1, -1, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 
-	LRESULT window::__handle_message(UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled)
+	LRESULT window::__handle_message(UINT umsg, WPARAM wparam, LPARAM lparam)
 	{
         if(umsg == WM_CLOSE) {
             HWND owner = ::GetWindow(_hwnd, GW_OWNER);
             if(owner && _is_dialog) {
-                ::PostQuitMessage(0);
+                ::PostQuitMessage(_return_code);
                 ::EnableWindow(owner, TRUE);
                 ::SetActiveWindow(owner);
             }
         }
-        return 0;
+        return ::DefWindowProc(_hwnd, umsg, wparam, lparam);
 	}
 
 	void window::on_first_message()
@@ -107,35 +107,32 @@ namespace laywin{
 
 	LRESULT __stdcall window::__window_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 	{
-		window* pThis = nullptr;
+		window* pThis = reinterpret_cast<window*>(::GetWindowLongPtr(hwnd, 4));
+
 		if(umsg == WM_NCCREATE) {
 			LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lparam);
 			pThis = static_cast<window*>(lpcs->lpCreateParams);
 			pThis->_hwnd = hwnd;
 			::SetWindowLongPtr(hwnd, 4, reinterpret_cast<LPARAM>(pThis));
             if(!pThis->_is_dialog)
-                window_manager::_message_filters.add(pThis);
+                __window_manager.add_message_filter(pThis);
 			pThis->on_first_message();
+            return TRUE; // must
 		}
-		else {
-			pThis = reinterpret_cast<window*>(::GetWindowLongPtr(hwnd, 4));
-			if(umsg == WM_NCDESTROY && pThis != nullptr) {
-				::SetWindowLongPtr(pThis->_hwnd, 4, 0);
-				LRESULT lRes = ::DefWindowProc(hwnd, umsg, wparam, lparam);
+        else if(umsg == WM_NCDESTROY) {
+            ::SetWindowLongPtr(pThis->_hwnd, 4, 0);
+            LRESULT lRes = ::DefWindowProc(hwnd, umsg, wparam, lparam);
+            if(pThis) {
                 if(!pThis->_is_dialog)
-                    window_manager::_message_filters.remove(pThis);
-				pThis->on_final_message();
-				return lRes;
-			}
+                    __window_manager.remove_message_filter(pThis);
+                pThis->on_final_message();
+            }
+            return 0;
 		}
 
-		if(pThis != nullptr) {
-			bool bHandled = false;
-			LRESULT r = pThis->__handle_message(umsg, wparam, lparam, bHandled);
-			if(bHandled) return r;
-		}
-
-		return ::DefWindowProc(hwnd, umsg, wparam, lparam);
+        return pThis
+            ? pThis->__handle_message(umsg, wparam, lparam)
+            : ::DefWindowProc(hwnd, umsg, wparam, lparam);
 	}
 
 	void window::close()
@@ -153,7 +150,7 @@ namespace laywin{
         wc.hInstance = ::GetModuleHandle(nullptr);
         wc.lpfnWndProc = &window::__window_procedure;
         wc.lpszClassName = "taowin";
-        wc.style = CS_HREDRAW | CS_VREDRAW;
+        wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
         wc.cbWndExtra = sizeof(void*)* 2; // [[extra_ptr][this]]
         ::RegisterClassEx(&wc);
     }

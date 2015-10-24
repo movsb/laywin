@@ -16,7 +16,7 @@ namespace laywin{
         window_manager() {}
         ~window_manager() {}
 
-        void loop_message()
+        int loop_message()
         {
             MSG msg;
             while(::GetMessage(&msg, NULL, 0, 0)){
@@ -25,15 +25,14 @@ namespace laywin{
                     ::DispatchMessage(&msg);
                 }
             }
+
+            return (int)msg.wParam;
         }
 
         bool filter_message(MSG* msg) {
             if(_message_filters.size() == 0)
                 return false;
 
-            if(msg->message == WM_KEYDOWN) {
-                msg = msg;
-            }
             HWND parent = msg->hwnd;
             while(parent && ::GetWindowLongPtr(parent, GWL_STYLE) & WS_CHILD)
                 parent = ::GetParent(parent);
@@ -48,29 +47,38 @@ namespace laywin{
         }
 
         void add_message_filter(i_message_filter* filter) {
+            assert(_message_filters.find(filter) == -1);
             _message_filters.add(filter);
         }
 
         void remove_message_filter(i_message_filter* filter) {
+            assert(_message_filters.size() > 0);
             _message_filters.remove(filter);
+            if(_message_filters.size() == 0)
+                quit(0);
         }
 
         void quit(int code = 0) {
             ::PostQuitMessage(code);
         }
 
-	public:
-		static array<i_message_filter*> _message_filters;
+	private:
+		array<i_message_filter*> _message_filters;
 	};
+
+    extern window_manager __window_manager;
 
     class dialog_manager{
     public:
-        dialog_manager(i_message_filter*  this_) {
+        dialog_manager(i_message_filter*  this_, HWND owner) {
             _this = this_;
             _hwnd = _this->filter_hwnd();
+            _owner = owner;
         }
 
         int run() {
+            assert(::IsWindow(_owner));
+            ::EnableWindow(_owner, FALSE);
             MSG msg;
             while(::GetMessage(&msg, NULL, 0, 0)) {
                 if(!filter_message(&msg)) {
@@ -79,10 +87,7 @@ namespace laywin{
                 }
             }
 
-            if(msg.message == WM_QUIT)
-                return (int)msg.wParam;
-
-            return 0x80000000;
+            return (int)msg.wParam;
         }
     private:
         bool filter_message(MSG* msg) {
@@ -95,6 +100,7 @@ namespace laywin{
     private:
         i_message_filter*   _this;
         HWND                _hwnd;
+        HWND                _owner;
     };
 
     void register_window_classes();
@@ -168,12 +174,13 @@ namespace laywin{
     public:
 		static LRESULT __stdcall __window_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 	protected:
-		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled);
+		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);
 		virtual void on_first_message();
 		virtual void on_final_message();
 
 	protected:
 		HWND    _hwnd;
         bool    _is_dialog;
+        int     _return_code;
 	};
 }
