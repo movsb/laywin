@@ -1,9 +1,9 @@
 #pragma once
 
 #include <map>
-#include "lw_util.h"
+#include "tw_util.h"
 
-namespace laywin{
+namespace taowin{
 
 	class resmgr;
 	class container;

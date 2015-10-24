@@ -1,9 +1,9 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#include "../src/lw_laywin.h"
+#include "../src/tw_taowin.h"
 
-class TW : public laywin::window_creator
+class TW : public taowin::window_creator
 {
 public:
 	TW()
@@ -43,7 +43,7 @@ protected:
 		case WM_CREATE:
 		{
 			center();
-            auto lv = _root->find<laywin::listview>("lv");
+            auto lv = _root->find<taowin::listview>("lv");
             lv->insert_column("c1", 50, 0);
             lv->insert_column("c2", 50, 1);
             lv->insert_column("c3", 50, 2);
@@ -62,7 +62,7 @@ protected:
         return __super::handle_message(umsg, wparam, lparam);
 	}
 
-    virtual LRESULT on_notify(HWND hwnd, laywin::control* pc, int code, NMHDR* hdr) override {
+    virtual LRESULT on_notify(HWND hwnd, taowin::control* pc, int code, NMHDR* hdr) override {
         if(pc->name() == "t1") {
             if(code == BN_CLICKED) {
                 MessageBox(_hwnd, "t1 clicked", "", MB_OK);
@@ -75,7 +75,7 @@ protected:
 
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-    laywin::init();
+    taowin::init();
 
     printf("running...\n");
 
@@ -85,7 +85,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 		tw1.show();
 
 
-        laywin::loop_message();
+        taowin::loop_message();
 	}
 	catch(LPCTSTR){
 

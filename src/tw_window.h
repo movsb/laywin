@@ -2,9 +2,9 @@
 
 #include <assert.h>
 #include <windows.h>
-#include "lw_util.h"
+#include "tw_util.h"
 
-namespace laywin{
+namespace taowin{
 	class i_message_filter{
 	public:
         virtual HWND filter_hwnd() = 0;

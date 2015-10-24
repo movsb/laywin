@@ -1,15 +1,15 @@
-#ifndef __laywin_syscontrols_h__
-#define __laywin_syscontrols_h__
+#ifndef __taowin_syscontrols_h__
+#define __taowin_syscontrols_h__
 
 #include <map>
 #include <vector>
 #include <limits.h>
 #include <functional>
 
-#include "lw_control.h"
-#include "lw_util.h"
+#include "tw_control.h"
+#include "tw_util.h"
 
-namespace laywin{
+namespace taowin{
 	struct style_map
 	{
 		DWORD dwStyle;
@@ -132,4 +132,4 @@ namespace laywin{
 	};
 }
 
-#endif//__laywin_syscontrols_h__
+#endif//__taowin_syscontrols_h__

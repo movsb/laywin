@@ -1,8 +1,8 @@
 #include <windows.h>
-#include "lw_util.h"
-#include "lw_resmgr.h"
+#include "tw_util.h"
+#include "tw_resmgr.h"
 
-namespace laywin{
+namespace taowin{
 
 	resmgr::resmgr()
         : _hwnd(nullptr)

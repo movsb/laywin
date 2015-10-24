@@ -2,11 +2,11 @@
 #include <tchar.h>
 #include <string>
 
-#include "lw_util.h"
-#include "lw_resmgr.h"
-#include "lw_control.h"
+#include "tw_util.h"
+#include "tw_resmgr.h"
+#include "tw_control.h"
 
-namespace laywin{
+namespace taowin{
 	
 	control::control()
 		: _hwnd(nullptr)

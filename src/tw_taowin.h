@@ -1,13 +1,13 @@
-#ifndef __laywin_h__
-#define __laywin_h__
+#ifndef __taowin_h__
+#define __taowin_h__
 
-#include "lw_util.h"
-#include "lw_control.h"
-#include "lw_syscontrols.h"
-#include "lw_window.h"
-#include "lw_resmgr.h"
+#include "tw_util.h"
+#include "tw_control.h"
+#include "tw_syscontrols.h"
+#include "tw_window.h"
+#include "tw_resmgr.h"
 
-namespace laywin{
+namespace taowin{
 
     class window_creator : public window
 	{
@@ -33,4 +33,4 @@ namespace laywin{
     int loop_message();
 }
 
-#endif//__laywin_h__
+#endif//__taowin_h__

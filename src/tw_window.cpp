@@ -1,6 +1,6 @@
-#include "lw_window.h"
+#include "tw_window.h"
 
-namespace laywin{
+namespace taowin{
 
     window_manager __window_manager;
 

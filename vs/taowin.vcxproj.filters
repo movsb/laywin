@@ -15,51 +15,51 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\lw_control.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\lw_util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\lw_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\lw_parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\lw_laywin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\lw_syscontrols.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\lw_resmgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_resmgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_syscontrols.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_taowin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\lw_control.h">
+    <ClInclude Include="..\src\tw_control.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\lw_util.h">
+    <ClInclude Include="..\src\tw_resmgr.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\lw_window.h">
+    <ClInclude Include="..\src\tw_parser.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\lw_parser.h">
+    <ClInclude Include="..\src\tw_syscontrols.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\lw_laywin.h">
+    <ClInclude Include="..\src\tw_util.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\lw_syscontrols.h">
+    <ClInclude Include="..\src\tw_window.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\lw_resmgr.h">
+    <ClInclude Include="..\src\tw_taowin.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

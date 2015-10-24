@@ -3,9 +3,9 @@
 #include <map>
 #include <string>
 
-#include "lw_util.h"
+#include "tw_util.h"
 
-namespace laywin{
+namespace taowin{
     class resmgr {
     public:
         typedef std::map<string, HFONT> font_maps_t;

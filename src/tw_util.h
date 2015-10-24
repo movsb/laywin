@@ -5,7 +5,7 @@
 #include <vector>
 #include <tchar.h>
 
-namespace laywin{
+namespace taowin{
 	class csize
 	{
 	public:

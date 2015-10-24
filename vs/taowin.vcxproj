@@ -14,6 +14,7 @@
     <ProjectGuid>{C28D44BF-69D9-4077-BE36-D30D9E1958AE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>laywin</RootNamespace>
+    <ProjectName>taowin</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -85,22 +86,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\lw_control.h" />
-    <ClInclude Include="..\src\lw_laywin.h" />
-    <ClInclude Include="..\src\lw_parser.h" />
-    <ClInclude Include="..\src\lw_syscontrols.h" />
-    <ClInclude Include="..\src\lw_util.h" />
-    <ClInclude Include="..\src\lw_resmgr.h" />
-    <ClInclude Include="..\src\lw_window.h" />
+    <ClInclude Include="..\src\tw_control.h" />
+    <ClInclude Include="..\src\tw_taowin.h" />
+    <ClInclude Include="..\src\tw_parser.h" />
+    <ClInclude Include="..\src\tw_syscontrols.h" />
+    <ClInclude Include="..\src\tw_util.h" />
+    <ClInclude Include="..\src\tw_resmgr.h" />
+    <ClInclude Include="..\src\tw_window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\lw_control.cpp" />
-    <ClCompile Include="..\src\lw_laywin.cpp" />
-    <ClCompile Include="..\src\lw_parser.cpp" />
-    <ClCompile Include="..\src\lw_syscontrols.cpp" />
-    <ClCompile Include="..\src\lw_util.cpp" />
-    <ClCompile Include="..\src\lw_resmgr.cpp" />
-    <ClCompile Include="..\src\lw_window.cpp" />
+    <ClCompile Include="..\src\tw_control.cpp" />
+    <ClCompile Include="..\src\tw_taowin.cpp" />
+    <ClCompile Include="..\src\tw_parser.cpp" />
+    <ClCompile Include="..\src\tw_syscontrols.cpp" />
+    <ClCompile Include="..\src\tw_util.cpp" />
+    <ClCompile Include="..\src\tw_resmgr.cpp" />
+    <ClCompile Include="..\src\tw_window.cpp" />
     <ClCompile Include="..\src\Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

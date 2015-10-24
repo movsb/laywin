@@ -1,9 +1,9 @@
 #include <assert.h>
 
-#include "lw_laywin.h"
-#include "lw_parser.h"
+#include "tw_taowin.h"
+#include "tw_parser.h"
 
-namespace laywin{
+namespace taowin{
     // TODO this is temporary
     // lambda cannot be called by itself, so we separated it here
     static void _create_children(container* p, parser::PARSER_OBJECT* o, resmgr* mgr) {

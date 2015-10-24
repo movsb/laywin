@@ -3,11 +3,11 @@
 #include <CommCtrl.h>
 #include <vector>
 
-#include "lw_control.h"
-#include "lw_resmgr.h"
-#include "lw_syscontrols.h"
+#include "tw_control.h"
+#include "tw_resmgr.h"
+#include "tw_syscontrols.h"
 
-namespace laywin{
+namespace taowin{
 
     int __map_style(DWORD* dwStyle, style_map* known_styles, std::vector<string>& styles)
     {
