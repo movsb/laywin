@@ -19,7 +19,6 @@ namespace laywin{
 		, _b_visible(true)
 		, _b_displayed(true)
 		, _b_visible_by_parent(true)
-		, _mgr(nullptr)
 		, _parent(nullptr)
 		, _ud(nullptr)
 	{
@@ -76,9 +75,6 @@ namespace laywin{
 				_padding = {l, t, r, b};
 			}
 		}
-		else if(_tcscmp(name, _T("font")) == 0){
-			_font = _tstoi(value);
-		}
 		else if(_tcscmp(name, _T("width")) == 0){
 			_width = _tstoi(value);
 		}
@@ -103,9 +99,6 @@ namespace laywin{
                 _width = width;
                 _height = height;
             }
-        }
-        else if(_tcscmp(name, _T("text")) == 0) {
-            ::SetWindowText(_hwnd, value);
         }
 		else{
 			::MessageBox(NULL, value, name, MB_ICONERROR);
@@ -179,15 +172,6 @@ namespace laywin{
 		}
 
 		need_update();
-	}
-
-	void container::set_resmgr(resmgr* mgr)
-	{
-		__super::set_resmgr(mgr);
-
-		for(int c = size(), i = 0; i < c; i++){
-			_items[i]->set_resmgr(mgr);
-		}
 	}
 
 	control* container::find(LPCTSTR n)
@@ -418,11 +402,5 @@ namespace laywin{
 		::SetWindowPos(_hwnd, NULL, 0, 0,
 			_init_size.cx, _init_size.cy,
 			SWP_NOMOVE | SWP_NOZORDER);
-	}
-
-	void window_container::resmgr_(resmgr* mgr)
-	{
-		__super::set_resmgr(mgr);
-		_hwnd = mgr->get_hwnd();
 	}
 }

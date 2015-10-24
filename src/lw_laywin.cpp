@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "lw_laywin.h"
 #include "lw_parser.h"
 
@@ -15,27 +17,20 @@ namespace laywin{
             else if(tag == "horizontal")    ctl = new horizontal;
             else if(tag == "vertical")      ctl = new vertical;
 
+            //else if(tag == "group")         ctl = new group;
             else if(tag == "button")        ctl = new button;
-            else if(tag == "edit")          ctl = new edit;
+            //else if(tag == "edit")          ctl = new edit;
+            else if(tag == "option")        ctl = new option;
+            //else if(tag == "static")        ctl = new static_;
 
             else                            ctl = nullptr;
 
-            if(!ctl) return;
-
-            std::string s;
-            s = c->get_attr("exstyle");
-            if(s.size()) {
-                ctl->set_attr("exstyle", s.c_str());
+            if(!ctl) {
+                assert(0);
+                return;
             }
 
-            ctl->create(p->hwnd());
-
-            c->dump_attr([&](const char* n, const char* v) {
-                ctl->set_attr(n, v);
-            });
-
-            if(!c->has_attr("font"))
-                ::SendMessage(ctl->hwnd(), WM_SETFONT, WPARAM(mgr->get_font("default")), TRUE);
+            ctl->create(p->hwnd(), c->attrs(), *mgr);
 
             p->add(ctl);
 
@@ -46,26 +41,15 @@ namespace laywin{
         });
     }
 
-	laywin::laywin()
-		: _root(NULL)
-	{
+    window_creator::window_creator()
+        : _root(new container)  // fake, keep _root valid always
+    {
 
-	}
+    }
 
-	laywin::~laywin()
-	{
-		if(_root){
-			delete _root;
-			_root = NULL;
-		}
-	}
-
-	void laywin::set_size(int cx, int cy)
-	{
-        if(_root)
-            _root->pos({0, 0, cx, cy});
-	}
-
+    window_creator::~window_creator() {
+        delete _root;
+    }
 
 	LPCTSTR window_creator::get_skin_json() const
 	{
@@ -82,7 +66,7 @@ namespace laywin{
 		switch(umsg)
 		{
 		case WM_SIZE:
-			_layout.set_size(LOWORD(lparam), HIWORD(lparam));
+            _root->pos({0, 0, LOWORD(lparam), HIWORD(lparam)});
 			break;
 		case WM_COMMAND:
 		{
@@ -91,7 +75,7 @@ namespace laywin{
 			int code = HIWORD(wparam);
 
             if(hwnd) { // from control message
-                control* pc = _layout.root()->find(hwnd);   // TODO
+                control* pc = _root->find(hwnd);   // TODO
                 if(pc) {
                     return on_notify(hwnd, pc, code, nullptr);
                 }
@@ -105,7 +89,7 @@ namespace laywin{
 		case WM_NOTIFY:
 		{
 			NMHDR* hdr = reinterpret_cast<NMHDR*>(lparam);
-			control* pc = _layout.root()->find(hdr->hwndFrom); // TODO set window extra to pc/name
+			control* pc = _root->find(hdr->hwndFrom); // TODO set window extra to pc/name
 			if(!hdr || !pc) break;
 			return on_notify(hdr->hwndFrom, pc, hdr->code, hdr);
 		}
@@ -135,21 +119,22 @@ namespace laywin{
                                 std::string name = c->get_attr("name");
                                 std::string face = c->get_attr("face");
                                 int size = std::stoi(c->get_attr("size", "12"));
-                                _layout._mgr.add_font(name.c_str(), face.c_str(), size);
+                                _mgr.add_font(name.c_str(), face.c_str(), size);
                             }
                         });
                     } else if(c->tag == "root") {
-                        _layout._root = new container;
-                        _layout._root->hwnd(_hwnd);
+                        if(_root) delete _root; // delete fake
+                        _root = new container;
+                        _root->hwnd(_hwnd);
 
-                        _create_children(_layout._root, c, &_layout._mgr);
+                        _create_children(_root, c, &_mgr);
                     }
                 });
 
-                _layout.root()->init();
+                _root->init();
                 rect rc2;
                 ::GetClientRect(_hwnd, &rc2);
-                _layout.set_size(rc2.width(), rc2.height());
+                _root->pos({0, 0, rc2.width(), rc2.height()});
             }
             break;
         }

@@ -59,6 +59,10 @@ namespace laywin{
                 return (int)_attrs.size();
             }
 
+            std::map<string, string>& attrs() {
+                return _attrs;
+            }
+
             int count_children() const {
                 return (int)_children.size();
             }

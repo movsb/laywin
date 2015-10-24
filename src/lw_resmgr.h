@@ -6,7 +6,8 @@
 #include "lw_util.h"
 
 namespace laywin{
-	class resmgr{
+    class __declspec(dllexport) resmgr {
+    public:
         typedef std::map<string, HFONT> font_maps_t;
 
 	public:
@@ -30,6 +31,6 @@ namespace laywin{
 
 	protected:
 		HWND        _hwnd;
-		font_maps_t _fonts;
+        font_maps_t _fonts;
 	};
 }

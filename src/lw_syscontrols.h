@@ -1,12 +1,27 @@
 #ifndef __laywin_syscontrols_h__
 #define __laywin_syscontrols_h__
 
+#include <map>
 #include <vector>
 #include <limits.h>
 
+#include "lw_control.h"
 #include "lw_util.h"
 
 namespace laywin{
+    struct syscontrol_metas {
+        DWORD       style;
+        DWORD       exstyle;
+        const char* caption;
+        const char* classname;
+    };
+
+	struct style_map
+	{
+		DWORD dwStyle;
+		LPCTSTR strStyle;
+	};
+
 	class syscontrol : public control
 	{
 	public:
@@ -29,26 +44,17 @@ namespace laywin{
 			return s;
 		}
 
-        void create(HWND parent) {
-            _hwnd = ::CreateWindowEx(_dwExStyle, get_control_class(), "", WS_CHILD | WS_VISIBLE | _dwStyle |WS_TABSTOP, 0, 0, 0, 0, parent, nullptr, nullptr, nullptr);
-        }
+        void create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) override;
 
 	protected:
 		virtual void init() override;
-		virtual LPCTSTR get_control_class() const = 0;
-		virtual void set_attr(const char* name, const char* value) override;
-		virtual void set_style(std::vector<string>& styles, bool bex = false);
-
-	protected:
-		DWORD _dwStyle;
-		DWORD _dwExStyle;
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles);
 	};
 
 	class button : public syscontrol
 	{
 	protected:
-		virtual LPCTSTR get_control_class() const;
-		virtual void set_style(std::vector<string>& styles, bool bex = false) override;
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) override;
 	};
 
 	class option : public syscontrol
@@ -57,8 +63,7 @@ namespace laywin{
 		option();
 
 	protected:
-		virtual LPCTSTR get_control_class() const;
-		virtual void set_style(std::vector<string>& styles, bool bex = false) override;
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) override;
 
 	protected:
 		bool _b_has_group;
@@ -71,17 +76,18 @@ namespace laywin{
 
 	protected:
 		virtual void init() override;
-		virtual LPCTSTR get_control_class() const override;
-		virtual void set_attr(const char* name, const char* value) override;
+        virtual void set_attr(const char* name, const char* value) override;
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) override;
 
 	protected:
 		bool _b_check;
 	};
 
+    /*
 	class static_ : public syscontrol
 	{
 	protected:
-		virtual LPCTSTR get_control_class() const override;
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) override;
 	};
 
 	class group : public syscontrol
@@ -90,7 +96,7 @@ namespace laywin{
 		group();
 
 	protected:
-		virtual LPCTSTR get_control_class() const override;
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) override;
 	};
 
 	class edit : public syscontrol
@@ -99,8 +105,7 @@ namespace laywin{
 		edit();
 
 	protected:
-		virtual LPCTSTR get_control_class() const override;
-		virtual void set_style(std::vector<string>& styles, bool bex /* = false */);
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) override;
 	};
 
 	class listview : public syscontrol
@@ -117,12 +122,12 @@ namespace laywin{
 		int size() const;
 
 	protected:
-		virtual LPCTSTR get_control_class() const override;
-		virtual void set_style(std::vector<string>& styles, bool bex /* = false */);
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) override;
 
 	private:
 		string _fmt_column;
 	};
+    */
 }
 
 #endif//__laywin_syscontrols_h__

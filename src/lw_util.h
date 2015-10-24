@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <string>
+#include <vector>
 #include <tchar.h>
 
 namespace laywin{
@@ -154,4 +155,29 @@ namespace laywin{
 		int     _count;
 		int     _alloc;
 	};
+
+    static void split_string(std::vector<string>* vec, LPCTSTR str, TCHAR delimiter=',')
+	{
+		LPCTSTR p = str;
+		string tmp;
+		for(;;){
+			if(*p){
+				if(*p != delimiter){
+					tmp += *p;
+					p++;
+					continue;
+				}
+				else{
+					vec->push_back(tmp);
+					tmp = _T("");
+					p++;
+					continue;
+				}
+			}
+			else{
+				if(tmp.size()) vec->push_back(tmp);
+				break;
+			}
+		}
+	}
 }

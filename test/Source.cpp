@@ -5,8 +5,11 @@
 #include <functional>
 #include <fstream>
 
-#include "lw_laywin.h"
+#include <windows.h>
 #include <commctrl.h>
+
+#include "../src/lw_laywin.h"
+#pragma comment(lib, "../bin/debug/laywin.lib")
 
 class TW : public laywin::window_creator
 {
@@ -17,23 +20,25 @@ public:
 protected:
 	virtual LPCTSTR get_skin_json() const
 	{
-        LPCTSTR json = R"(
+        LPCTSTR json = R"tw(
 <window title="taowin演示窗口" size="500,300">
     <res>
         <font name="default" face="微软雅黑" size="12"/>
+        <font name="1" face="微软雅黑" size="24"/>
     </res>
     <root>
-        <horizontal>
-            <button name="t1" text="t1" size="100,100"/>
-            <button text="t2"/>
+        <vertical padding="5,5,5,5">
+            <button name="nothing" text="取消" font="1"/>
+            <button name="nothing" text="取消" font="1"/>
             <horizontal>
-                <edit text="edit1" exstyle="clientedge" maxwidth="100"/>
-                <edit text="说得好像真的一样，然而并没有什么卵用。" exstyle="clientedge"/>
+                <button name="nothing" text="取消" font="1" width="100" maxheight="300"/>
+                <button name="t1" text="内边距呵呵哒" padding="5,5,5,5" style="multiline" font="1" maxwidth="200"/>
+                <button name="nothing" text="取消" font="1"/>
             </horizontal>
-        </horizontal>
+        </vertical>
     </root>
 </window>
-)";
+)tw";
 		return json;
 	}
 
@@ -41,12 +46,6 @@ protected:
 	{
 		switch(umsg)
 		{
-        case WM_LBUTTONUP:
-        {
-            auto tw = new TW();
-            int r = tw->domodal({"", "taowin", WS_OVERLAPPEDWINDOW, 0}, _hwnd);
-            return 0;
-        }
 		case WM_CREATE:
 		{
 			center();
@@ -74,11 +73,7 @@ protected:
     }
 };
 
-#ifdef _DEBUG
-int main()
-#else
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
-#endif
 {
     laywin::init();
 

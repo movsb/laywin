@@ -8,21 +8,15 @@
 #include "lw_resmgr.h"
 
 namespace laywin{
-	class laywin{
-	public:
-		laywin();
-		virtual ~laywin();
 
-		void set_size(int cx, int cy);
-		container* root() const { return _root; }
+#define laywin_export __declspec(dllexport)
 
-	public:
-		container* _root;
-		resmgr _mgr;
-	};
-
-	class window_creator : public window
+    class laywin_export window_creator : public window
 	{
+    public:
+        window_creator();
+        ~window_creator();
+
 	protected:
 		virtual LPCTSTR get_skin_json() const;
 		virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);
@@ -33,11 +27,12 @@ namespace laywin{
 		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam) override;
 
 	protected:
-		laywin _layout;
+        container*  _root;
+        resmgr      _mgr;
 	};
 
-    void init();
-    int loop_message();
+    laywin_export void init();
+    laywin_export int loop_message();
 }
 
 #endif//__laywin_h__

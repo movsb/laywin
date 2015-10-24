@@ -8,61 +8,29 @@
 #include "lw_syscontrols.h"
 
 namespace laywin{
-	struct style_map
-	{
-		DWORD dwStyle;
-		LPCTSTR strStyle;
-	};
 
-	bool map_style(DWORD* dwStyle, style_map* known_styles, std::vector<string>& styles)
-	{
-		int n = 0;
-		for(auto& style : styles){
-			if(style.size()){
-				for(int i = 0; known_styles[i].strStyle != nullptr; i++){
-					if(_tcscmp(known_styles[i].strStyle, style.c_str()) == 0){
-						*dwStyle |= known_styles[i].dwStyle;
-						style = _T("");
-						n++;
-						break;
-					}
-				}
-			}
-			else{
-				n++;
-			}
-		}
-		return n == styles.size();
-	}
-
-	void split_string(std::vector<string>* vec, LPCTSTR str, TCHAR delimiter)
-	{
-		LPCTSTR p = str;
-		string tmp;
-		for(;;){
-			if(*p){
-				if(*p != delimiter){
-					tmp += *p;
-					p++;
-					continue;
-				}
-				else{
-					vec->push_back(tmp);
-					tmp = _T("");
-					p++;
-					continue;
-				}
-			}
-			else{
-				if(tmp.size()) vec->push_back(tmp);
-				break;
-			}
-		}
-	}
+    int __map_style(DWORD* dwStyle, style_map* known_styles, std::vector<string>& styles)
+    {
+        int n = 0;
+        for(auto& style : styles){
+            if(style.size()){
+                for(int i = 0; known_styles[i].strStyle != nullptr; i++){
+                    if(_tcscmp(known_styles[i].strStyle, style.c_str()) == 0){
+                        *dwStyle |= known_styles[i].dwStyle;
+                        style = _T("");
+                        n++;
+                        break;
+                    }
+                }
+            }
+            else{
+                n++;
+            }
+        }
+        return n;
+    }
 
 	syscontrol::syscontrol()
-		: _dwStyle(WS_CHILD|WS_VISIBLE)
-		, _dwExStyle(0)
 	{
 
 	}
@@ -72,26 +40,37 @@ namespace laywin{
 		__super::init();
 	}
 
-    void syscontrol::set_attr(const char* name, const char* value)
-	{
-		if(0);
+    void syscontrol::create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) {
+        syscontrol_metas metas;
+        get_metas(metas, attrs, nullptr, nullptr);
+        _hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
+            0, 0, 0, 0, parent, nullptr, nullptr, this);
+        assert(_hwnd);
 
-		else if(_tcscmp(name, _T("style")) == 0){
-			std::vector<string> styles;
-			split_string(&styles, value, ',');
-			set_style(styles);
-		}
-		else if(_tcscmp(name, _T("exstyle")) == 0){
-			std::vector<string> exstyles;
-			split_string(&exstyles, value, ',');
-			set_style(exstyles, true);
-		}
-		else __super::set_attr(name, value);
-	}
+        decltype(attrs.begin()) it;
 
-	void syscontrol::set_style(std::vector<string>& styles, bool bex /*= false*/)
-	{
-		static style_map known_styles[] =
+        it = attrs.find("font");
+        HFONT font = it == attrs.end()
+            ? mgr.get_font("default")
+            : mgr.get_font(it->second.c_str());
+        ::SendMessage(_hwnd, WM_SETFONT, WPARAM(font), TRUE);
+        if(it != attrs.end())
+            attrs.erase(it);
+
+        it = attrs.find("text");
+        if(it != attrs.end()) {
+            ::SetWindowText(_hwnd, it->second.c_str());
+            attrs.erase(it);
+        }
+
+        for(auto it = attrs.cbegin(); it != attrs.cend(); it++)
+            set_attr(it->first.c_str(), it->second.c_str());
+    }
+
+    void syscontrol::get_metas(syscontrol_metas& metas, std::map<string,string>& attrs, 
+        style_map* known_styles, style_map* known_ex_styles) 
+    {
+		static style_map __known_styles[] =
 		{
 			{WS_BORDER, _T("border")},
 			{WS_CAPTION, _T("caption")},
@@ -106,7 +85,7 @@ namespace laywin{
 			{0, nullptr}
 		};
 
-		static style_map known_ex_styles[] =
+		static style_map __known_ex_styles[] =
 		{
 			{WS_EX_ACCEPTFILES, _T("acceptfiles")},
 			{WS_EX_CLIENTEDGE, _T("clientedge")},
@@ -117,81 +96,96 @@ namespace laywin{
 			{0, nullptr}
 		};
 
-		auto ks = bex ? &known_ex_styles[0] : &known_styles[0];
-		auto& thestyle = bex ? _dwExStyle : _dwStyle;
-		if(!map_style(&thestyle, ks, styles)){
-			assert(0 && "unknown style detected!");
-		}
-	}
+        metas.style = WS_CHILD | WS_VISIBLE;
+        metas.exstyle = 0;
 
+        decltype(attrs.begin()) it;
 
-	LPCTSTR button::get_control_class() const
-	{
-		return WC_BUTTON;
-	}
+        if((it = attrs.find("style")) != attrs.end()) {
+            std::vector<string> styles;
+            split_string(&styles, it->second.c_str());
 
-	void button::set_style(std::vector<string>& styles, bool bex /*= false*/)
-	{
-		static style_map known_styles[] =
-		{
-			{BS_MULTILINE, _T("multiline")},
-			{0, nullptr}
-		};
+            int mapped = __map_style(&metas.style, &__known_styles[0], styles);
+            if(known_styles)
+                mapped += __map_style(&metas.style, known_styles, styles);
 
-		static style_map known_ex_styles[] =
-		{
-			{0, nullptr}
-		};
+            assert(mapped == styles.size());
+            attrs.erase(it);
+        }
 
-		auto ks = bex ? &known_ex_styles[0] : &known_styles[0];
-		auto& thestyle = bex ? _dwExStyle : _dwStyle;
-		if(!map_style(&thestyle, ks, styles)){
-			return __super::set_style(styles, bex);
-		}
-	}
+        if((it = attrs.find("exstyle")) != attrs.end()) {
+            std::vector<string> exstyles;
+            split_string(&exstyles, it->second.c_str());
 
+            int mapped = __map_style(&metas.exstyle, &__known_ex_styles[0], exstyles);
+            if(known_ex_styles)
+                mapped += __map_style(&metas.exstyle, known_ex_styles, exstyles);
 
-	LPCTSTR option::get_control_class() const
-	{
-		return WC_BUTTON;
-	}
+            assert(mapped == exstyles.size());
+            attrs.erase(it);
+        }
 
+        if((it = attrs.find("text")) != attrs.end()) {
+            auto& text = it->second;
+            metas.caption = text.c_str();   // TODO ALERT text is not local!
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    void button::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) {
+        static style_map __known_styles[] =
+        {
+            {BS_MULTILINE, _T("multiline")},
+            {0, nullptr}
+        };
+
+        static style_map __known_ex_styles[] =
+        {
+            {0, nullptr}
+        };
+
+        __super::get_metas(metas, attrs, __known_styles, __known_ex_styles);
+        metas.classname = WC_BUTTON;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
 	option::option()
 		: _b_has_group(false)
 	{
-		_dwStyle |= BS_AUTORADIOBUTTON;
 	}
 
-	void option::set_style(std::vector<string>& styles, bool bex /*= false*/)
-	{
-		return __super::set_style(styles, bex);
-	}
+    void option::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) {
+        __super::get_metas(metas, attrs, known_styles, known_ex_styles);
+        metas.classname = WC_BUTTON;
+        metas.style |= BS_AUTORADIOBUTTON;
+    }
 
-
+    //////////////////////////////////////////////////////////////////////////
 	check::check()
 	{
-		_b_check = false;
-		_dwStyle |= BS_AUTOCHECKBOX;
 	}
 
 	void check::init()
 	{
-		__super::init();
-		::SendMessage(_hwnd, BM_SETCHECK, _b_check ? BST_CHECKED : BST_UNCHECKED, 0);
 	}
 
-	LPCTSTR check::get_control_class() const
-	{
-		return WC_BUTTON;
-	}
+    void check::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs, style_map* known_styles, style_map* known_ex_styles) {
+        __super::get_metas(metas, attrs, known_styles, known_ex_styles);
+        metas.classname = WC_BUTTON;
+        metas.style |= BS_AUTOCHECKBOX;
+    }
 
 	void check::set_attr(const char* name, const char* value)
 	{
-		if(_tcscmp(name, _T("checked")) == 0) _b_check = _tcscmp(value, _T("true")) == 0;
+        if(_tcscmp(name, _T("checked")) == 0) {
+            bool checked = _tcscmp(value, _T("true")) == 0;
+            ::SendMessage(_hwnd, BM_SETCHECK, checked ? BST_CHECKED : BST_UNCHECKED, 0);
+        }
 		else return __super::set_attr(name, value);
 	}
 
-
+    /*
+    //////////////////////////////////////////////////////////////////////////
 	LPCTSTR static_::get_control_class() const
 	{
 		return WC_STATIC;
@@ -219,7 +213,7 @@ namespace laywin{
 		return WC_EDIT;
 	}
 
-	void edit::set_style(std::vector<string>& styles, bool bex /* = false */)
+	void edit::set_style(std::vector<string>& styles, bool bex)
 	{
 		static style_map known_styles[] =
 		{
@@ -255,12 +249,12 @@ namespace laywin{
 		return WC_LISTVIEW;
 	}
 
-	void listview::set_style(std::vector<string>& styles, bool bex /* = false */)
+	void listview::set_style(std::vector<string>& styles, bool bex)
 	{
 		return __super::set_style(styles, bex);
 	}
 
-	int listview::insert_item(LPCTSTR str, LPARAM param /*= 0*/, int i /*= */)
+	int listview::insert_item(LPCTSTR str, LPARAM param)
 	{
 		LVITEM lvi = {0};
 		lvi.mask = LVIF_TEXT | LVIF_PARAM;
@@ -324,5 +318,5 @@ namespace laywin{
 	{
 		return !!ListView_DeleteItem(_hwnd, i);
 	}
-
+    */
 }

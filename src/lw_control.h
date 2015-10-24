@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include "lw_util.h"
 
 namespace laywin{
@@ -15,7 +16,7 @@ namespace laywin{
 		control();
 		virtual ~control();
 
-        virtual void create(HWND parent) {
+        virtual void create(HWND parent, std::map<string,string>& attrs, resmgr& mgr) {
             
         }
 
@@ -29,10 +30,6 @@ namespace laywin{
 
         const string& name() {
             return _name;
-        }
-
-        virtual void set_resmgr(resmgr* mgr) {
-            _mgr = mgr;
         }
 
 		virtual bool is_container() const { return false; }
@@ -113,10 +110,7 @@ namespace laywin{
 		bool            _b_visible_by_parent;   // 父控件所设置的显示属性
 		bool            _b_displayed;           // 同CSS，false时不占空间
 
-		resmgr*         _mgr;       // 资源管理器
 		control*        _parent;    // 父控件
-
-		string          _font;      // 控件字体
 
 		void*           _ud;        // 用户数据
 	};
@@ -132,7 +126,6 @@ namespace laywin{
 			remove_all();
 		}
 
-        virtual void set_resmgr(resmgr* mgr) override;
 		virtual bool is_container() const override { return true; }
 
 		static LPCTSTR get_class_static() { return _T("container"); }
