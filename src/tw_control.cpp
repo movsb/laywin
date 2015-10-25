@@ -30,10 +30,6 @@ namespace taowin{
 
 	}
 
-	void control::init()
-	{
-	}
-
 	bool control::focus()
 	{
 		if (::IsWindow(_hwnd)){
@@ -116,8 +112,7 @@ namespace taowin{
 		if(_pos.right < _pos.left) _pos.right = _pos.left;
 		if(_pos.bottom < _pos.top)  _pos.bottom = _pos.top;
 
-		csize tmpsz = {_pos.width(), _pos.height()};
-//		post_size(tmpsz);
+        _post_size = {_pos.width(), _pos.height()};
 
 		if(!IsWindow(_hwnd))
 			return;
@@ -129,8 +124,9 @@ namespace taowin{
 		rct.right   -= _padding.right;
 		rct.bottom  -= _padding.bottom;
 
-        if(!is_container())
-		    ::SetWindowPos(_hwnd, 0, rct.left, rct.top, rct.width(), rct.height(), SWP_NOZORDER);
+        if(!is_container()) {
+            ::SetWindowPos(_hwnd, 0, rct.left, rct.top, rct.width(), rct.height(), SWP_NOZORDER);
+        }
 	}
 
     void control::create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) {
@@ -286,10 +282,7 @@ namespace taowin{
 			cxNeeded += sz.cx;
 			szRemaining.cx -= sz.cx;
 		}
-
-		csize sztmp = {cxNeeded, _pos.height()};
-		sztmp.cx += _pos.left + _pos.right;
-		//post_size(sztmp);
+        _post_size = {cxNeeded + _padding.left + _padding.right, _pos.height()};//sztmp;
 	}
 
 
@@ -376,10 +369,7 @@ namespace taowin{
 			cyNeeded += sz.cy;
 			szRemaining.cy -= sz.cy;
 		}
-
-		csize sztmp = {_pos.width(), cyNeeded};
-		sztmp.cy += _pos.top + _pos.bottom;
-		//post_size(sztmp);
+        _post_size = {_pos.width(), cyNeeded + _padding.top + _padding.bottom};
 	}
 
 	window_container::window_container()
@@ -402,13 +392,5 @@ namespace taowin{
 		}
 		else
 			return __super::set_attr(name, value);
-	}
-
-	void window_container::init()
-	{
-		__super::init();
-		::SetWindowPos(_hwnd, NULL, 0, 0,
-			_init_size.cx, _init_size.cy,
-			SWP_NOMOVE | SWP_NOZORDER);
 	}
 }

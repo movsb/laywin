@@ -30,12 +30,12 @@ namespace taowin{
             return _name;
         }
 
+        void set_enabled(bool enable = true) {
+            ::EnableWindow(_hwnd, enable);
+        }
+
 		virtual bool is_container() const { return false; }
 
-		virtual LPCTSTR get_class() const { return get_class_static(); }
-		static LPCTSTR get_class_static() { return _T("control"); }
-
-		virtual void init();
 		virtual bool focus();
 
 		virtual void pos(const rect& rc);
@@ -94,6 +94,7 @@ namespace taowin{
 		HWND            _hwnd;      // 所绑定的控件的句柄
 
 		rect            _pos;       // 在界面上的位置
+        csize           _post_size; // 最终被设置的大小
 		rect            _padding;   // 内边距
 
 		int             _width;     // 设置的宽度，默认为0
@@ -125,17 +126,6 @@ namespace taowin{
 		}
 
 		virtual bool is_container() const override { return true; }
-
-		static LPCTSTR get_class_static() { return _T("container"); }
-		virtual LPCTSTR get_class() const override { return get_class_static(); }
-
-		virtual void init() override{
-			__super::init();
-
-			for(int c = size(), i = 0; i < c; ++i){
-				_items[i]->init();
-			}
-		}
 
 		int size() const{
 			return _items.size();
@@ -182,18 +172,12 @@ namespace taowin{
 	class horizontal : public container
 	{
 	public:
-		virtual LPCTSTR get_class() const override { return get_class_static(); }
-		static LPCTSTR get_class_static() { return _T("horizontal"); }
-
 		virtual void pos(const rect& rc) override;
 	};
 
 	class vertical : public container
 	{
 	public:
-		virtual LPCTSTR get_class() const override { return get_class_static(); }
-		static LPCTSTR get_class_static() { return _T("vertical"); }
-
 		virtual void pos(const rect& rc) override;
 	};
 
@@ -204,11 +188,17 @@ namespace taowin{
 		window_container();
 
 	protected:
-		virtual void init() override;
 		void resmgr_(resmgr* mgr);
 		virtual void set_attr(const char* name, const char* value) override;
 
     private:
 		csize _init_size;
 	};
+
+    class root_control : public container {
+    public:
+        const csize& get_post_size() const {
+            return _post_size;
+        }
+    };
 }

@@ -48,7 +48,7 @@ namespace taowin{
     }
 
     window_creator::window_creator()
-        : _root(new container)  // fake, keep _root valid always
+        : _root(new root_control)  // fake, keep _root valid always
     {
 
     }
@@ -71,7 +71,7 @@ namespace taowin{
 	{
 		switch(umsg)
 		{
-		case WM_SIZE:
+        case WM_SIZE:
             _root->pos({0, 0, LOWORD(lparam), HIWORD(lparam)});
 			break;
 		case WM_COMMAND:
@@ -130,20 +130,21 @@ namespace taowin{
                         });
                     } else if(c->tag == "root") {
                         if(_root) delete _root; // delete fake
-                        _root = new container;
+                        _root = new root_control;
                         _root->hwnd(_hwnd);
 
                         _create_children(_root, c, &_mgr);
                     }
                 });
 
-                _root->init();
                 rect rc2;
                 ::GetClientRect(_hwnd, &rc2);
                 _root->pos({0, 0, rc2.width(), rc2.height()});
             }
             break;
         }
+        case WM_CTLCOLORSTATIC:
+            return (LRESULT)::GetStockObject(WHITE_BRUSH);
 		}
 
 		return handle_message(umsg, wparam, lparam);

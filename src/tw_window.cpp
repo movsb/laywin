@@ -17,19 +17,24 @@ namespace taowin{
 
 	}
 
-	HWND window::create(const window_meta_t& meta)
+	HWND window::create()
 	{
-		_hwnd = ::CreateWindowEx(0, meta.classname, meta.caption, WS_OVERLAPPEDWINDOW,
+        window_meta_t metas;
+        get_metas(&metas);
+		_hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
             0, 0, 300, 250, nullptr, nullptr, nullptr, this);
 		assert(_hwnd);
 		return _hwnd;
 	}
 
-	int window::domodal(const window_meta_t& meta, HWND owner)
+	int window::domodal(HWND owner)
 	{
         assert(owner != nullptr);
         _is_dialog = true;
-		_hwnd = ::CreateWindowEx(meta.exstyle, meta.classname, meta.caption, meta.style,
+
+        window_meta_t metas;
+        get_metas(&metas);
+		_hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
             0, 0, 300, 250, owner, nullptr, nullptr, this);
 		assert(_hwnd);
         show();
@@ -135,16 +140,27 @@ namespace taowin{
             : ::DefWindowProc(hwnd, umsg, wparam, lparam);
 	}
 
-	void window::close()
+	void window::close(int code)
 	{
+        _return_code = code;
 		send_message(WM_CLOSE);
 	}
+
+    void window::get_metas(window_meta_t* metas) {
+        metas->caption = "taowin";
+        metas->classname = "taowin";
+        if(_is_dialog)
+            metas->style = WS_OVERLAPPEDWINDOW & ~(WS_MINIMIZE|WS_MINIMIZEBOX);
+        else
+            metas->style = WS_OVERLAPPEDWINDOW;
+        metas->exstyle = 0;
+    }
 
     //////////////////////////////////////////////////////////////////////////
     void register_window_classes() {
         WNDCLASSEX wc = {0};
         wc.cbSize = sizeof(wc);
-        wc.hbrBackground = (HBRUSH)::GetStockObject(WHITE_BRUSH);
+        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
         wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
         wc.hIcon = wc.hIconSm = ::LoadIcon(nullptr, IDI_APPLICATION);
         wc.hInstance = ::GetModuleHandle(nullptr);

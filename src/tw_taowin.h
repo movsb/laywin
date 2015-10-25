@@ -25,8 +25,8 @@ namespace taowin{
 		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam) override;
 
 	protected:
-        container*  _root;
-        resmgr      _mgr;
+        root_control*   _root;
+        resmgr          _mgr;
 	};
 
     void init();

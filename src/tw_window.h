@@ -117,15 +117,6 @@ namespace taowin{
             const char*     classname;
             DWORD           style;
             DWORD           exstyle;
-
-            window_meta_t(const char* caption_ = "", const char* classname_ = "",
-                DWORD style_ = WS_OVERLAPPEDWINDOW, DWORD exstyle_ = 0) 
-            {
-                caption = caption_;
-                classname = classname_;
-                style = style_;
-                exstyle = exstyle_;
-            }
         };
 
 	public:
@@ -135,11 +126,18 @@ namespace taowin{
 		HWND hwnd() const { return _hwnd; }
 		operator HWND() const { return hwnd(); }
 
-        HWND create(const window_meta_t& meta);
-        int  domodal(const window_meta_t& meta, HWND owner=nullptr);
-		void close();
+        HWND create();
+        int  domodal(HWND owner=nullptr);
+		void close(int code = 0);
 		void show(bool show = true, bool focus = true);
 		void center();
+
+        int msgbox(const char* text, int type = (int)MB_OK, const char* title = "") {
+            return ::MessageBox(_hwnd, text, title, (UINT)type);
+        }
+        int msgbox(const std::string& text, int type = (int)MB_OK, const std::string& title = "") {
+            return msgbox(text.c_str(), type, title.c_str());
+        }
 
 		LRESULT send_message(UINT umsg, WPARAM wparam = 0, LPARAM lparam = 0){
 			return ::SendMessage(_hwnd, umsg, wparam, lparam);
@@ -171,7 +169,11 @@ namespace taowin{
 			return false;
 		}
 
-    public:
+    private:
+        virtual void get_metas(window_meta_t* metas);
+
+    private:
+        friend void register_window_classes();
 		static LRESULT __stdcall __window_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 	protected:
 		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);

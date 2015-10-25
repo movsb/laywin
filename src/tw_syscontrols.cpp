@@ -32,11 +32,6 @@ namespace taowin{
 
 	}
 
-	void syscontrol::init()
-	{
-		__super::init();
-	}
-
     void syscontrol::create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) {
         syscontrol_metas metas;
         create_metas(metas, attrs);
@@ -80,6 +75,7 @@ namespace taowin{
             {WS_HSCROLL, _T("hscroll")},
             {WS_TABSTOP, _T("tabstop")},
             {WS_VSCROLL, _T("vscroll")},
+            {LVS_SHOWSELALWAYS, _T("showselalways")},
             {0, nullptr}
         };
 
@@ -173,7 +169,14 @@ namespace taowin{
 
     //////////////////////////////////////////////////////////////////////////
     void label::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+        static style_map __known_styles[] =
+        {
+            {SS_CENTER, _T("center")},
+            {SS_CENTERIMAGE, _T("centerimage")},
+            {0, nullptr}
+        };
         metas.classname = WC_STATIC;
+        metas.known_styles = &__known_styles[0];
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -241,13 +244,13 @@ namespace taowin{
 
 	}
 
-	int listview::set_item(LPCTSTR str, int i, int isub)
+	int listview::set_item(int i, int isub, const char* s)
 	{
 		LVITEM lvi = {0};
 		lvi.mask = LVIF_TEXT;
 		lvi.iItem = i;
 		lvi.iSubItem = isub;
-		lvi.pszText = (LPSTR)str;
+		lvi.pszText = (LPSTR)s; // TODO
 		return ListView_SetItem(_hwnd, &lvi);
 	}
 
@@ -277,4 +280,46 @@ namespace taowin{
         HWND header = ListView_GetHeader(_hwnd);
         return Header_GetItemCount(header);
     }
+
+    int listview::get_selected_count() {
+        return ListView_GetSelectedCount(_hwnd);
+    }
+
+    int listview::get_next_item(int start, unsigned int flags) {
+        return ListView_GetNextItem(_hwnd, start, flags);
+    }
+
+    int listview::get_item_count() {
+        return ListView_GetItemCount(_hwnd);
+    }
+
+    std::string listview::get_item_text(int i, int isub) {
+        char buf[1024 * 4];
+        LVITEM lvi;
+        lvi.iItem = i;
+        lvi.iSubItem = isub;
+        lvi.pszText = &buf[0];
+        lvi.cchTextMax = _countof(buf);
+        int len = ::SendMessage(_hwnd, LVM_GETITEMTEXT, WPARAM(i), LPARAM(&lvi));
+        return std::string(buf, len);
+    }
+
+    int listview::get_item_data(int i, int isub) {
+        LVITEM li;
+        li.iItem = i;
+        li.iSubItem = isub;
+        li.mask = LVIF_PARAM;
+        ListView_GetItem(_hwnd, &li);
+        return (int)li.lParam;
+    }
+
+    // I used macro, so it return nothing(msdn says so).
+    void listview::set_item_text(int i, int isub, const char* text) {
+        ListView_SetItemText(_hwnd, i, isub, (char*)text);  // TODO confirm cannot use const.
+    }
+
+    bool listview::delete_all_items() {
+        return !!ListView_DeleteAllItems(_hwnd);
+    }
+
 }

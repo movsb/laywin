@@ -36,11 +36,11 @@ namespace taowin{
 			left = top = right = bottom = 0;
 		}
 
-		int width(){
+		int width() const {
 			return right - left;
 		}
 
-		int height(){
+		int height() const {
 			return bottom - top;
 		}
 
