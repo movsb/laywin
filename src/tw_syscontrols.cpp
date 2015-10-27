@@ -207,6 +207,7 @@ namespace taowin{
     void listview::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
         static style_map __known_styles[] = {
             {LVS_SINGLESEL, "singlesel"},
+            {LVS_OWNERDATA, "ownerdata"},
         };
 
         metas.classname = WC_LISTVIEW;
@@ -320,6 +321,14 @@ namespace taowin{
 
     bool listview::delete_all_items() {
         return !!ListView_DeleteAllItems(_hwnd);
+    }
+
+    bool listview::set_item_count(int count, int flags) {
+        return !!ListView_SetItemCountEx(_hwnd, count, flags);
+    }
+
+    bool listview::redraw_items(int first, int last) {
+        return !!ListView_RedrawItems(_hwnd, first, last);
     }
 
 }

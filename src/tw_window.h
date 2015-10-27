@@ -128,6 +128,7 @@ namespace taowin{
 
         HWND create();
         int  domodal(HWND owner=nullptr);
+        int  domodal(window* w) { return domodal(*w); }
 		void close(int code = 0);
 		void show(bool show = true, bool focus = true);
 		void center();

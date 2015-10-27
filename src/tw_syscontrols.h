@@ -116,6 +116,8 @@ namespace taowin{
 	class listview : public syscontrol
 	{
 	public:
+        bool redraw_items(int first, int last);
+        bool set_item_count(int count, int flags);
         int get_item_count();
         int get_selected_count();
         int get_next_item(int start, unsigned int flags);
