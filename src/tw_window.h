@@ -112,6 +112,7 @@ namespace taowin{
     class window
 		: public i_message_filter
 	{
+    protected:
         struct window_meta_t {
             const char*     caption;
             const char*     classname;
@@ -170,7 +171,7 @@ namespace taowin{
 			return false;
 		}
 
-    private:
+    protected:
         virtual void get_metas(window_meta_t* metas);
 
     private:

@@ -13,7 +13,7 @@ namespace taowin{
 	{
     public:
         window_creator();
-        ~window_creator();
+        virtual ~window_creator();
 
 	protected:
 		virtual LPCTSTR get_skin_xml() const;

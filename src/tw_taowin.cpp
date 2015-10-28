@@ -101,6 +101,8 @@ namespace taowin{
 		}
         case WM_CREATE:
         {
+            center();
+
             using namespace parser;
             PARSER_OBJECT* p = parser::parse(get_skin_xml());
             if(!p) break;
@@ -112,8 +114,10 @@ namespace taowin{
                     window->set_attr(a, v);
                 });
 
+                window_meta_t metas;
+                get_metas(&metas); // only styles
                 rect rc {0, 0, window->_init_size.cx, window->_init_size.cy};
-                ::AdjustWindowRectEx(&rc, WS_OVERLAPPEDWINDOW|WS_VISIBLE, FALSE, 0);
+                ::AdjustWindowRectEx(&rc, metas.style|WS_VISIBLE, FALSE, metas.exstyle);
                 rc.offset(-rc.left, -rc.top);
                 ::SetWindowPos(_hwnd, nullptr, rc.left, rc.top, rc.width(), rc.height(), SWP_NOZORDER);
                 center();

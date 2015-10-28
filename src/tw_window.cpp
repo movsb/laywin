@@ -22,7 +22,7 @@ namespace taowin{
         window_meta_t metas;
         get_metas(&metas);
 		_hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
-            0, 0, 300, 250, nullptr, nullptr, nullptr, this);
+            100, 100, 300, 250, nullptr, nullptr, nullptr, this);
 		assert(_hwnd);
 		return _hwnd;
 	}
@@ -35,7 +35,7 @@ namespace taowin{
         window_meta_t metas;
         get_metas(&metas);
 		_hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
-            0, 0, 300, 250, owner, nullptr, nullptr, this);
+            100, 100, 300, 250, owner, nullptr, nullptr, this);
 		assert(_hwnd);
         show();
         return dialog_manager(this, owner).run();
