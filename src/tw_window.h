@@ -171,6 +171,19 @@ namespace taowin{
 			return false;
 		}
 
+        rect get_window_rect() const {
+            assert(_hwnd);
+            rect rc;
+            ::GetWindowRect(_hwnd, &rc);
+            return rc;
+        }
+
+        rect get_client_rect() const {
+            assert(_hwnd);
+            rect rc;
+            ::GetClientRect(_hwnd, &rc);
+            return rc;
+        }
     protected:
         virtual void get_metas(window_meta_t* metas);
 
