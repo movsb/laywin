@@ -162,7 +162,7 @@ namespace taowin{
         wc.cbSize = sizeof(wc);
         wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
         wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
-        wc.hIcon = wc.hIconSm = ::LoadIcon(nullptr, IDI_APPLICATION);
+        wc.hIcon = wc.hIconSm = (HICON)::LoadImage(::GetModuleHandle(nullptr), (LPCSTR)101, IMAGE_ICON, 32, 32, 0);
         wc.hInstance = ::GetModuleHandle(nullptr);
         wc.lpfnWndProc = &window::__window_procedure;
         wc.lpszClassName = "taowin";
