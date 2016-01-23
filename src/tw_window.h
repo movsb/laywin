@@ -68,41 +68,6 @@ namespace taowin{
 
     extern window_manager __window_manager;
 
-    class dialog_manager{
-    public:
-        dialog_manager(i_message_filter*  this_, HWND owner) {
-            _this = this_;
-            _hwnd = _this->filter_hwnd();
-            _owner = owner;
-        }
-
-        int run() {
-            assert(::IsWindow(_owner));
-            ::EnableWindow(_owner, FALSE);
-            MSG msg;
-            while(::GetMessage(&msg, NULL, 0, 0)) {
-                if(!filter_message(&msg)) {
-                    ::TranslateMessage(&msg);
-                    ::DispatchMessage(&msg);
-                }
-            }
-
-            return (int)msg.wParam;
-        }
-    private:
-        bool filter_message(MSG* msg) {
-            HWND parent = msg->hwnd;
-            while(parent && ::GetWindowLongPtr(parent, GWL_STYLE) & WS_CHILD)
-                parent = ::GetParent(parent);
-
-            return _hwnd == parent && _this->filter_message(msg);
-        }
-    private:
-        i_message_filter*   _this;
-        HWND                _hwnd;
-        HWND                _owner;
-    };
-
     void register_window_classes();
 
     struct window_extra_t {
@@ -162,7 +127,6 @@ namespace taowin{
                 default:
                     // I don't want IsDialogMessage to process VK_ESCAPE, because it produces a WM_COMMAND
                     // menu message with id == 2. It is undocumented.
-                    // and, this function call doesn't care the variable _is_dialog.
                     if(::IsDialogMessage(_hwnd, msg))
                         return true;
                     break;
@@ -197,7 +161,6 @@ namespace taowin{
 
 	protected:
 		HWND    _hwnd;
-        bool    _is_dialog;
         int     _return_code;
 	};
 }

@@ -6,7 +6,6 @@ namespace taowin{
 
 	window::window()
 		: _hwnd(NULL)
-        , _is_dialog(false)
         , _return_code(0)
 	{
 
@@ -30,15 +29,14 @@ namespace taowin{
 	int window::domodal(HWND owner)
 	{
         assert(owner != nullptr);
-        _is_dialog = true;
-
         window_meta_t metas;
         get_metas(&metas);
+        metas.style |= WS_VISIBLE;
 		_hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
             100, 100, 300, 250, owner, nullptr, nullptr, this);
 		assert(_hwnd);
-        show();
-        return dialog_manager(this, owner).run();
+        ::EnableWindow(owner, FALSE);
+        return __window_manager.loop_message();
 	}
 
 	void window::show(bool show /*= true*/, bool focus /*= true*/)
@@ -91,7 +89,7 @@ namespace taowin{
 	{
         if(umsg == WM_CLOSE) {
             HWND owner = ::GetWindow(_hwnd, GW_OWNER);
-            if(owner && _is_dialog) {
+            if(owner && !::IsWindowEnabled(owner)) {
                 ::PostQuitMessage(_return_code);
                 ::EnableWindow(owner, TRUE);
                 ::SetActiveWindow(owner);
@@ -119,8 +117,7 @@ namespace taowin{
 			pThis = static_cast<window*>(lpcs->lpCreateParams);
 			pThis->_hwnd = hwnd;
 			::SetWindowLongPtr(hwnd, 4, reinterpret_cast<LPARAM>(pThis));
-            if(!pThis->_is_dialog)
-                __window_manager.add_message_filter(pThis);
+            __window_manager.add_message_filter(pThis);
 			pThis->on_first_message();
             return TRUE; // must
 		}
@@ -128,8 +125,7 @@ namespace taowin{
             ::SetWindowLongPtr(pThis->_hwnd, 4, 0);
             LRESULT lRes = ::DefWindowProc(hwnd, umsg, wparam, lparam);
             if(pThis) {
-                if(!pThis->_is_dialog)
-                    __window_manager.remove_message_filter(pThis);
+                __window_manager.remove_message_filter(pThis);
                 pThis->on_final_message();
             }
             return 0;
@@ -149,10 +145,7 @@ namespace taowin{
     void window::get_metas(window_meta_t* metas) {
         metas->caption = "taowin";
         metas->classname = "taowin";
-        if(_is_dialog)
-            metas->style = WS_OVERLAPPEDWINDOW & ~(WS_MINIMIZE|WS_MINIMIZEBOX);
-        else
-            metas->style = WS_OVERLAPPEDWINDOW;
+        metas->style = WS_OVERLAPPEDWINDOW;
         metas->exstyle = 0;
     }
 

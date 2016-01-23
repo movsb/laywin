@@ -65,7 +65,8 @@ protected:
     virtual LRESULT on_notify(HWND hwnd, taowin::control* pc, int code, NMHDR* hdr) override {
         if(pc->name() == "t1") {
             if(code == BN_CLICKED) {
-                MessageBox(_hwnd, "t1 clicked", "", MB_OK);
+                TW* tw = new TW;
+                tw->domodal(this);
                 return 0;
             }
         }
@@ -81,9 +82,12 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 
 	try{
 		TW tw1;
-        tw1.create({ "test", "taowin", WS_OVERLAPPEDWINDOW, 0});
+        tw1.create();
 		tw1.show();
 
+		TW tw2;
+        tw2.create();
+		tw2.show();
 
         taowin::loop_message();
 	}
