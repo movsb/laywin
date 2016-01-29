@@ -224,7 +224,7 @@ namespace taowin {
         PARSER_OBJECT* parse(const char* xml) {
             xml = xml ? xml : "";
             int len = (int)::strlen(xml) + 1;
-            std::unique_ptr<char> x(new char[len]);
+            std::unique_ptr<char[]> x(new char[len]);
             ::memcpy(x.get(), xml, len);
             return parse(x.get());
         }
