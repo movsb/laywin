@@ -160,6 +160,10 @@ namespace taowin{
 
     void init() {
         register_window_classes();
+
+        ::ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
+        ::ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
+        ::ChangeWindowMessageFilter(0x49 /* WM_COPYGLOBALDATA */, MSGFLT_ADD);
     }
 
 }
