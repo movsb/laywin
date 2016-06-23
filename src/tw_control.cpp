@@ -106,7 +106,7 @@ namespace taowin{
 		return { _width, _height };
 	}
 
-	void control::pos(const rect& rc)
+	void control::pos(const Rect& rc)
 	{
 		_pos = rc;
 		if(_pos.right < _pos.left) _pos.right = _pos.left;
@@ -117,7 +117,7 @@ namespace taowin{
 		if(!IsWindow(_hwnd))
 			return;
 
-		rect rct = _pos;
+		Rect rct = _pos;
 
 		rct.left    += _padding.left;
 		rct.top     += _padding.top;
@@ -137,13 +137,13 @@ namespace taowin{
     }
 
     //////////////////////////////////////////////////////////////////////////
-	void container::pos(const rect& rc)
+	void container::pos(const Rect& rc)
 	{
 		__super::pos(rc);
 
 		if(_items.size() == 0) return;
 
-		rect r = _pos;
+		Rect r = _pos;
 		r.left      += _padding.left;
 		r.top       += _padding.top;
 		r.right     -= _padding.right;
@@ -201,13 +201,13 @@ namespace taowin{
 		return NULL;
 	}
 
-	void horizontal::pos(const rect& rc)
+	void horizontal::pos(const Rect& rc)
 	{
 		control::pos(rc);
 
 		if(_items.size() == 0) return;
 
-		rect r = _pos;
+		Rect r = _pos;
         r.left      += _padding.left;
 		r.top       += _padding.top;
 		r.right     -= _padding.right;
@@ -276,7 +276,7 @@ namespace taowin{
 			if(sz.cy < pc->_min_height) sz.cy = pc->_min_height;
 			if(sz.cy > pc->_max_height) sz.cy = pc->_max_height;
 
-			rect rct = {iPosX, r.top, iPosX + sz.cx, r.top + sz.cy};
+			Rect rct = {iPosX, r.top, iPosX + sz.cx, r.top + sz.cy};
 			pc->pos(rct);
 			iPosX += sz.cx;
 			cxNeeded += sz.cx;
@@ -286,13 +286,13 @@ namespace taowin{
 	}
 
 
-	void vertical::pos(const rect& rc)
+	void vertical::pos(const Rect& rc)
 	{
 		control::pos(rc);
 
 		if(_items.size() == 0) return;
 
-		rect r = _pos;
+		Rect r = _pos;
         r.left      += _padding.left;
 		r.top       += _padding.top;
 		r.right     -= _padding.right;
@@ -362,7 +362,7 @@ namespace taowin{
 			if(sz.cx < pc->_min_height) sz.cx = pc->_min_width;
 			if(sz.cx > pc->_max_height) sz.cx = pc->_max_width;
 
-			rect rct = {iPosX, iPosY, iPosX + sz.cx, iPosY + sz.cy};
+			Rect rct = {iPosX, iPosY, iPosX + sz.cx, iPosY + sz.cy};
 			pc->pos(rct);
 
 			iPosY += sz.cy;

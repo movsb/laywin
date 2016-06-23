@@ -16,12 +16,12 @@ namespace taowin{
 
 	}
 
-	HWND window::create()
+	HWND window::create(HWND owner)
 	{
-        window_meta_t metas;
+        WindowMeta metas;
         get_metas(&metas);
 		_hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
-            100, 100, 300, 250, nullptr, nullptr, nullptr, this);
+            100, 100, 300, 250, owner, nullptr, nullptr, this);
 		assert(_hwnd);
 		return _hwnd;
 	}
@@ -29,7 +29,7 @@ namespace taowin{
 	int window::domodal(HWND owner)
 	{
         assert(owner != nullptr);
-        window_meta_t metas;
+        WindowMeta metas;
         get_metas(&metas);
         metas.style |= WS_VISIBLE;
 		_hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
@@ -89,9 +89,11 @@ namespace taowin{
 	{
         if(umsg == WM_CLOSE) {
             HWND owner = ::GetWindow(_hwnd, GW_OWNER);
-            if(owner && !::IsWindowEnabled(owner)) {
-                ::PostQuitMessage(_return_code);
-                ::EnableWindow(owner, TRUE);
+            if(owner) {
+                if (!::IsWindowEnabled(owner)) {
+                    ::PostQuitMessage(_return_code);
+                    ::EnableWindow(owner, TRUE);
+                }
                 ::SetActiveWindow(owner);
             }
         }
@@ -142,11 +144,12 @@ namespace taowin{
 		send_message(WM_CLOSE);
 	}
 
-    void window::get_metas(window_meta_t* metas) {
+    void window::get_metas(WindowMeta* metas) {
         metas->caption = "taowin";
         metas->classname = "taowin";
         metas->style = WS_OVERLAPPEDWINDOW;
         metas->exstyle = 0;
+        metas->flags = WindowFlag::center;
     }
 
     //////////////////////////////////////////////////////////////////////////

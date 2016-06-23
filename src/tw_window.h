@@ -5,7 +5,7 @@
 #include "tw_util.h"
 
 namespace taowin{
-	class i_message_filter{
+	class IMessageFilter{
 	public:
         virtual HWND filter_hwnd() = 0;
 		virtual bool filter_message(MSG* msg) = 0;
@@ -46,12 +46,12 @@ namespace taowin{
             return false;
         }
 
-        void add_message_filter(i_message_filter* filter) {
+        void add_message_filter(IMessageFilter* filter) {
             assert(_message_filters.find(filter) == -1);
             _message_filters.add(filter);
         }
 
-        void remove_message_filter(i_message_filter* filter) {
+        void remove_message_filter(IMessageFilter* filter) {
             assert(_message_filters.size() > 0);
             _message_filters.remove(filter);
             if(_message_filters.size() == 0)
@@ -63,7 +63,7 @@ namespace taowin{
         }
 
 	private:
-		array<i_message_filter*> _message_filters;
+		array<IMessageFilter*> _message_filters;
 	};
 
     extern window_manager __window_manager;
@@ -75,14 +75,19 @@ namespace taowin{
     };
 
     class window
-		: public i_message_filter
+		: public IMessageFilter
 	{
     protected:
-        struct window_meta_t {
+        struct WindowFlag {
+            static const DWORD center = 1;
+        };
+
+        struct WindowMeta {
             const char*     caption;
             const char*     classname;
             DWORD           style;
             DWORD           exstyle;
+            DWORD           flags;
         };
 
 	public:
@@ -92,10 +97,14 @@ namespace taowin{
 		HWND hwnd() const { return _hwnd; }
 		operator HWND() const { return hwnd(); }
 
-        HWND create();
-        int  domodal(HWND owner=nullptr);
+        HWND create(HWND owner = nullptr);
+        HWND create(window* w) { return create(w->hwnd()); }
+
+        int  domodal(HWND owner = nullptr);
         int  domodal(window* w) { return domodal(*w); }
+
 		void close(int code = 0);
+
 		void show(bool show = true, bool focus = true);
 		void center();
 
@@ -135,21 +144,21 @@ namespace taowin{
 			return false;
 		}
 
-        rect get_window_rect() const {
+        Rect get_window_Rect() const {
             assert(_hwnd);
-            rect rc;
+            Rect rc;
             ::GetWindowRect(_hwnd, &rc);
             return rc;
         }
 
-        rect get_client_rect() const {
+        Rect get_client_Rect() const {
             assert(_hwnd);
-            rect rc;
+            Rect rc;
             ::GetClientRect(_hwnd, &rc);
             return rc;
         }
     protected:
-        virtual void get_metas(window_meta_t* metas);
+        virtual void get_metas(WindowMeta* metas);
 
     private:
         friend void register_window_classes();

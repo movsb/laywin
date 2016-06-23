@@ -13,19 +13,19 @@ namespace taowin{
 		int cy;
 	};
 
-	class rect : public tagRECT
+	class Rect : public tagRECT
 	{
 	public:
-		rect(){
+		Rect(){
 			empty();
 		}
-		rect(const tagRECT& r){
+		Rect(const tagRECT& r){
 			left    = r.left;
 			top     = r.top;
 			right   = r.right;
 			bottom  = r.bottom;
 		}
-		rect(int l, int t, int r, int b){
+		Rect(int l, int t, int r, int b){
 			left    = l;
 			top     = t;
 			right   = r;

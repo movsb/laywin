@@ -38,7 +38,7 @@ namespace taowin{
 
 		virtual bool focus();
 
-		virtual void pos(const rect& rc);
+		virtual void pos(const Rect& rc);
 
 		virtual int		width() const { return _pos.right - _pos.left; }
 		virtual int		height() const { return _pos.bottom - _pos.top; }
@@ -93,9 +93,9 @@ namespace taowin{
         string          _name;      // 控件的名字，不要重复
 		HWND            _hwnd;      // 所绑定的控件的句柄
 
-		rect            _pos;       // 在界面上的位置
+		Rect            _pos;       // 在界面上的位置
         csize           _post_size; // 最终被设置的大小
-		rect            _padding;   // 内边距
+		Rect            _padding;   // 内边距
 
 		int             _width;     // 设置的宽度，默认为0
 		int             _height;    // 设置的高度，默认为0
@@ -148,7 +148,7 @@ namespace taowin{
 			return _items[i];
 		}
 
-		virtual void pos(const rect& rc) override;
+		virtual void pos(const Rect& rc) override;
 
 		virtual void set_visible(bool visible_) override;
 		virtual void displayed(bool displayed_) override;
@@ -172,13 +172,13 @@ namespace taowin{
 	class horizontal : public container
 	{
 	public:
-		virtual void pos(const rect& rc) override;
+		virtual void pos(const Rect& rc) override;
 	};
 
 	class vertical : public container
 	{
 	public:
-		virtual void pos(const rect& rc) override;
+		virtual void pos(const Rect& rc) override;
 	};
 
 	class window_container : public container
