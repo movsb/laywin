@@ -1,6 +1,8 @@
 #ifndef __taowin_h__
 #define __taowin_h__
 
+#include <functional>
+
 #include "tw_util.h"
 #include "tw_control.h"
 #include "tw_syscontrols.h"
@@ -20,6 +22,10 @@ namespace taowin{
 		virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);
 		virtual LRESULT on_menu(int id, bool is_accel = false) { return 0; }
 		virtual LRESULT on_notify(HWND hwnd, control* pc, int code, NMHDR* hdr) { return 0; }
+
+        void async_call(std::function<void()> fn) {
+            __window_manager.add_async_call(fn);
+        }
 
 	private:
 		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam) override;

@@ -88,10 +88,10 @@ namespace taowin{
 			}
 		}
 		~array(){
-			empty();
+			clear();
 		}
 
-		void empty(){
+		void clear(){
 			if (_pt){
 				delete[] _pt;
 				_pt = NULL;
@@ -146,6 +146,9 @@ namespace taowin{
 		int size() const{
 			return _count;
 		}
+        bool empty() const {
+            return _count == 0;
+        }
 		T& operator[](int i) const{
 			return _pt[i];
 		}

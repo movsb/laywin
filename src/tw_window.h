@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include <assert.h>
 #include <windows.h>
 #include "tw_util.h"
@@ -19,10 +21,29 @@ namespace taowin{
         int loop_message()
         {
             MSG msg;
-            while(::GetMessage(&msg, NULL, 0, 0)){
-                if(!filter_message(&msg)){
-                    ::TranslateMessage(&msg);
-                    ::DispatchMessage(&msg);
+
+            for (;;) {
+                if (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+                    if (msg.message == WM_QUIT)
+                        break;
+
+                    if (!filter_message(&msg)) {
+                        ::TranslateMessage(&msg);
+                        ::DispatchMessage(&msg);
+                    }
+                }
+                else if (_idle_handlers.empty()) {
+                    ::GetMessage(&msg, nullptr, 0, 0);
+                    if (msg.message == WM_QUIT)
+                        break;
+
+                    if (!filter_message(&msg)) {
+                        ::TranslateMessage(&msg);
+                        ::DispatchMessage(&msg);
+                    }
+                }
+                else {
+                    handle_idle();
                 }
             }
 
@@ -30,7 +51,7 @@ namespace taowin{
         }
 
         bool filter_message(MSG* msg) {
-            if(_message_filters.size() == 0)
+            if(_message_filters.empty())
                 return false;
 
             HWND parent = msg->hwnd;
@@ -52,9 +73,9 @@ namespace taowin{
         }
 
         void remove_message_filter(IMessageFilter* filter) {
-            assert(_message_filters.size() > 0);
+            assert(!_message_filters.empty());
             _message_filters.remove(filter);
-            if(_message_filters.size() == 0)
+            if(_message_filters.empty())
                 quit(0);
         }
 
@@ -62,8 +83,23 @@ namespace taowin{
             ::PostQuitMessage(code);
         }
 
+        void add_async_call(std::function<void()> fn) {
+            _idle_handlers.push_back(fn);
+        }
+
+    protected:
+        void handle_idle() {
+            if (!_idle_handlers.empty()) {
+                auto handlers = std::move(_idle_handlers);
+
+                for (auto& handler : handlers)
+                    handler();
+            }
+        }
+
 	private:
-		array<IMessageFilter*> _message_filters;
+		array<IMessageFilter*>              _message_filters;
+        std::vector<std::function<void()>>  _idle_handlers;
 	};
 
     extern window_manager __window_manager;

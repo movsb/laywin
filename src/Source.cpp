@@ -59,7 +59,13 @@ protected:
 
     virtual LRESULT on_notify(HWND hwnd, taowin::control* pc, int code, NMHDR* hdr) override {
         if(pc->name() == "t1") {
-            if(code == BN_CLICKED) {
+            if (code == BN_CLICKED) {
+                async_call([&]() {
+                    msgbox("async calling");
+                    async_call([this]() {
+                        msgbox("another async calling");
+                    });
+                });
                 return 0;
             }
         }
