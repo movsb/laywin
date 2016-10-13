@@ -145,8 +145,8 @@ namespace taowin{
 	}
 
     void window::get_metas(WindowMeta* metas) {
-        metas->caption = "taowin";
-        metas->classname = "taowin";
+        metas->caption = _T("taowin");
+        metas->classname = _T("taowin");
         metas->style = WS_OVERLAPPEDWINDOW;
         metas->exstyle = 0;
         metas->flags = WindowFlag::center;
@@ -158,10 +158,10 @@ namespace taowin{
         wc.cbSize = sizeof(wc);
         wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
         wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
-        wc.hIcon = wc.hIconSm = (HICON)::LoadImage(::GetModuleHandle(nullptr), (LPCSTR)101, IMAGE_ICON, 32, 32, 0);
+        wc.hIcon = wc.hIconSm = (HICON)::LoadImage(::GetModuleHandle(nullptr), (LPCTSTR)101, IMAGE_ICON, 32, 32, 0);
         wc.hInstance = ::GetModuleHandle(nullptr);
         wc.lpfnWndProc = &window::__window_procedure;
-        wc.lpszClassName = "taowin";
+        wc.lpszClassName = _T("taowin");
         wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
         wc.cbWndExtra = sizeof(void*)* 2; // [[extra_ptr][this]]
         ::RegisterClassEx(&wc);

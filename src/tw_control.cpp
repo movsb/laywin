@@ -60,7 +60,7 @@ namespace taowin{
         }
 	}
 
-	void control::set_attr(const char* name, const char* value)
+	void control::set_attr(const TCHAR* name, const TCHAR* value)
 	{
 		if(_tcscmp(name, _T("name")) == 0){
 			_name = value;
@@ -378,14 +378,14 @@ namespace taowin{
 		_init_size.cy = 480;
 	}
 
-	void window_container::set_attr(const char* name, const char* value)
+	void window_container::set_attr(const TCHAR* name, const TCHAR* value)
 	{
 		if(_tcscmp(name, _T("title")) == 0){
             ::SetWindowText(_hwnd, value);
 		}
 		else if(_tcscmp(name, _T("size")) == 0){
 			int w, h;
-			if(_stscanf(value, "%d,%d", &w, &h) == 2){
+			if(_stscanf(value, _T("%d,%d"), &w, &h) == 2){
 				_init_size.cx = w;
 				_init_size.cy = h;
 			}

@@ -14,8 +14,8 @@ namespace taowin{
 		resmgr();
 		~resmgr();
 
-		void    add_font(const char* name, const char* face, int size);
-        HFONT   get_font(const char* name) {
+		void    add_font(const TCHAR* name, const TCHAR* face, int size);
+        HFONT   get_font(const TCHAR* name) {
             auto it = _fonts.find(name);
             if(it != _fonts.cend())
                 return it->second;

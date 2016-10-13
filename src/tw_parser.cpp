@@ -16,7 +16,7 @@ namespace taowin {
             error = 0, tag, attr, assign, value, text, close, close1, close2, eof, next,
         };
 
-        static char* p = nullptr;
+        static TCHAR* p = nullptr;
 
         static inline void _skip() {
             while(*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')
@@ -29,8 +29,8 @@ namespace taowin {
 
         static SC sc = SC::init;
         static TK tk = TK::error;
-        static const char* tt;  // token text
-        static char nc; // next char to be used, if not zero
+        static const TCHAR* tt;  // token text
+        static TCHAR nc; // next char to be used, if not zero
 
         static void next() {
             if(nc) {
@@ -96,7 +96,7 @@ namespace taowin {
                     tk = TK::assign;
                     return;
                 } else if(*p == '\'' || *p == '\"') {
-                    const char c = *p++;
+                    const TCHAR c = *p++;
                     tt = p;
                     while(*p && *p != c)
                         p++;
@@ -132,24 +132,24 @@ namespace taowin {
             return;
         }
 
-        inline bool is(const char* t, const char* a) {
-            return ::strcmp(t, a) == 0;
+        inline bool is(const TCHAR* t, const TCHAR* a) {
+            return ::_tcscmp(t, a) == 0;
         }
 
 
-        static void parse(char* xml, PARSER_OBJECT* parent) {
+        static void parse(TCHAR* xml, PARSER_OBJECT* parent) {
             p = xml;
             for(;;) {
                 next();
                 if(tk == TK::tag) {
-                    const char* tag_name = tt;
+                    const TCHAR* tag_name = tt;
                     PARSER_OBJECT* obj = new PARSER_OBJECT;
                     obj->tag = tag_name;
                     parent->append_child(obj);
                     next();
                     while(tk == TK::attr) {
                         //std::cout << " " << tt;
-                        const char* attr = tt;
+                        const TCHAR* attr = tt;
                         next();
                         if(tk == TK::assign) {
                             //std::cout << "=\"";
@@ -162,7 +162,7 @@ namespace taowin {
 
                             throw "value expected after assignment.";
                         }
-                        obj->set_attr(attr, "");
+                        obj->set_attr(attr, _T(""));
                     }
 
                     if(tk == TK::close) {
@@ -173,7 +173,7 @@ namespace taowin {
                                 continue;
 
                             else if(tk == TK::close2) {
-                                if(::strncmp(tag_name, tt, ::strlen(tt)) != 0)
+                                if(::_tcsncmp(tag_name, tt, ::_tcslen(tt)) != 0)
                                     throw "mismatched opening tag and closing tag.";
 
                                 tk = TK::next;
@@ -206,10 +206,10 @@ namespace taowin {
             }
         }
 
-        PARSER_OBJECT* parse(char* xml) {
+        PARSER_OBJECT* parse(TCHAR* xml) {
             PARSER_OBJECT po;
 
-            if(!xml) xml = "";
+            if(!xml) xml = _T("");
 
             try {
                 parse(xml, &po);
@@ -221,11 +221,11 @@ namespace taowin {
             return po.first_child();
         }
 
-        PARSER_OBJECT* parse(const char* xml) {
-            xml = xml ? xml : "";
-            int len = (int)::strlen(xml) + 1;
-            std::unique_ptr<char[]> x(new char[len]);
-            ::memcpy(x.get(), xml, len);
+        PARSER_OBJECT* parse(const TCHAR* xml) {
+            xml = xml ? xml : _T("");
+            int len = (int)::_tcslen(xml) + 1;
+            std::unique_ptr<TCHAR[]> x(new TCHAR[len]);
+            ::memcpy(x.get(), xml, len*sizeof(TCHAR));
             return parse(x.get());
         }
 

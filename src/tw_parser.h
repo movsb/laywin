@@ -11,11 +11,13 @@
 #include <map>
 #include <functional>
 
+#include "tw_util.h"
+
 namespace taowin{
     namespace parser {
         class PARSER_OBJECT {
         public:
-            void set_attr(const char* name, const char* value) {
+            void set_attr(const TCHAR* name, const TCHAR* value) {
                 _attrs[name] = value;
             }
 
@@ -24,7 +26,7 @@ namespace taowin{
             }
 
         public:
-            void dump_attr(std::function<void(const char* name, const char* value)> dumper) {
+            void dump_attr(std::function<void(const TCHAR* name, const TCHAR* value)> dumper) {
                 auto it = _attrs.cbegin();
                 while(it != _attrs.cend()) {
                     dumper(it->first.c_str(), it->second.c_str());
@@ -40,19 +42,19 @@ namespace taowin{
                 }
             }
 
-            std::string get_attr(const char* name, const char* def = "") {
+            string get_attr(const TCHAR* name, const TCHAR* def = _T("")) {
                 if(_attrs.count(name))
                     return _attrs[name];
 
-                if(!def) def = "";
+                if(!def) def = _T("");
                 return def;
             }
 
-            bool has_attr(const char* name) {
+            bool has_attr(const TCHAR* name) {
                 return _attrs.count(name) > 0;
             }
 
-            void remove_attr(const char* name) {
+            void remove_attr(const TCHAR* name) {
                 _attrs.erase(name);
             }
 
@@ -60,7 +62,7 @@ namespace taowin{
                 return (int)_attrs.size();
             }
 
-            std::map<std::string, std::string>& attrs() {
+            std::map<string, string>& attrs() {
                 return _attrs;
             }
 
@@ -75,14 +77,14 @@ namespace taowin{
             }
 
         public:
-            std::string tag;
+            string tag;
 
         protected:
-            std::map<std::string, std::string>  _attrs;
+            std::map<string, string>  _attrs;
             std::vector<PARSER_OBJECT*>         _children;
         };
 
-        PARSER_OBJECT* parse(char* xml);
-        PARSER_OBJECT* parse(const char* xml);
+        PARSER_OBJECT* parse(TCHAR* xml);
+        PARSER_OBJECT* parse(const TCHAR* xml);
     }
 }

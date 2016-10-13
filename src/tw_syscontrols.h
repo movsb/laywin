@@ -17,19 +17,19 @@ namespace taowin{
 	};
 
     struct syscontrol_metas {
-        DWORD       style;
-        DWORD       exstyle;
-        const char* caption;
-        const char* classname;
-        style_map*  known_styles;
-        style_map*  known_ex_styles;
+        DWORD           style;
+        DWORD           exstyle;
+        const TCHAR*    caption;
+        const TCHAR*     classname;
+        style_map*      known_styles;
+        style_map*      known_ex_styles;
         std::function<void()> after_created;
 
         syscontrol_metas() {
             style = WS_CHILD | WS_VISIBLE;
             exstyle = 0;
-            caption = "";
-            classname = "";
+            caption = _T("");
+            classname = _T("");
             known_styles = nullptr;
             known_ex_styles = nullptr;
             after_created = nullptr;
@@ -72,7 +72,7 @@ namespace taowin{
 	class check : public syscontrol
 	{
 	protected:
-        virtual void set_attr(const char* name, const char* value) override;
+        virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
 	};
 
@@ -92,19 +92,19 @@ namespace taowin{
 	class edit : public syscontrol
 	{
     public:
-        void set_text(const char* text) {
+        void set_text(const TCHAR* text) {
             ::SetWindowText(_hwnd, text);
         }
 
-        std::string get_text() {
-            char buf[1024];
-            char* p = &buf[0];
+        string get_text() {
+            TCHAR buf[1024];
+            TCHAR* p = &buf[0];
             int len = ::GetWindowTextLength(_hwnd)+1;
             if(len > _countof(buf))
-                p = new char[len];
-            p[::GetWindowText(_hwnd, p, len)] = '\0';
+                p = new TCHAR[len];
+            p[::GetWindowText(_hwnd, p, len)] = _T('\0');
             
-            std::string s(p);
+            string s(p);
             if(p != &buf[0])
                 delete[] p;
             return std::move(s);
@@ -121,18 +121,18 @@ namespace taowin{
         int get_item_count();
         int get_selected_count();
         int get_next_item(int start, unsigned int flags);
-        std::string get_item_text(int i, int isub);
-        void set_item_text(int i, int isub, const char* text);
+        string get_item_text(int i, int isub);
+        void set_item_text(int i, int isub, const TCHAR* text);
         int get_item_data(int i, int isub);
 		int insert_column(LPCTSTR name, int cx, int i);
 		int insert_item(LPCTSTR str, LPARAM param = 0, int i = INT_MAX);
-        inline int insert_item(const std::string& str, LPARAM param = 0, int i = INT_MAX) {
+        inline int insert_item(const string& str, LPARAM param = 0, int i = INT_MAX) {
             return insert_item(str.c_str(), param, i);
         }
 		bool delete_item(int i);
         bool delete_all_items();
-		int set_item(int i, int isub, const char* s);
-        inline int set_item(int i, int isub, const std::string& s) {
+		int set_item(int i, int isub, const TCHAR* s);
+        inline int set_item(int i, int isub, const string& s) {
             return set_item(i, isub, s.c_str());
         }
 		LPARAM get_param(int i, int isub);

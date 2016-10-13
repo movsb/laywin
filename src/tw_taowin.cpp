@@ -11,21 +11,21 @@ namespace taowin{
             control* ctl = nullptr;
             auto& tag = c->tag;
 
-            if(tag == "control")            ctl = new control;
-            else if(tag == "container")     ctl = new container;
+            if(tag == _T("control"))            ctl = new control;
+            else if(tag == _T("container"))     ctl = new container;
 
-            else if(tag == "horizontal")    ctl = new horizontal;
-            else if(tag == "vertical")      ctl = new vertical;
+            else if(tag == _T("horizontal"))    ctl = new horizontal;
+            else if(tag == _T("vertical"))      ctl = new vertical;
 
-            else if(tag == "button")        ctl = new button;
-            else if(tag == "option")        ctl = new option;
-            else if(tag == "check")         ctl = new check;
-            else if(tag == "label")         ctl = new label;
-            else if(tag == "group")         ctl = new group;
-            else if(tag == "edit")          ctl = new edit;
-            else if(tag == "listview")      ctl = new listview;
+            else if(tag == _T("button"))        ctl = new button;
+            else if(tag == _T("option"))        ctl = new option;
+            else if(tag == _T("check"))         ctl = new check;
+            else if(tag == _T("label"))         ctl = new label;
+            else if(tag == _T("group"))         ctl = new group;
+            else if(tag == _T("edit"))          ctl = new edit;
+            else if(tag == _T("listview"))      ctl = new listview;
 
-            else                            ctl = nullptr;
+            else                                ctl = nullptr;
 
             if(!ctl) {
                 assert(0);
@@ -105,10 +105,10 @@ namespace taowin{
             PARSER_OBJECT* p = parser::parse(get_skin_xml());
             if(!p) break;
 
-            if(p->tag == "window") {
+            if(p->tag == _T("window")) {
                 auto window = new window_container;
                 window->_hwnd = _hwnd;
-                p->dump_attr([&](const char* a, const char* v) {
+                p->dump_attr([&](const TCHAR* a, const TCHAR* v) {
                     window->set_attr(a, v);
                 });
 
@@ -124,16 +124,16 @@ namespace taowin{
                     center();
 
                 p->dump_children([&](PARSER_OBJECT* c) {
-                    if(c->tag == "res") {
+                    if(c->tag == _T("res")) {
                         c->dump_children([&](PARSER_OBJECT* c) {
-                            if(c->tag == "font") {
-                                std::string name = c->get_attr("name");
-                                std::string face = c->get_attr("face");
-                                int size = std::stoi(c->get_attr("size", "12"));
+                            if(c->tag == _T("font")) {
+                                string name = c->get_attr(_T("name"));
+                                string face = c->get_attr(_T("face"));
+                                int size = std::stoi(c->get_attr(_T("size"), _T("12")));
                                 _mgr.add_font(name.c_str(), face.c_str(), size);
                             }
                         });
-                    } else if(c->tag == "root") {
+                    } else if(c->tag == _T("root")) {
                         if(_root) delete _root; // delete fake
                         _root = new root_control;
                         _root->hwnd(_hwnd);

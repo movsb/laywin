@@ -71,7 +71,7 @@ namespace taowin{
 
 		virtual csize estimate_size(const csize& available);
 
-        virtual void set_attr(const char* name, const char* value);
+        virtual void set_attr(const TCHAR* name, const TCHAR* value);
 
 		virtual void need_update(){
             pos(_pos);
@@ -189,7 +189,7 @@ namespace taowin{
 
 	protected:
 		void resmgr_(resmgr* mgr);
-		virtual void set_attr(const char* name, const char* value) override;
+		virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
 
     private:
 		csize _init_size;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <functional>
 
 #include <assert.h>
@@ -7,6 +8,13 @@
 #include "tw_util.h"
 
 namespace taowin{
+    
+#ifdef _UNICODE
+    typedef std::wstring string;
+#else
+    typedef std::string string;
+#endif
+
 	class IMessageFilter{
 	public:
         virtual HWND filter_hwnd() = 0;
@@ -119,8 +127,8 @@ namespace taowin{
         };
 
         struct WindowMeta {
-            const char*     caption;
-            const char*     classname;
+            const TCHAR*    caption;
+            const TCHAR*    classname;
             DWORD           style;
             DWORD           exstyle;
             DWORD           flags;
@@ -144,10 +152,11 @@ namespace taowin{
 		void show(bool show = true, bool focus = true);
 		void center();
 
-        int msgbox(const char* text, int type = (int)MB_OK, const char* title = "") {
+        int msgbox(const TCHAR* text, int type = (int)MB_OK, const TCHAR* title = _T("")) {
             return ::MessageBox(_hwnd, text, title, (UINT)type);
         }
-        int msgbox(const std::string& text, int type = (int)MB_OK, const std::string& title = "") {
+
+        int msgbox(const string& text, int type = (int)MB_OK, const string& title = _T("")) {
             return msgbox(text.c_str(), type, title.c_str());
         }
 

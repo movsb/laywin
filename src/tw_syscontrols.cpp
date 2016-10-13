@@ -45,15 +45,15 @@ namespace taowin{
 
         decltype(attrs.begin()) it;
 
-        it = attrs.find("font");
+        it = attrs.find(_T("font"));
         HFONT font = it == attrs.end()
-            ? mgr.get_font("default")
+            ? mgr.get_font(_T("default"))
             : mgr.get_font(it->second.c_str());
         ::SendMessage(_hwnd, WM_SETFONT, WPARAM(font), TRUE);
         if(it != attrs.end())
             attrs.erase(it);
 
-        it = attrs.find("text");
+        it = attrs.find(_T("text"));
         if(it != attrs.end()) {
             attrs.erase(it);
         }
@@ -94,7 +94,7 @@ namespace taowin{
         
         decltype(attrs.begin()) it;
 
-        if((it = attrs.find("style")) != attrs.end()) {
+        if((it = attrs.find(_T("style"))) != attrs.end()) {
             std::vector<string> styles;
             split_string(&styles, it->second.c_str());
 
@@ -107,7 +107,7 @@ namespace taowin{
             attrs.erase(it);
         }
 
-        if((it = attrs.find("exstyle")) != attrs.end()) {
+        if((it = attrs.find(_T("exstyle"))) != attrs.end()) {
             std::vector<string> exstyles;
             split_string(&exstyles, it->second.c_str());
 
@@ -120,7 +120,7 @@ namespace taowin{
             attrs.erase(it);
         }
 
-        if((it = attrs.find("text")) != attrs.end()) {
+        if((it = attrs.find(_T("text"))) != attrs.end()) {
             auto& text = it->second;
             metas.caption = text.c_str();   // TODO ALERT text is not local!
             // DO not erase it.
@@ -158,7 +158,7 @@ namespace taowin{
         metas.style |= BS_AUTOCHECKBOX;
     }
 
-	void check::set_attr(const char* name, const char* value)
+	void check::set_attr(const TCHAR* name, const TCHAR* value)
 	{
         if(_tcscmp(name, _T("checked")) == 0) {
             bool checked = _tcscmp(value, _T("true")) == 0;
@@ -206,8 +206,8 @@ namespace taowin{
     //////////////////////////////////////////////////////////////////////////
     void listview::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
         static style_map __known_styles[] = {
-            {LVS_SINGLESEL, "singlesel"},
-            {LVS_OWNERDATA, "ownerdata"},
+            {LVS_SINGLESEL, _T("singlesel")},
+            {LVS_OWNERDATA, _T("ownerdata")},
         };
 
         metas.classname = WC_LISTVIEW;
@@ -245,13 +245,13 @@ namespace taowin{
 
 	}
 
-	int listview::set_item(int i, int isub, const char* s)
+	int listview::set_item(int i, int isub, const TCHAR* s)
 	{
 		LVITEM lvi = {0};
 		lvi.mask = LVIF_TEXT;
 		lvi.iItem = i;
 		lvi.iSubItem = isub;
-		lvi.pszText = (LPSTR)s; // TODO
+		lvi.pszText = (LPTSTR)s; // TODO
 		return ListView_SetItem(_hwnd, &lvi);
 	}
 
@@ -294,15 +294,15 @@ namespace taowin{
         return ListView_GetItemCount(_hwnd);
     }
 
-    std::string listview::get_item_text(int i, int isub) {
-        char buf[1024 * 4];
+    string listview::get_item_text(int i, int isub) {
+        TCHAR buf[1024 * 4];
         LVITEM lvi;
         lvi.iItem = i;
         lvi.iSubItem = isub;
         lvi.pszText = &buf[0];
         lvi.cchTextMax = _countof(buf);
         int len = ::SendMessage(_hwnd, LVM_GETITEMTEXT, WPARAM(i), LPARAM(&lvi));
-        return std::string(buf, len);
+        return string(buf, len);
     }
 
     int listview::get_item_data(int i, int isub) {
@@ -315,8 +315,8 @@ namespace taowin{
     }
 
     // I used macro, so it return nothing(msdn says so).
-    void listview::set_item_text(int i, int isub, const char* text) {
-        ListView_SetItemText(_hwnd, i, isub, (char*)text);  // TODO confirm cannot use const.
+    void listview::set_item_text(int i, int isub, const TCHAR* text) {
+        ListView_SetItemText(_hwnd, i, isub, (TCHAR*)text);  // TODO confirm cannot use const.
     }
 
     bool listview::delete_all_items() {

@@ -14,7 +14,7 @@ namespace taowin{
         // TODO remove all fonts
 	}
 
-	void resmgr::add_font(const char* name, const char* face, int size)
+	void resmgr::add_font(const TCHAR* name, const TCHAR* face, int size)
 	{
 		LOGFONT lf = { 0 };
 		::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
