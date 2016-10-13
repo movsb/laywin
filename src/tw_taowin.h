@@ -3,6 +3,9 @@
 
 #include <functional>
 
+#include <windows.h>
+#include <CommCtrl.h>
+
 #include "tw_util.h"
 #include "tw_control.h"
 #include "tw_syscontrols.h"
