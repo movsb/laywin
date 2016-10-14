@@ -24,6 +24,7 @@ namespace taowin{
             else if(tag == _T("group"))         ctl = new group;
             else if(tag == _T("edit"))          ctl = new edit;
             else if(tag == _T("listview"))      ctl = new listview;
+            else if(tag == _T("combobox"))      ctl = new combobox;
 
             else                                ctl = nullptr;
 

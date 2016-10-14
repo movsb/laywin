@@ -53,6 +53,11 @@ namespace taowin{
 
 	class button : public syscontrol
 	{
+    public:
+        void set_text(const TCHAR* text) {
+            ::SetWindowText(_hwnd, text);
+        }
+
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
 	};
@@ -92,6 +97,20 @@ namespace taowin{
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
 	};
+
+    class combobox : public syscontrol
+    {
+    public:
+        int add_string(const TCHAR* s);
+        void set_item_data(int i, void* data);
+        void* get_item_data(int i);
+        int get_cur_sel();
+        void set_cur_sel(int i);
+        int get_count();
+        
+    protected:
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    };
 
 	class edit : public syscontrol
 	{

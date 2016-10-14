@@ -192,6 +192,44 @@ namespace taowin{
         metas.classname = WC_BUTTON;
     }
 
+    int combobox::add_string(const TCHAR * s)
+    {
+        return ComboBox_AddString(_hwnd, s);
+    }
+
+    void combobox::set_item_data(int i, void * data)
+    {
+        ComboBox_SetItemData(_hwnd, i, data);
+    }
+
+    void * combobox::get_item_data(int i)
+    {
+        return (void*)ComboBox_GetItemData(_hwnd, i);
+    }
+
+    int combobox::get_cur_sel()
+    {
+        return ComboBox_GetCurSel(_hwnd);
+    }
+
+    void combobox::set_cur_sel(int i)
+    {
+        return (void)ComboBox_SetCurSel(_hwnd, i);
+    }
+
+    int combobox::get_count()
+    {
+        return ComboBox_GetCount(_hwnd);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    void combobox::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+    {
+        metas.style |= CBS_DROPDOWNLIST;
+        metas.classname = WC_COMBOBOX;
+    }
+
+
     //////////////////////////////////////////////////////////////////////////
     void edit::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
         static style_map __known_styles[] =

@@ -5,6 +5,7 @@
 
 #include <windows.h>
 #include <CommCtrl.h>
+#include <windowsx.h>
 
 #include "tw_util.h"
 #include "tw_control.h"
