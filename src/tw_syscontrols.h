@@ -71,8 +71,12 @@ namespace taowin{
 
 	class check : public syscontrol
 	{
-	protected:
+    public:
+        bool get_chekc();
+
         virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
+
+	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
 	};
 
@@ -138,6 +142,7 @@ namespace taowin{
 		LPARAM get_param(int i, int isub);
 		void format_columns(const string& fmt);
         int get_column_count();
+        void set_column_width(int i, int cx);
 		int size() const;
 
 	protected:

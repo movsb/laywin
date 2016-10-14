@@ -156,7 +156,7 @@ namespace taowin{
     void register_window_classes() {
         WNDCLASSEX wc = {0};
         wc.cbSize = sizeof(wc);
-        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+        wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
         wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
         wc.hIcon = wc.hIconSm = (HICON)::LoadImage(::GetModuleHandle(nullptr), (LPCTSTR)101, IMAGE_ICON, 32, 32, 0);
         wc.hInstance = ::GetModuleHandle(nullptr);

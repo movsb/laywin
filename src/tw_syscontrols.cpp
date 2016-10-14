@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <windows.h>
 #include <CommCtrl.h>
+#include <WindowsX.h>
 #include <vector>
 
 #include "tw_control.h"
@@ -62,7 +63,8 @@ namespace taowin{
             set_attr(it->first.c_str(), it->second.c_str());
     }
 
-    void syscontrol::create_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+    void syscontrol::create_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+    {
         static style_map __known_styles[] =
         {
             {WS_BORDER, _T("border")},
@@ -158,7 +160,12 @@ namespace taowin{
         metas.style |= BS_AUTOCHECKBOX;
     }
 
-	void check::set_attr(const TCHAR* name, const TCHAR* value)
+    bool check::get_chekc()
+    {
+        return !!Button_GetCheck(_hwnd);
+    }
+
+    void check::set_attr(const TCHAR* name, const TCHAR* value)
 	{
         if(_tcscmp(name, _T("checked")) == 0) {
             bool checked = _tcscmp(value, _T("true")) == 0;
@@ -282,7 +289,13 @@ namespace taowin{
         return Header_GetItemCount(header);
     }
 
-    int listview::get_selected_count() {
+    void listview::set_column_width(int i, int cx)
+    {
+        return (void)ListView_SetColumnWidth(_hwnd, i, cx);
+    }
+
+    int listview::get_selected_count()
+    {
         return ListView_GetSelectedCount(_hwnd);
     }
 
