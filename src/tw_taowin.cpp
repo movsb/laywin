@@ -96,7 +96,7 @@ namespace taowin{
 		{
 			NMHDR* hdr = reinterpret_cast<NMHDR*>(lparam);
             control* pc = (control*)::GetWindowLongPtr(hdr->hwndFrom, GWL_USERDATA);
-			if(!hdr || !pc) break;
+			if(!hdr) break;
 			return on_notify(hdr->hwndFrom, pc, hdr->code, hdr);
 		}
         case WM_CREATE:

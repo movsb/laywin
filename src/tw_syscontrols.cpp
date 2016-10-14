@@ -294,6 +294,11 @@ namespace taowin{
         return (void)ListView_SetColumnWidth(_hwnd, i, cx);
     }
 
+    HWND listview::get_header()
+    {
+        return ListView_GetHeader(_hwnd);
+    }
+
     int listview::get_selected_count()
     {
         return ListView_GetSelectedCount(_hwnd);

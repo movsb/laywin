@@ -143,6 +143,7 @@ namespace taowin{
 		void format_columns(const string& fmt);
         int get_column_count();
         void set_column_width(int i, int cx);
+        HWND get_header();
 		int size() const;
 
 	protected:
