@@ -149,8 +149,6 @@ namespace taowin{
 
             break;
         }
-        case WM_CTLCOLORSTATIC:
-            return (LRESULT)::GetStockObject(WHITE_BRUSH);
 		}
 
 		return handle_message(umsg, wparam, lparam);
