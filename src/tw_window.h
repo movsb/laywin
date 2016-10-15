@@ -171,13 +171,25 @@ namespace taowin{
             return _hwnd;
         }
 
+        virtual bool filter_special_key(int vk) {
+            if (vk == VK_ESCAPE) {
+                close(-1);
+                return true;
+            }
+
+            return false;
+        }
+
 		virtual bool filter_message(MSG* msg) override {
 			if(msg->message == WM_KEYDOWN){
 				switch(msg->wParam)
 				{
                 case VK_ESCAPE:
-                    close();
-                    return true;
+                case VK_TAB:
+                case VK_RETURN:
+                    if (filter_special_key(msg->wParam))
+                        return true;
+                    // pass through
                 default:
                     // I don't want IsDialogMessage to process VK_ESCAPE, because it produces a WM_COMMAND
                     // menu message with id == 2. It is undocumented.

@@ -135,6 +135,7 @@ namespace taowin{
         static style_map __known_styles[] =
         {
             {BS_MULTILINE, _T("multiline")},
+            {BS_DEFPUSHBUTTON, _T("default")},
             {0, nullptr}
         };
 
