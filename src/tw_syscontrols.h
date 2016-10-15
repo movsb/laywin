@@ -132,6 +132,9 @@ namespace taowin{
                 delete[] p;
             return std::move(s);
         }
+
+        void set_sel(int start, int end);
+
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
 	};

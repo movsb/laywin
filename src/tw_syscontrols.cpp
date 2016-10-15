@@ -230,6 +230,11 @@ namespace taowin{
     }
 
 
+    void edit::set_sel(int start, int end)
+    {
+        Edit_SetSel(_hwnd, start, end);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     void edit::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
         static style_map __known_styles[] =
