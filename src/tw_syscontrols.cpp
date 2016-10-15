@@ -317,6 +317,24 @@ namespace taowin{
 		return ListView_GetItemCount(_hwnd);
 	}
 
+    bool listview::get_selected_items(std::vector<int>* items)
+    {
+        int i = -1;
+        while ((i = get_next_item(i, LVNI_SELECTED)) != -1)
+            items->push_back(i);
+        return !items->empty();
+    }
+
+    void listview::set_item_state(int i, int mask, int state)
+    {
+        ListView_SetItemState(_hwnd, i, state, mask);
+    }
+
+    void listview::ensure_visible(int i)
+    {
+        ListView_EnsureVisible(_hwnd, i, FALSE);
+    }
+
 	bool listview::delete_item(int i)
 	{
 		return !!ListView_DeleteItem(_hwnd, i);

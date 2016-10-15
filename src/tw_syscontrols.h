@@ -164,6 +164,9 @@ namespace taowin{
         void set_column_width(int i, int cx);
         HWND get_header();
 		int size() const;
+        bool get_selected_items(std::vector<int>* items);
+        void set_item_state(int i, int mask, int state);
+        void ensure_visible(int i);
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
