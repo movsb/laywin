@@ -183,4 +183,6 @@ namespace taowin{
 			}
 		}
 	}
+
+    string last_error();
 }
