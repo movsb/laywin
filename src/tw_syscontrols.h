@@ -171,6 +171,10 @@ namespace taowin{
         void set_item_state(int i, int mask, int state);
         void ensure_visible(int i);
         void show_header(int state); // 1:show, 0, hide, -1: toggle
+        int get_top_index();
+        bool get_item_position(int i, POINT* ppt);
+        void scroll(int dx, int dy);
+        int find_item(int start, const LVFINDINFO* lvfi);
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;

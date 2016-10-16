@@ -357,6 +357,26 @@ namespace taowin{
         ::SetWindowLongPtr(_hwnd, GWL_STYLE, style);
     }
 
+    int listview::get_top_index()
+    {
+        return ListView_GetTopIndex(_hwnd);
+    }
+
+    bool listview::get_item_position(int i, POINT * ppt)
+    {
+        return !!ListView_GetItemPosition(_hwnd, i, ppt);
+    }
+
+    void listview::scroll(int dx, int dy)
+    {
+        ListView_Scroll(_hwnd, dx, dy);
+    }
+
+    int listview::find_item(int start, const LVFINDINFO * lvfi)
+    {
+        return ListView_FindItem(_hwnd, start, lvfi);
+    }
+
 	bool listview::delete_item(int i)
 	{
 		return !!ListView_DeleteItem(_hwnd, i);
