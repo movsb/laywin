@@ -170,6 +170,7 @@ namespace taowin{
         bool get_selected_items(std::vector<int>* items);
         void set_item_state(int i, int mask, int state);
         void ensure_visible(int i);
+        void show_header(int state); // 1:show, 0, hide, -1: toggle
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;

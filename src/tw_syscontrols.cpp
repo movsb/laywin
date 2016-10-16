@@ -341,6 +341,22 @@ namespace taowin{
         ListView_EnsureVisible(_hwnd, i, FALSE);
     }
 
+    void listview::show_header(int state)
+    {
+        auto style = ::GetWindowLongPtr(_hwnd, GWL_STYLE);
+        bool hiding = !!(style & LVS_NOCOLUMNHEADER);
+
+        if (state == -1) state = hiding ? 1 : 0;
+
+        switch(state)
+        {
+        case 1:  style &= ~LVS_NOCOLUMNHEADER; break;
+        case 0:  style |= LVS_NOCOLUMNHEADER; break;
+        }
+
+        ::SetWindowLongPtr(_hwnd, GWL_STYLE, style);
+    }
+
 	bool listview::delete_item(int i)
 	{
 		return !!ListView_DeleteItem(_hwnd, i);

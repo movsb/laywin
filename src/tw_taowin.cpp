@@ -34,6 +34,7 @@ namespace taowin{
             }
 
             ctl->create(p->hwnd(), c->attrs(), *mgr);
+            ctl->parent(p);
 
             // set this
             if(ctl->hwnd())
