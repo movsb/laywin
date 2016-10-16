@@ -107,6 +107,7 @@ namespace taowin{
         int get_cur_sel();
         void set_cur_sel(int i);
         int get_count();
+        void reset_content();
         
     protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;

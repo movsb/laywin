@@ -223,6 +223,11 @@ namespace taowin{
         return ComboBox_GetCount(_hwnd);
     }
 
+    void combobox::reset_content()
+    {
+        ComboBox_ResetContent(_hwnd);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     void combobox::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
     {
