@@ -198,6 +198,16 @@ namespace taowin{
         return ComboBox_AddString(_hwnd, s);
     }
 
+    int combobox::add_string(const TCHAR * s, void * data)
+    {
+        int i = add_string(s);
+        if (i != -1) {
+            set_item_data(i, data);
+        }
+
+        return i;
+    }
+
     void combobox::set_item_data(int i, void * data)
     {
         ComboBox_SetItemData(_hwnd, i, data);
@@ -206,6 +216,18 @@ namespace taowin{
     void * combobox::get_item_data(int i)
     {
         return (void*)ComboBox_GetItemData(_hwnd, i);
+    }
+
+    void * combobox::get_cur_data()
+    {
+        void* d = nullptr;
+        int i = get_cur_sel();
+
+        if (i != -1) {
+            d = get_item_data(i);
+        }
+
+        return d;
     }
 
     int combobox::get_cur_sel()

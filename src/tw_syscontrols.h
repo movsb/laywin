@@ -102,8 +102,10 @@ namespace taowin{
     {
     public:
         int add_string(const TCHAR* s);
+        int add_string(const TCHAR* s, void* data);
         void set_item_data(int i, void* data);
         void* get_item_data(int i);
+        void* get_cur_data();
         int get_cur_sel();
         void set_cur_sel(int i);
         int get_count();
