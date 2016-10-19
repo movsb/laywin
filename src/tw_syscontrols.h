@@ -178,6 +178,8 @@ namespace taowin{
         bool get_item_position(int i, POINT* ppt);
         void scroll(int dx, int dy);
         int find_item(int start, const LVFINDINFO* lvfi);
+		int get_column_order(int n, int* a);
+        void set_column_order(int n, int* a);
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
