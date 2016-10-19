@@ -54,7 +54,6 @@ namespace taowin{
 		RECT rcArea = {0};
 		RECT rcCenter = {0};
 		HWND hWnd = *this;
-		HWND hWndParent = ::GetParent(_hwnd);
 		HWND hWndCenter = ::GetWindow(_hwnd, GW_OWNER);
 		if(hWndCenter != NULL)
 			hWnd = hWndCenter;
@@ -125,7 +124,7 @@ namespace taowin{
 		}
         else if(umsg == WM_NCDESTROY) {
             ::SetWindowLongPtr(pThis->_hwnd, 4, 0);
-            LRESULT lRes = ::DefWindowProc(hwnd, umsg, wparam, lparam);
+            ::DefWindowProc(hwnd, umsg, wparam, lparam);
             if(pThis) {
                 __window_manager.remove_message_filter(pThis);
                 pThis->on_final_message();

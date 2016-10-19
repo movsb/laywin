@@ -105,7 +105,7 @@ namespace taowin{
                 mapped += __map_style(&metas.style, metas.known_styles, styles);
             mapped += __map_style(&metas.style, &__known_styles[0], styles);
 
-            assert(mapped == styles.size());
+            assert(mapped == (int)styles.size());
             attrs.erase(it);
         }
 
@@ -118,7 +118,7 @@ namespace taowin{
                 mapped += __map_style(&metas.exstyle, metas.known_ex_styles, exstyles);
             mapped += __map_style(&metas.exstyle, &__known_ex_styles[0], exstyles);
 
-            assert(mapped == exstyles.size());
+            assert(mapped == (int)exstyles.size());
             attrs.erase(it);
         }
 
