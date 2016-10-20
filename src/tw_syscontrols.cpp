@@ -29,6 +29,8 @@ namespace taowin{
     }
 
 	syscontrol::syscontrol()
+        : _old_wnd_proc(0)
+        , _owner(0)
 	{
 
 	}
@@ -40,6 +42,8 @@ namespace taowin{
             0, 0, 0, 0, parent, nullptr, nullptr, this);
         assert(_hwnd);
         if(!_hwnd) return;
+
+        _owner = mgr._owner;
 
         if(metas.after_created)
             metas.after_created();
@@ -292,6 +296,7 @@ namespace taowin{
 		static style_map __known_ex_styles[] = {
 			{LVS_EX_DOUBLEBUFFER, _T("doublebuffer")},
 			{LVS_EX_HEADERDRAGDROP, _T("headerdragdrop")},
+            {LVS_EX_INFOTIP, _T("infotip")},
             {0, nullptr}
 		};
 

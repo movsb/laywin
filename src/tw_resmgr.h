@@ -6,9 +6,17 @@
 #include "tw_util.h"
 
 namespace taowin{
+    class window_creator;
+    class control;
+    class syscontrol;
+
     class resmgr {
     public:
         typedef std::map<string, HFONT> font_maps_t;
+
+        friend class window_creator;
+        friend class control;
+        friend class syscontrol;
 
 	public:
 		resmgr();
@@ -32,5 +40,6 @@ namespace taowin{
 	private:
 		HWND        _hwnd;
         font_maps_t _fonts;
+        window_creator* _owner;
 	};
 }

@@ -36,8 +36,12 @@ namespace taowin{
         }
     };
 
+    class window_creator;
+
 	class syscontrol : public control
 	{
+        friend class window_creator;
+
 	public:
 		syscontrol();
 
@@ -49,6 +53,10 @@ namespace taowin{
 
     private:
         void create_metas(syscontrol_metas& metas, std::map<string, string>& attrs);
+
+    private:
+        window_creator* _owner;
+        WNDPROC _old_wnd_proc;
 	};
 
 	class button : public syscontrol

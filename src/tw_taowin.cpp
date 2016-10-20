@@ -59,7 +59,13 @@ namespace taowin{
         delete _root;
     }
 
-	LPCTSTR window_creator::get_skin_xml() const
+    void window_creator::subclass_control(syscontrol* ctl)
+    {
+        assert(::IsWindow(ctl->hwnd()));
+        ctl->_old_wnd_proc = (WNDPROC)::SetWindowLongPtr(ctl->hwnd(), GWL_WNDPROC, (LONG)__control_procedure);
+    }
+
+    LPCTSTR window_creator::get_skin_xml() const
 	{
 		return _T("");
 	}
@@ -114,6 +120,8 @@ namespace taowin{
                     window->set_attr(a, v);
                 });
 
+                _mgr._owner = this;
+
                 WindowMeta metas;
                 get_metas(&metas);
 
@@ -155,6 +163,17 @@ namespace taowin{
 
 		return handle_message(umsg, wparam, lparam);
 	}
+
+    LRESULT window_creator::control_message(syscontrol* ctl, UINT umsg, WPARAM wparam, LPARAM lparam)
+    {
+        return ::CallWindowProc(ctl->_old_wnd_proc, ctl->_hwnd, umsg, wparam, lparam);
+    }
+
+    LRESULT window_creator::__control_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+    {
+        syscontrol* ctl = (syscontrol*)::GetWindowLongPtr(hwnd, GWL_USERDATA);
+        return ctl->_owner->control_message(ctl, umsg, wparam, lparam);
+    }
 
     int loop_message() {
         return __window_manager.loop_message();
