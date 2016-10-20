@@ -96,6 +96,12 @@ namespace taowin{
     
 	class label : public syscontrol
 	{
+    public:
+        void set_text(const TCHAR* s)
+        {
+            ::SetWindowText(_hwnd, s);
+        }
+
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
 	};
