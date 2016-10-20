@@ -31,6 +31,11 @@ namespace taowin{
             MSG msg;
 
             for (;;) {
+				// 如果有异步回调消息，就先处理
+				if(!_async_calls.empty()) {
+					handle_async_call();
+				}
+
                 if (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
                     if (msg.message == WM_QUIT)
                         break;
@@ -92,6 +97,10 @@ namespace taowin{
         }
 
         void add_async_call(std::function<void()> fn) {
+            _async_calls.push_back(fn);
+        }
+
+        void add_idle_handler(std::function<void()> fn) {
             _idle_handlers.push_back(fn);
         }
 
@@ -105,9 +114,19 @@ namespace taowin{
             }
         }
 
+        void handle_async_call() {
+            if (!_async_calls.empty()) {
+                auto calls = std::move(_async_calls);
+
+                for (auto& call : calls)
+                    call();
+            }
+        }
+
 	private:
 		array<IMessageFilter*>              _message_filters;
         std::vector<std::function<void()>>  _idle_handlers;
+		std::vector<std::function<void()>>  _async_calls;
 	};
 
     extern window_manager __window_manager;
