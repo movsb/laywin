@@ -306,7 +306,7 @@ namespace taowin{
 		metas.known_ex_styles = &__known_ex_styles[0];
         metas.after_created = [&]() {
             DWORD dw = ListView_GetExtendedListViewStyle(_hwnd);
-            ListView_SetExtendedListViewStyle(_hwnd, dw | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT|LVS_EX_HEADERDRAGDROP);
+            ListView_SetExtendedListViewStyle(_hwnd, dw | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT|LVS_EX_HEADERDRAGDROP|LVS_EX_INFOTIP);
         };
     }
 
