@@ -77,7 +77,6 @@ namespace taowin{
             {WS_HSCROLL, _T("hscroll")},
             {WS_TABSTOP, _T("tabstop")},
             {WS_VSCROLL, _T("vscroll")},
-            {LVS_SHOWSELALWAYS, _T("showselalways")},
             {0, nullptr}
         };
 
@@ -286,14 +285,23 @@ namespace taowin{
         static style_map __known_styles[] = {
             {LVS_SINGLESEL, _T("singlesel")},
             {LVS_OWNERDATA, _T("ownerdata")},
+            {LVS_SHOWSELALWAYS, _T("showselalways")},
+            {0, nullptr}
         };
+
+		static style_map __known_ex_styles[] = {
+			{LVS_EX_DOUBLEBUFFER, _T("doublebuffer")},
+			{LVS_EX_HEADERDRAGDROP, _T("headerdragdrop")},
+            {0, nullptr}
+		};
 
         metas.classname = WC_LISTVIEW;
         metas.style |= LVS_REPORT;
         metas.known_styles = &__known_styles[0];
+		metas.known_ex_styles = &__known_ex_styles[0];
         metas.after_created = [&]() {
             DWORD dw = ListView_GetExtendedListViewStyle(_hwnd);
-            ListView_SetExtendedListViewStyle(_hwnd, dw | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+            ListView_SetExtendedListViewStyle(_hwnd, dw | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT|LVS_EX_HEADERDRAGDROP);
         };
     }
 
@@ -402,6 +410,16 @@ namespace taowin{
     int listview::find_item(int start, const LVFINDINFO * lvfi)
     {
         return ListView_FindItem(_hwnd, start, lvfi);
+    }
+
+	int listview::get_column_order(int n, int * a)
+	{
+		return ListView_GetColumnOrderArray(_hwnd, n, a);
+	}
+
+    void listview::set_column_order(int n, int * a)
+    {
+        ListView_SetColumnOrderArray(_hwnd, n, a);
     }
 
 	bool listview::delete_item(int i)
