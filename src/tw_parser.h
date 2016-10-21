@@ -84,7 +84,7 @@ namespace taowin{
             std::vector<PARSER_OBJECT*>         _children;
         };
 
-        PARSER_OBJECT* parse(TCHAR* xml);
-        PARSER_OBJECT* parse(const TCHAR* xml);
+        PARSER_OBJECT* parse(TCHAR* xml, const TCHAR** err);
+        PARSER_OBJECT* parse(const TCHAR* xml, const TCHAR** err);
     }
 }

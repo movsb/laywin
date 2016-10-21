@@ -19,7 +19,7 @@ namespace taowin {
         static TCHAR* p = nullptr;
 
         static inline void _skip() {
-            while(*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')
+            while(*p == _T(' ') || *p == _T('\t') || *p == _T('\r') || *p == _T('\n'))
                 p++;
         }
 
@@ -39,15 +39,15 @@ namespace taowin {
             }
             if(sc == SC::init) {
                 _skip();
-                if(*p == '<') {
+                if(*p == _T('<')) {
                     p++;
-                    if(*p == '/') {
+                    if(*p == _T('/')) {
                         p++;
                         tt = p;
                         while(::isalnum(*p))
                             p++;
-                        if(*p == '>') {
-                            *p = '\0';
+                        if(*p == _T('>')) {
+                            *p = _T('\0');
                             p++;
                             sc = SC::init;
                             tk = TK::close2;
@@ -57,9 +57,9 @@ namespace taowin {
                         tt = p;
                         while(::isalnum(*p))
                             p++;
-                        if(*p != '\0') {
+                        if(*p != _T('\0')) {
                             nc = *p;
-                            *p = '\0';
+                            *p = _T('\0');
                         }
                         sc = SC::tag;
                         tk = TK::tag;
@@ -67,11 +67,11 @@ namespace taowin {
                     }
                 } else {
                     tt = p;
-                    while(*p && *p != '<' && *p != '>')
+                    while(*p && *p != _T('<') && *p != _T('>'))
                         p++;
-                    if(*p != '\0') {
+                    if(*p != _T('\0')) {
                         nc = *p;
-                        *p = '\0';
+                        *p = _T('\0');
                     }
                     tk = *tt ? TK::text
                         : *p ? TK::error
@@ -84,38 +84,38 @@ namespace taowin {
                     tt = p;
                     while(::isalnum(*p))
                         p++;
-                    if(*p != '\0') {
+                    if(*p != _T('\0')) {
                         nc = *p;
-                        *p = '\0';
+                        *p = _T('\0');
                     }
                     tk = TK::attr;
                     return;
-                } else if(*p == '=') {
-                    *p = '\0';
+                } else if(*p == _T('=')) {
+                    *p = _T('\0');
                     p++;
                     tk = TK::assign;
                     return;
-                } else if(*p == '\'' || *p == '\"') {
+                } else if(*p == _T('\'') || *p == _T('\"')) {
                     const TCHAR c = *p++;
                     tt = p;
                     while(*p && *p != c)
                         p++;
                     if(*p == c) {
-                        *p = '\0';
+                        *p = _T('\0');
                         p++;
                         tk = TK::value;
                         return;
                     }
-                } else if(*p == '/') {
-                    *p = '\0';
+                } else if(*p == _T('/')) {
+                    *p = _T('\0');
                     p++;
-                    if(*p == '>') {
+                    if(*p == _T('>')) {
                         p++;
                         sc = SC::init;
                         tk = TK::close1;
                         return;
                     }
-                } else if(*p == '>') {
+                } else if(*p == _T('>')) {
                     p++;
                     sc = SC::init;
                     tk = TK::close;
@@ -160,7 +160,7 @@ namespace taowin {
                                 continue;
                             }
 
-                            throw "value expected after assignment.";
+                            throw _T("value expected after assignment.");
                         }
                         obj->set_attr(attr, _T(""));
                     }
@@ -174,7 +174,7 @@ namespace taowin {
 
                             else if(tk == TK::close2) {
                                 if(::_tcsncmp(tag_name, tt, ::_tcslen(tt)) != 0)
-                                    throw "mismatched opening tag and closing tag.";
+                                    throw _T("mismatched opening tag and closing tag.");
 
                                 tk = TK::next;
                                 //std::cout << tt;
@@ -182,8 +182,8 @@ namespace taowin {
                                 return;
                             }
 
-                            if(tk == TK::eof) throw "premature eof, expecting closing tag.";
-                            else throw "expecting closing tag.";
+                            if(tk == TK::eof) throw _T("premature eof, expecting closing tag.");
+                            else throw _T("expecting closing tag.");
                         }
                     } else if(tk == TK::close1) {
                         tk = TK::next;
@@ -191,7 +191,7 @@ namespace taowin {
                         return;
                     }
 
-                    throw "unexpected following token for open tag.";
+                    throw _T("unexpected following token for open tag.");
                 } else if(tk == TK::text) {
                     tk = TK::next;
                     //std::cout << "<!CDATA[" << tt << "]]\n";
@@ -202,11 +202,11 @@ namespace taowin {
                     return;
                 }
 
-                throw "unexpected token while calling parse.";
+                throw _T("unexpected token while calling parse.");
             }
         }
 
-        PARSER_OBJECT* parse(TCHAR* xml) {
+        PARSER_OBJECT* parse(TCHAR* xml, const TCHAR** err) {
             PARSER_OBJECT po;
 
             if(!xml) xml = _T("");
@@ -214,19 +214,20 @@ namespace taowin {
             try {
                 parse(xml, &po);
             }
-            catch(const char*) {
-
+            catch(const TCHAR* e) {
+                if(err) *err = e;
+                return nullptr;
             }
 
             return po.first_child();
         }
 
-        PARSER_OBJECT* parse(const TCHAR* xml) {
+        PARSER_OBJECT* parse(const TCHAR* xml, const TCHAR** err) {
             xml = xml ? xml : _T("");
             int len = (int)::_tcslen(xml) + 1;
             std::unique_ptr<TCHAR[]> x(new TCHAR[len]);
             ::memcpy(x.get(), xml, len*sizeof(TCHAR));
-            return parse(x.get());
+            return parse(x.get(), err);
         }
 
     }

@@ -110,8 +110,13 @@ namespace taowin{
         case WM_CREATE:
         {
             using namespace parser;
-            PARSER_OBJECT* p = parser::parse(get_skin_xml());
-            if(!p) break;
+
+            const TCHAR* err = nullptr;
+            PARSER_OBJECT* p = parser::parse(get_skin_xml(), &err);
+            if(!p) {
+                msgbox(err, MB_ICONERROR, L"");
+                return 0;
+            }
 
             if(p->tag == _T("window")) {
                 auto window = new window_container;
