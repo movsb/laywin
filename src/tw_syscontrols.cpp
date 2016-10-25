@@ -456,6 +456,11 @@ namespace taowin{
         return ListView_GetNextItem(_hwnd, start, flags);
     }
 
+    unsigned int listview::get_item_state(int i, unsigned int flag)
+    {
+        return ListView_GetItemState(_hwnd, i, flag);
+    }
+
     int listview::get_item_count() {
         return ListView_GetItemCount(_hwnd);
     }

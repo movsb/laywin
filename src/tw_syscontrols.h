@@ -164,6 +164,7 @@ namespace taowin{
         int get_item_count();
         int get_selected_count();
         int get_next_item(int start, unsigned int flags);
+        unsigned int get_item_state(int i, unsigned int flag);
         string get_item_text(int i, int isub);
         void set_item_text(int i, int isub, const TCHAR* text);
         int get_item_data(int i, int isub);
