@@ -201,6 +201,15 @@ namespace taowin{
 	private:
 		string _fmt_column;
 	};
+
+	class tabctrl : public syscontrol
+	{
+    public:
+        int insert_item(int i, const TCHAR* s, const void* p);
+
+	protected:
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+	};
 }
 
 #endif//__taowin_syscontrols_h__

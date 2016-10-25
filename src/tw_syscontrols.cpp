@@ -497,4 +497,21 @@ namespace taowin{
         return !!ListView_RedrawItems(_hwnd, first, last);
     }
 
+    //////////////////////////////////////////////////////////////////////////
+
+    int tabctrl::insert_item(int i, const TCHAR* s, const void* p)
+    {
+        TCITEM item = {0};
+        item.mask = TCIF_TEXT | TCIF_PARAM;
+        item.pszText = const_cast<TCHAR*>(s);
+        item.lParam = (LPARAM)p;
+
+        return TabCtrl_InsertItem(_hwnd, i, &item);
+    }
+
+    void tabctrl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+    {
+        metas.classname = WC_TABCONTROL;
+    }
+
 }
