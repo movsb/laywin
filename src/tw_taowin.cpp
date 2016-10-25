@@ -52,6 +52,8 @@ namespace taowin{
 
     window_creator::window_creator()
         : _root(new root_control)  // fake, keep _root valid always
+        , _window(nullptr)
+        , _window_created(false)
     {
 
     }
@@ -81,6 +83,8 @@ namespace taowin{
 		switch(umsg)
 		{
         case WM_SIZE:
+            if(!_window_created) return 0;
+
             _root->pos({0, 0, LOWORD(lparam), HIWORD(lparam)});
 			break;
 		case WM_COMMAND:
@@ -126,18 +130,11 @@ namespace taowin{
                     window->set_attr(a, v);
                 });
 
+                _window = window;
                 _mgr._owner = this;
 
                 WindowMeta metas;
                 get_metas(&metas);
-
-                Rect rc {0, 0, window->_init_size.cx, window->_init_size.cy};
-                ::AdjustWindowRectEx(&rc, metas.style|WS_VISIBLE, FALSE, metas.exstyle);
-                rc.offset(-rc.left, -rc.top);
-                ::SetWindowPos(_hwnd, nullptr, rc.left, rc.top, rc.width(), rc.height(), SWP_NOZORDER);
-
-                if (metas.flags & WindowFlag::center)
-                    center();
 
                 p->dump_children([&](PARSER_OBJECT* c) {
                     if(c->tag == _T("res")) {
@@ -158,10 +155,20 @@ namespace taowin{
                     }
                 });
 
+                Rect rc {0, 0, _window->_init_size.cx, _window->_init_size.cy};
+                ::AdjustWindowRectEx(&rc, metas.style|WS_VISIBLE, FALSE, metas.exstyle);
+                rc.offset(-rc.left, -rc.top);
+                ::SetWindowPos(_hwnd, nullptr, rc.left, rc.top, rc.width(), rc.height(), SWP_NOZORDER);
+
+                if (metas.flags & WindowFlag::center)
+                    center();
+
                 Rect rc2;
                 ::GetClientRect(_hwnd, &rc2);
                 _root->pos({0, 0, rc2.width(), rc2.height()});
             }
+
+            _window_created = true;
 
             break;
         }

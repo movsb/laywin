@@ -514,6 +514,11 @@ namespace taowin{
         return TabCtrl_InsertItem(_hwnd, i, &item);
     }
 
+    void tabctrl::adjust_rect(bool large, RECT * rc)
+    {
+        TabCtrl_AdjustRect(_hwnd, !!large, rc);
+    }
+
     void tabctrl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
     {
         metas.classname = WC_TABCONTROL;

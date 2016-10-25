@@ -39,6 +39,8 @@ namespace taowin{
         static LRESULT __stdcall __control_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 
 	protected:
+        bool            _window_created;
+        window_container* _window;
         root_control*   _root;
         resmgr          _mgr;
 	};
