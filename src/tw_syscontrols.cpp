@@ -306,7 +306,7 @@ namespace taowin{
 		metas.known_ex_styles = &__known_ex_styles[0];
         metas.after_created = [&]() {
             DWORD dw = ListView_GetExtendedListViewStyle(_hwnd);
-            ListView_SetExtendedListViewStyle(_hwnd, dw | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT|LVS_EX_HEADERDRAGDROP|LVS_EX_INFOTIP);
+            ListView_SetExtendedListViewStyle(_hwnd, dw | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT|LVS_EX_HEADERDRAGDROP);
         };
     }
 
@@ -427,7 +427,17 @@ namespace taowin{
         ListView_SetColumnOrderArray(_hwnd, n, a);
     }
 
-	bool listview::delete_item(int i)
+    int listview::subitem_hittest(LVHITTESTINFO* pht)
+    {
+        return ListView_SubItemHitTest(_hwnd, pht);
+    }
+
+    int listview::get_subitem_rect(int item, int subitem, RECT* rc, int code)
+    {
+        return ListView_GetSubItemRect(_hwnd, item, subitem, code, rc);
+    }
+
+    bool listview::delete_item(int i)
 	{
 		return !!ListView_DeleteItem(_hwnd, i);
 	}

@@ -119,8 +119,10 @@ namespace taowin{
             const TCHAR* err = nullptr;
             PARSER_OBJECT* p = parser::parse(get_skin_xml(), &err);
             if(!p) {
-                msgbox(err, MB_ICONERROR, L"");
-                return 0;
+                if(err) {
+                    msgbox(err, MB_ICONERROR, L"");
+                }
+                break;
             }
 
             if(p->tag == _T("window")) {

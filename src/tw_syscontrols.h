@@ -195,6 +195,10 @@ namespace taowin{
         int find_item(int start, const LVFINDINFO* lvfi);
 		int get_column_order(int n, int* a);
         void set_column_order(int n, int* a);
+        int subitem_hittest(LVHITTESTINFO* pht);
+
+        // return non-zero on success
+        int get_subitem_rect(int item, int subitem, RECT* rc, int code = LVIR_BOUNDS);
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
