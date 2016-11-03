@@ -124,6 +124,7 @@ namespace taowin{
         void set_cur_sel(int i);
         int get_count();
         void reset_content();
+        void adjust_droplist_width(const std::vector<const TCHAR*>& strs);
         
     protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;

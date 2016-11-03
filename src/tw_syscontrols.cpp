@@ -253,6 +253,29 @@ namespace taowin{
         ComboBox_ResetContent(_hwnd);
     }
 
+    void combobox::adjust_droplist_width(const std::vector<const TCHAR*>& strs)
+    {
+        HFONT hFont = (HFONT)::SendMessage(_hwnd, WM_GETFONT, 0, 0);
+        HDC hDc = ::GetDC(_hwnd);
+        HFONT hOldFont = SelectFont(hDc, hFont);
+
+        int padding = 12;
+        int max_width = 0;
+
+        for(auto& s : strs) {
+            SIZE sz;
+            if(::GetTextExtentPoint32(hDc, s, _tcslen(s), &sz)) {
+                if(sz.cx > max_width)
+                    max_width = sz.cx;
+            }
+        }
+
+        SelectFont(hDc, hOldFont);
+        ::ReleaseDC(_hwnd, hDc);
+
+        ::SendMessage(_hwnd, CB_SETDROPPEDWIDTH, padding + max_width, 0);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     void combobox::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
     {
