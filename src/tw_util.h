@@ -32,9 +32,14 @@ namespace taowin{
 			bottom  = b;
 		}
 
-		void empty(){
-			left = top = right = bottom = 0;
+		bool empty() const {
+            return !(width() && height());
 		}
+
+        void clear()
+        {
+            left = top = right = bottom = 0;
+        }
 
 		int width() const {
 			return right - left;
@@ -44,11 +49,10 @@ namespace taowin{
 			return bottom - top;
 		}
 
-		void join(const tagRECT& rc){
-			if (rc.left     < left)     left    = rc.left;
-			if (rc.top      < top)      top     = rc.top;
-			if (rc.right    > right)    right   = rc.right;
-			if (rc.bottom   > bottom)   bottom  = rc.bottom;
+		Rect join(const Rect& rc){
+            Rect r {0,0,0,0};
+            ::IntersectRect(&r, this, &rc);
+            return r;
 		}
 
 		void offset(int cx, int cy){
@@ -63,9 +67,23 @@ namespace taowin{
 			::InflateRect(this, -cx, -cy);
 		}
 
-		void union_(const tagRECT& rc){
+		void union_(const Rect& rc){
 			::UnionRect(this, this, &rc);
 		}
+
+        bool operator==(const Rect& rc) const
+        {
+            return left     == rc.left
+                && top      == rc.top
+                && right    == rc.right
+                && bottom   == rc.bottom
+                ;
+        }
+
+        bool operator!=(const Rect& rc) const
+        {
+            return !(rc == *this);
+        }
 	};
 
 #ifdef _UNICODE
