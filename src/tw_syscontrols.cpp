@@ -460,6 +460,109 @@ namespace taowin{
         return ListView_GetSubItemRect(_hwnd, item, subitem, code, rc);
     }
 
+    bool listview::showtip_needed(const POINT& pt, const TCHAR** s)
+    {
+        LVHITTESTINFO hti;
+        hti.pt = pt;
+
+        if(subitem_hittest(&hti) == -1)
+            return false;
+
+        NMLVDISPINFO dispinfo;
+        dispinfo.hdr.hwndFrom = _hwnd;
+        dispinfo.hdr.idFrom = ::GetWindowLongPtr(_hwnd, GWL_ID);
+        dispinfo.hdr.code = LVN_GETDISPINFO;
+        dispinfo.item.iItem = hti.iItem;
+        dispinfo.item.iSubItem = hti.iSubItem;
+        dispinfo.item.pszText = nullptr;
+
+        ::SendMessage(::GetParent(_hwnd), WM_NOTIFY, 0, LPARAM(&dispinfo));
+
+        if(!dispinfo.item.pszText || !*dispinfo.item.pszText)
+            return false;
+
+        bool need_tip = false;
+
+        auto text = dispinfo.item.pszText;
+
+        // 1) 有换行符
+        if(!need_tip) {
+            if(_tcschr(text, _T('\n'))) {
+                need_tip = true;
+            }
+        }
+
+        // 不初始化会报潜在使用了未初始化的变量（但实际上不可能）
+        int text_width = 0;
+        constexpr int text_padding = 20;
+
+        // 2) 文本宽度超出列宽
+        if(!need_tip) {
+            HDC hdc = ::GetDC(_hwnd);
+            HFONT hFont = (HFONT)::SendMessage(_hwnd, WM_GETFONT, 0, 0);
+            HFONT hOldFont = SelectFont(hdc, hFont);
+
+            SIZE szText = {0};
+            if(::GetTextExtentPoint32(hdc, text, _tcslen(text), &szText)) {
+                int col_width = get_column_width(hti.iSubItem);
+                text_width = szText.cx + text_padding;
+
+                if(text_width > col_width) {
+                    need_tip = true;
+                }
+            }
+
+            SelectFont(hdc, hOldFont);
+
+            ::ReleaseDC(_hwnd, hdc);
+        }
+
+        // 3) 列没有完整地显示出来
+        // 包括：滚动条出现、位于屏幕外
+        if(!need_tip) {
+            taowin::Rect rcSubItem, rcListView;
+            ::GetClientRect(_hwnd, &rcListView);
+
+            if(get_subitem_rect(0, hti.iSubItem, &rcSubItem)) {
+                if(rcSubItem.left < rcListView.left || rcSubItem.left + text_width > rcListView.right) {
+                    need_tip = true;
+                }
+
+                if(!need_tip) {
+                    // 列的屏幕位置（B）
+                    taowin::Rect rc(rcSubItem);
+                    ::ClientToScreen(_hwnd, reinterpret_cast<POINT*>(&rc.left));
+                    ::ClientToScreen(_hwnd, reinterpret_cast<POINT*>(&rc.right));
+
+                    // 屏幕位置（A）
+                    taowin::Rect rcScreen;
+                    {
+                        POINT pt;
+                        ::GetCursorPos(&pt);
+
+                        HMONITOR hMonitor = ::MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+                        MONITORINFO info = {sizeof(info)};
+
+                        if(hMonitor && ::GetMonitorInfo(hMonitor, &info)) {
+                            rcScreen = info.rcWork;
+                        }
+                        else {
+                            rcScreen = {0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN)};
+                        }
+                    }
+
+                    // 如果 A & B != B
+                    if(rcScreen.join(rc) != rc) {
+                        need_tip = true;
+                    }
+                }
+            }
+        }
+
+        *s = text;
+        return need_tip;
+    }
+
     bool listview::delete_item(int i)
 	{
 		return !!ListView_DeleteItem(_hwnd, i);
@@ -473,6 +576,11 @@ namespace taowin{
     void listview::set_column_width(int i, int cx)
     {
         return (void)ListView_SetColumnWidth(_hwnd, i, cx);
+    }
+
+    int listview::get_column_width(int i)
+    {
+        return ListView_GetColumnWidth(_hwnd, i);
     }
 
     HWND listview::get_header()

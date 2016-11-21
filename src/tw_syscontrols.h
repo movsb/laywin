@@ -184,6 +184,7 @@ namespace taowin{
 		void format_columns(const string& fmt);
         int get_column_count();
         void set_column_width(int i, int cx);
+        int get_column_width(int i);
         HWND get_header();
 		int size() const;
         bool get_selected_items(std::vector<int>* items);
@@ -200,6 +201,7 @@ namespace taowin{
 
         // return non-zero on success
         int get_subitem_rect(int item, int subitem, RECT* rc, int code = LVIR_BOUNDS);
+        bool showtip_needed(const POINT& pt, const TCHAR** s);
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
