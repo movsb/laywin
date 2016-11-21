@@ -6,6 +6,9 @@
 #include <tchar.h>
 
 namespace taowin{
+class control;
+class container;
+
 	class csize
 	{
 	public:
@@ -180,4 +183,5 @@ namespace taowin{
     void split_string(std::vector<string>* vec, LPCTSTR str, TCHAR delimiter = ',');
 
     string last_error();
+    void set_track_mouse(const control* p);
 }

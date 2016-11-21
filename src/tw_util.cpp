@@ -1,5 +1,9 @@
 #include "tw_util.h"
 
+#include "tw_control.h"
+
+#include <commctrl.h>
+
 namespace taowin {
 
 void split_string(std::vector<string>* vec, LPCTSTR str, TCHAR delimiter)
@@ -39,6 +43,16 @@ string last_error()
     }
 
     return std::move(r);
+}
+
+void set_track_mouse(const control* p)
+{
+    TRACKMOUSEEVENT tme = {0};
+    tme.cbSize = sizeof(tme);
+    tme.hwndTrack = p->hwnd();
+    tme.dwFlags = TME_HOVER | TME_LEAVE;
+    tme.dwHoverTime = HOVER_DEFAULT;
+    _TrackMouseEvent(&tme);
 }
 
 }
