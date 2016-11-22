@@ -354,7 +354,12 @@ namespace taowin{
 		return ListView_InsertColumn(_hwnd, i, &lvc);
 	}
 
-	void listview::format_columns(const string& fmt)
+    void listview::delete_column(int i)
+    {
+        return (void)ListView_DeleteColumn(_hwnd, i);
+    }
+
+    void listview::format_columns(const string& fmt)
 	{
 
 	}
@@ -523,7 +528,7 @@ namespace taowin{
             taowin::Rect rcSubItem, rcListView;
             ::GetClientRect(_hwnd, &rcListView);
 
-            if(get_subitem_rect(0, hti.iSubItem, &rcSubItem)) {
+            if(get_subitem_rect(hti.iItem, hti.iSubItem, &rcSubItem)) {
                 if(rcSubItem.left < rcListView.left || rcSubItem.left + text_width > rcListView.right) {
                     need_tip = true;
                 }

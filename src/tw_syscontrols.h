@@ -170,6 +170,7 @@ namespace taowin{
         void set_item_text(int i, int isub, const TCHAR* text);
         int get_item_data(int i, int isub);
 		int insert_column(LPCTSTR name, int cx, int i);
+        void delete_column(int i);
 		int insert_item(LPCTSTR str, LPARAM param = 0, int i = INT_MAX);
         inline int insert_item(const string& str, LPARAM param = 0, int i = INT_MAX) {
             return insert_item(str.c_str(), param, i);
