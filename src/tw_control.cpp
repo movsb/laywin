@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include <string>
+#include <algorithm>
 
 #include "tw_util.h"
 #include "tw_resmgr.h"
@@ -240,7 +241,7 @@ namespace taowin{
 		int cxNeeded = 0;
 
 		if(nAdjustables > 0)
-			cxExpand = max(0, (szAvailable.cx - cxFixed) / nAdjustables);
+			cxExpand = std::max(0, (szAvailable.cx - cxFixed) / nAdjustables);
 
 		csize szRemaining = szAvailable;
 		int iPosX = r.left;
@@ -257,7 +258,7 @@ namespace taowin{
 				sz.cx = cxExpand;
 
 				if(iAdjustable == nAdjustables){
-					sz.cx = max(0, szRemaining.cx - cxFixedRemaining);
+					sz.cx = std::max(0, szRemaining.cx - cxFixedRemaining);
 				}
 
 				if(sz.cx < pc->_min_width) sz.cx = pc->_min_width;
@@ -325,7 +326,7 @@ namespace taowin{
 		int cyNeeded = 0;
 
 		if(nAdjustables > 0)
-			cyExpand = max(0, (szAvailable.cy - cyFixed) / nAdjustables);
+			cyExpand = std::max(0, (szAvailable.cy - cyFixed) / nAdjustables);
 
 		csize szRemaining = szAvailable;
 		int iPosY = r.top;
@@ -343,7 +344,7 @@ namespace taowin{
 				sz.cy = cyExpand;
 
 				if(iAdjustable == nAdjustables){
-					sz.cy = max(0, szRemaining.cy - cyFixedRemaining);
+					sz.cy = std::max(0, szRemaining.cy - cyFixedRemaining);
 				}
 
 				if(sz.cy < pc->_min_height) sz.cy = pc->_min_height;
