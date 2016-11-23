@@ -20,14 +20,16 @@ class container;
 	{
 	public:
 		Rect(){
-			empty();
+            clear();
 		}
+
 		Rect(const tagRECT& r){
 			left    = r.left;
 			top     = r.top;
 			right   = r.right;
 			bottom  = r.bottom;
 		}
+
 		Rect(int l, int t, int r, int b){
 			left    = l;
 			top     = t;
