@@ -23,6 +23,8 @@ void menu_manager::_create_items(HMENU hMenu, PARSER_OBJECT* c, sibling* rel)
     sibling _dummy_child;
     sibling* prev_child = &_dummy_child;
 
+    _dummy_child.next = nullptr;
+
     c->dump_children([&](PARSER_OBJECT* c) {
         auto sib = new sibling;
         sib->parent = rel;
