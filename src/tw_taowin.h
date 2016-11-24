@@ -12,6 +12,7 @@
 #include "tw_syscontrols.h"
 #include "tw_window.h"
 #include "tw_resmgr.h"
+#include "tw_menu.h"
 
 namespace taowin{
 
@@ -22,12 +23,14 @@ namespace taowin{
         virtual ~window_creator();
 
         void subclass_control(syscontrol* ctl);
+        void add_menu(const menu_manager* menu) { _menus.add(menu); }
 
 	protected:
 		virtual LPCTSTR get_skin_xml() const;
 		virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);
 		virtual LRESULT control_message(syscontrol* ctl, UINT umsg, WPARAM wparam, LPARAM lparam);
-		virtual LRESULT on_menu(int id, bool is_accel = false) { return 0; }
+		virtual LRESULT on_menu(const std::vector<string>& ids) { return 0; }
+        virtual LRESULT on_accel(int id) { return 0; }
 		virtual LRESULT on_notify(HWND hwnd, control* pc, int code, NMHDR* hdr) { return 0; }
 
         void async_call(std::function<void()> fn) {
@@ -43,6 +46,7 @@ namespace taowin{
         window_container* _window;
         root_control*   _root;
         resmgr          _mgr;
+        array<const menu_manager*> _menus;
 	};
 
     void init();

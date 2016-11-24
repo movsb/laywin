@@ -100,7 +100,19 @@ namespace taowin{
                 }
             }
             else {
-                return on_menu(id, code != 0);
+                if(code == 0) {
+                    std::vector<string> ids;
+
+                    for(int i = 0; i < _menus.size(); ++i) {
+                        ids = _menus[i]->get_ids(id);
+                        if(!ids.empty()) break;
+                    }
+
+                    return on_menu(ids);
+                }
+                else {
+                    return on_accel(id);
+                }
             }
 
 			break;
@@ -120,7 +132,7 @@ namespace taowin{
             PARSER_OBJECT* p = parser::parse(get_skin_xml(), &err);
             if(!p) {
                 if(err) {
-                    msgbox(err, MB_ICONERROR, L"");
+                    msgbox(err, MB_ICONERROR, _T(""));
                 }
                 break;
             }
