@@ -4,6 +4,31 @@
 
 namespace taowin {
 
+class MenuIds
+{
+public:
+    MenuIds(std::vector<string>&& ids)
+        : ids(ids)
+    { }
+
+    const string& operator[](size_t i) const
+    {
+        if(i < ids.size())
+            return ids[ids.size()-1-i];
+
+        static string _dummy;
+        return _dummy;
+    }
+
+    std::vector<string>* operator->()
+    {
+        return &ids;
+    }
+
+protected:
+    std::vector<string> ids;
+};
+
 class menu_manager
 {
     struct sibling

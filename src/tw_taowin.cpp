@@ -101,14 +101,12 @@ namespace taowin{
             }
             else {
                 if(code == 0) {
-                    std::vector<string> ids;
-
                     for(int i = 0; i < _menus.size(); ++i) {
-                        ids = _menus[i]->get_ids(id);
-                        if(!ids.empty()) break;
+                        MenuIds ids = _menus[i]->get_ids(id);
+                        if(!ids->empty()) {
+                            return on_menu(ids);
+                        }
                     }
-
-                    return on_menu(ids);
                 }
                 else {
                     return on_accel(id);
