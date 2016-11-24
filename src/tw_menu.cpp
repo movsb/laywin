@@ -29,6 +29,7 @@ void menu_manager::_create_items(HMENU hMenu, PARSER_OBJECT* c, sibling* rel)
         auto sib = new sibling;
         sib->parent = rel;
         sib->owner = hMenu;
+        sib->self = nullptr;
         sib->child = nullptr;
         sib->next = nullptr;
         sib->prev = prev_child;
@@ -53,6 +54,7 @@ void menu_manager::_create_items(HMENU hMenu, PARSER_OBJECT* c, sibling* rel)
         }
         else if(c->tag == _T("sub")) {
             HMENU hSubMenu = ::CreatePopupMenu();
+            sib->self = hSubMenu;
             _create_items(hSubMenu, c, sib);
             _insert_sub(hMenu, hSubMenu, id, s, e);
         }
@@ -103,7 +105,7 @@ void menu_manager::_insert_str(HMENU hMenu, UINT id, const string& s, bool enabl
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
 }
 
-const menu_manager::sibling* menu_manager::find_sib(const string& ids_) const
+menu_manager::sibling* menu_manager::find_sib(const string& ids_)
 {
     string ids = ids_ + _T('\0');
 #ifdef _UNICODE
@@ -138,6 +140,8 @@ void menu_manager::create(const TCHAR* xml)
 
     _hmenu = ::CreatePopupMenu();
     _root.parent = nullptr;
+    _root.owner = nullptr;
+    _root.self = _hmenu;
     _root.sid = root->get_attr(_T("i"));
     _create_items(_hmenu, root, &_root);
 }
@@ -179,12 +183,30 @@ std::vector<string> menu_manager::get_ids(int id) const
     return std::move(ids);
 }
 
-void menu_manager::enable(const string& ids, bool b) const
+void menu_manager::enable(const string& ids, bool b)
 {
     if(auto sib = find_sib(ids)) {
         ::EnableMenuItem(sib->owner, sib->id, b ? MF_ENABLED : MF_GRAYED);
     }
 }
 
+menu_manager::sibling * menu_manager::get_popup(int id) const
+{
+    auto it = _idmap.find(id);
+    if(it == _idmap.cend())
+        return nullptr;
+
+    return it->second;
 }
 
+void menu_manager::clear_popup(sibling* sib)
+{
+    int count = ::GetMenuItemCount(sib->self);
+    if(count != -1 && count > 0) {
+        while(--count >= 0) {
+            ::RemoveMenu(sib->self, count, MF_BYPOSITION);
+        }
+    }
+}
+
+}

@@ -41,6 +41,7 @@ class menu_manager
         UINT     id;
         string   sid;
         HMENU    owner;
+        HMENU    self;
     };
 
 public:
@@ -59,14 +60,16 @@ public:
     void destroy();
     void track(const POINT* pt = nullptr, HWND owner = ::GetActiveWindow());
     std::vector<string> get_ids(int id) const;
-    void enable(const string& ids, bool b) const;
+    void enable(const string& ids, bool b);
+    sibling* get_popup(int id) const;
+    void clear_popup(sibling* sib);
+    sibling* find_sib(const string& ids);
 
 protected:
     void _create_items(HMENU hMenu, parser::PARSER_OBJECT* c, sibling* rel);
     void _insert_sep(HMENU hMenu, UINT id) const;
     void _insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enalbed = true);
     void _insert_str(HMENU hMenu, UINT id, const string& s, bool enabled = true);
-    const sibling* find_sib(const string& ids) const;
 
 protected:
     static int   _id;
