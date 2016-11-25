@@ -204,6 +204,9 @@ namespace taowin{
         int get_subitem_rect(int item, int subitem, RECT* rc, int code = LVIR_BOUNDS);
         bool showtip_needed(const POINT& pt, const TCHAR** s);
 
+        void go_top() { ::PostMessage(_hwnd, WM_KEYDOWN, VK_HOME, 0); }
+        void go_bottom() { ::PostMessage(_hwnd, WM_KEYDOWN, VK_END, 0); }
+
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
 
