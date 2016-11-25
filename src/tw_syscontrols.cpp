@@ -38,6 +38,10 @@ namespace taowin{
     void syscontrol::create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) {
         syscontrol_metas metas;
         create_metas(metas, attrs);
+
+        if(metas.before_creation)
+            metas.before_creation();
+
         _hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
             0, 0, 0, 0, parent, nullptr, nullptr, this);
         assert(_hwnd);
@@ -248,6 +252,18 @@ namespace taowin{
         return ComboBox_GetCount(_hwnd);
     }
 
+    string combobox::get_text()
+    {
+        static TCHAR buf[1024];
+        int len = ::GetWindowTextLength(_hwnd);
+        TCHAR* p = len <= _countof(buf) ? buf : new TCHAR[len + 1];
+        *p = _T('\0');
+        ::GetWindowText(_hwnd, p, len + 1);
+        string s(p);
+        if(p != buf) delete[] p;
+        return std::move(s);
+    }
+
     void combobox::reset_content()
     {
         ComboBox_ResetContent(_hwnd);
@@ -276,20 +292,35 @@ namespace taowin{
         ::SendMessage(_hwnd, CB_SETDROPPEDWIDTH, padding + max_width, 0);
     }
 
-    //////////////////////////////////////////////////////////////////////////
     void combobox::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
     {
-        metas.style |= CBS_DROPDOWNLIST;
+        static style_map __known_styles[] = {
+            {CBS_SIMPLE,    _T("simple")},
+            {CBS_DROPDOWN,  _T("dropdown")},
+            {CBS_DROPDOWNLIST, _T("droplist")},
+            {0, nullptr}
+        };
+
         metas.classname = WC_COMBOBOX;
+        metas.known_styles = __known_styles;
+        metas.before_creation = [&] {
+            if((metas.style & 3) == 0)
+                metas.style |= CBS_DROPDOWNLIST;
+        };
     }
 
 
+    void combobox::set_attr(const TCHAR* name, const TCHAR* value)
+    {
+		return __super::set_attr(name, value);
+	}
+
+    //////////////////////////////////////////////////////////////////////////
     void edit::set_sel(int start, int end)
     {
         Edit_SetSel(_hwnd, start, end);
     }
 
-    //////////////////////////////////////////////////////////////////////////
     void edit::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
         static style_map __known_styles[] =
         {

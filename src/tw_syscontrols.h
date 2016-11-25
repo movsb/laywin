@@ -24,6 +24,7 @@ namespace taowin{
         style_map*      known_styles;
         style_map*      known_ex_styles;
         std::function<void()> after_created;
+        std::function<void()> before_creation;
 
         syscontrol_metas() {
             style = WS_CHILD | WS_VISIBLE;
@@ -32,7 +33,6 @@ namespace taowin{
             classname = _T("");
             known_styles = nullptr;
             known_ex_styles = nullptr;
-            after_created = nullptr;
         }
     };
 
@@ -123,11 +123,13 @@ namespace taowin{
         int get_cur_sel();
         void set_cur_sel(int i);
         int get_count();
+        string get_text();
         void reset_content();
         void adjust_droplist_width(const std::vector<const TCHAR*>& strs);
         
     protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+        virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
     };
 
 	class edit : public syscontrol
