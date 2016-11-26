@@ -14,6 +14,27 @@ namespace taowin {
 
 int menu_manager::_id = 0;
 
+menu_manager::sibling* menu_manager::_create_sib(string sid, sibling* parent, HMENU owner, sibling* prev)
+{
+    auto sib = new sibling;
+
+    sib->parent = parent;
+    sib->owner  = owner;
+    sib->self   = nullptr;
+    sib->child  = nullptr;
+    sib->next   = nullptr;
+    sib->prev   = prev;
+    sib->sid = sid;
+
+    if(prev) prev->next = sib;
+
+    auto id = ++_id;
+    sib->id = id;
+    _idmap[id] = sib;
+
+    return sib;
+}
+
 void menu_manager::_create_items(HMENU hMenu, PARSER_OBJECT* c, sibling* rel)
 {
     rel->prev = nullptr;
@@ -26,37 +47,25 @@ void menu_manager::_create_items(HMENU hMenu, PARSER_OBJECT* c, sibling* rel)
     _dummy_child.next = nullptr;
 
     c->dump_children([&](PARSER_OBJECT* c) {
-        auto sib = new sibling;
-        sib->parent = rel;
-        sib->owner = hMenu;
-        sib->self = nullptr;
-        sib->child = nullptr;
-        sib->next = nullptr;
-        sib->prev = prev_child;
-        prev_child->next = sib;
-        prev_child = sib;
-
-        auto id = ++_id;
         auto sid = c->get_attr(_T("i"));
         auto s = c->get_attr(_T("s"));
         auto e= c->get_attr(_T("d")) != _T("1");
 
-        _idmap[id] = sib;
+        auto sib = _create_sib(sid, rel, hMenu, prev_child);
 
-        sib->sid = sid;
-        sib->id = id;
+        prev_child = sib;
 
         if(c->tag == _T("item")) {
-            _insert_str(hMenu, id, s, e);
+            _insert_str(hMenu, sib->id, s, e);
         }
         else if(c->tag == _T("sep")) {
-            _insert_sep(hMenu, id);
+            _insert_sep(hMenu, sib->id);
         }
         else if(c->tag == _T("sub")) {
             HMENU hSubMenu = ::CreatePopupMenu();
             sib->self = hSubMenu;
             _create_items(hSubMenu, c, sib);
-            _insert_sub(hMenu, hSubMenu, id, s, e);
+            _insert_sub(hMenu, hSubMenu, sib->id, s, e);
         }
     });
 
@@ -131,6 +140,18 @@ menu_manager::sibling* menu_manager::find_sib(const string& ids_)
     }
 
     return p;
+}
+
+void menu_manager::insert_str(sibling* popup, string sid, const string& s, bool enabled)
+{
+    auto sib = _create_sib(sid, popup, popup->self, nullptr);
+    _insert_str(popup->self, sib->id, s, enabled);
+}
+
+void menu_manager::insert_sep(sibling* popup)
+{
+    auto sib = _create_sib(L"", popup, popup->self, nullptr);
+    _insert_sep(popup->self, 0);
 }
 
 void menu_manager::create(const TCHAR* xml)

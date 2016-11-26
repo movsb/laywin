@@ -31,6 +31,7 @@ protected:
 
 class menu_manager
 {
+public:
     struct sibling
     {
         sibling* parent;
@@ -64,8 +65,11 @@ public:
     sibling* get_popup(int id) const;
     void clear_popup(sibling* sib);
     sibling* find_sib(const string& ids);
+    void insert_str(sibling* popup, string sid, const string& s, bool enabled = true);
+    void insert_sep(sibling* popup);
 
 protected:
+    sibling* _create_sib(string sid, sibling* parent, HMENU owner, sibling* prev);
     void _create_items(HMENU hMenu, parser::PARSER_OBJECT* c, sibling* rel);
     void _insert_sep(HMENU hMenu, UINT id) const;
     void _insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enalbed = true);
