@@ -43,6 +43,7 @@ public:
         string   sid;
         HMENU    owner;
         HMENU    self;
+        void*    ud;
     };
 
 public:
@@ -63,6 +64,7 @@ public:
     std::vector<string> get_ids(int id) const;
     void enable(const string& ids, bool b);
     sibling* get_popup(int id) const;
+    sibling* match_popup(const string& ids, HMENU popup);
     void clear_popup(sibling* sib);
     sibling* find_sib(const string& ids);
     void insert_str(sibling* popup, string sid, const string& s, bool enabled = true);
@@ -74,6 +76,10 @@ protected:
     void _insert_sep(HMENU hMenu, UINT id) const;
     void _insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enalbed = true);
     void _insert_str(HMENU hMenu, UINT id, const string& s, bool enabled = true);
+
+protected:
+    sibling* _alloc_sib();
+    void _dealloc_sib(sibling* sib);
 
 protected:
     static int   _id;

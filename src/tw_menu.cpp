@@ -16,7 +16,7 @@ int menu_manager::_id = 0;
 
 menu_manager::sibling* menu_manager::_create_sib(string sid, sibling* parent, HMENU owner, sibling* prev)
 {
-    auto sib = new sibling;
+    auto sib = _alloc_sib();
 
     sib->parent = parent;
     sib->owner  = owner;
@@ -24,7 +24,8 @@ menu_manager::sibling* menu_manager::_create_sib(string sid, sibling* parent, HM
     sib->child  = nullptr;
     sib->next   = nullptr;
     sib->prev   = prev;
-    sib->sid = sid;
+    sib->sid    = sid;
+    sib->ud     = nullptr;
 
     if(prev) prev->next = sib;
 
@@ -112,6 +113,16 @@ void menu_manager::_insert_str(HMENU hMenu, UINT id, const string& s, bool enabl
     m.fState        = enabled ? MFS_ENABLED : MFS_GRAYED;
 
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
+}
+
+menu_manager::sibling* menu_manager::_alloc_sib()
+{
+    return new sibling;
+}
+
+void menu_manager::_dealloc_sib(sibling* sib)
+{
+    delete sib;
 }
 
 menu_manager::sibling* menu_manager::find_sib(const string& ids_)
@@ -220,12 +231,22 @@ menu_manager::sibling * menu_manager::get_popup(int id) const
     return it->second;
 }
 
+menu_manager::sibling* menu_manager::match_popup(const string& ids, HMENU popup)
+{
+    auto sib = find_sib(ids);
+    if(sib && sib->self == popup)
+        return sib;
+    return nullptr;
+}
+
 void menu_manager::clear_popup(sibling* sib)
 {
-    int count = ::GetMenuItemCount(sib->self);
-    if(count != -1 && count > 0) {
-        while(--count >= 0) {
-            ::RemoveMenu(sib->self, count, MF_BYPOSITION);
+    if(sib && sib->self) {
+        int count = ::GetMenuItemCount(sib->self);
+        if(count != -1 && count > 0) {
+            while(--count >= 0) {
+                ::DeleteMenu(sib->self, count, MF_BYPOSITION);
+            }
         }
     }
 }
