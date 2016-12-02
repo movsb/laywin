@@ -12,7 +12,7 @@ using namespace taowin::parser;
 
 namespace taowin {
 
-int menu_manager::_id = 0;
+int menu_manager::_id = 0x0f;
 
 menu_manager::sibling* menu_manager::_create_sib(string sid, sibling* parent, HMENU owner, sibling* prev)
 {
