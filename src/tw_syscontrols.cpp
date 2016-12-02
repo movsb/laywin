@@ -560,7 +560,10 @@ namespace taowin{
             ::GetClientRect(_hwnd, &rcListView);
 
             if(get_subitem_rect(hti.iItem, hti.iSubItem, &rcSubItem)) {
-                if(rcSubItem.left < rcListView.left || rcSubItem.left + text_width > rcListView.right) {
+                // 换算成 SubItem 的实际尺寸
+                rcSubItem.right = rcSubItem.left + text_width;
+
+                if(rcSubItem.left < rcListView.left || rcSubItem.right > rcListView.right) {
                     need_tip = true;
                 }
 
