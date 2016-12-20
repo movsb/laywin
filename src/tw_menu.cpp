@@ -155,12 +155,14 @@ menu_manager::sibling* menu_manager::find_sib(const string& ids_)
 
 void menu_manager::insert_str(sibling* popup, string sid, const string& s, bool enabled)
 {
+    if(!popup) popup = &_root;
     auto sib = _create_sib(sid, popup, popup->self, nullptr);
     _insert_str(popup->self, sib->id, s, enabled);
 }
 
 void menu_manager::insert_sep(sibling* popup)
 {
+    if(!popup) popup = &_root;
     auto sib = _create_sib(L"", popup, popup->self, nullptr);
     _insert_sep(popup->self, 0);
 }
