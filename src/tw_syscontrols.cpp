@@ -321,7 +321,24 @@ namespace taowin{
         Edit_SetSel(_hwnd, start, end);
     }
 
-    void edit::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+    void edit::replace_sel(const TCHAR* s)
+    {
+        Edit_ReplaceSel(_hwnd, s);
+    }
+
+    void edit::append(const TCHAR* s)
+    {
+        set_sel(size(), -1);
+        replace_sel(s);
+    }
+
+    int edit::size() const
+    {
+        return ::GetWindowTextLength(_hwnd);
+    }
+
+    void edit::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+    {
         static style_map __known_styles[] =
         {
             {ES_CENTER, _T("center")},

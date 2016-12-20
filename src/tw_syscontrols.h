@@ -154,6 +154,9 @@ namespace taowin{
         }
 
         void set_sel(int start, int end);
+        void replace_sel(const TCHAR* s);
+        void append(const TCHAR* s);
+        int size() const;
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
