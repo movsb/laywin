@@ -6,6 +6,7 @@ namespace taowin{
 
 	resmgr::resmgr()
         : _hwnd(nullptr)
+        , _next_ctrl_id(1)
 	{
 	}
 

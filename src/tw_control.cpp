@@ -132,8 +132,6 @@ namespace taowin{
 	}
 
     void control::create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) {
-        decltype(attrs.begin()) it;
-
         for(auto it = attrs.cbegin(); it != attrs.cend(); it++)
             set_attr(it->first.c_str(), it->second.c_str());
     }

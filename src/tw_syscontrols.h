@@ -47,6 +47,7 @@ namespace taowin{
 
 	public:
         void create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) override;
+        unsigned int get_ctrl_id() const;
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) = 0;
@@ -115,6 +116,9 @@ namespace taowin{
     class combobox : public syscontrol
     {
     public:
+        typedef std::function<void(combobox* that, DRAWITEMSTRUCT* dis, int i, bool selected)> OnDraw;
+
+    public:
         int add_string(const TCHAR* s);
         int add_string(const TCHAR* s, void* data);
         void set_item_data(int i, void* data);
@@ -126,10 +130,15 @@ namespace taowin{
         string get_text();
         void reset_content();
         void adjust_droplist_width(const std::vector<const TCHAR*>& strs);
+        void set_ondraw(OnDraw fn) { _ondraw = fn; }
+        void drawit(DRAWITEMSTRUCT* dis);
         
     protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
         virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
+
+    private:
+        OnDraw _ondraw;
     };
 
 	class edit : public syscontrol

@@ -37,9 +37,15 @@ namespace taowin{
             return _hwnd;
         }
 
+        unsigned int next_ctrl_id()
+        {
+            return _next_ctrl_id++;
+        }
+
 	private:
 		HWND        _hwnd;
         font_maps_t _fonts;
         window_creator* _owner;
+        unsigned int    _next_ctrl_id;
 	};
 }

@@ -43,7 +43,7 @@ namespace taowin{
             metas.before_creation();
 
         _hwnd = ::CreateWindowEx(metas.exstyle, metas.classname, metas.caption, metas.style,
-            0, 0, 0, 0, parent, nullptr, nullptr, this);
+            0, 0, 0, 0, parent, HMENU(mgr.next_ctrl_id()), nullptr, this);
         assert(_hwnd);
         if(!_hwnd) return;
 
@@ -69,6 +69,11 @@ namespace taowin{
 
         for(auto it = attrs.cbegin(); it != attrs.cend(); it++)
             set_attr(it->first.c_str(), it->second.c_str());
+    }
+
+    unsigned int syscontrol::get_ctrl_id() const
+    {
+        return ::GetWindowLongPtr(_hwnd, GWL_ID);
     }
 
     void syscontrol::create_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
@@ -289,7 +294,18 @@ namespace taowin{
         SelectFont(hDc, hOldFont);
         ::ReleaseDC(_hwnd, hDc);
 
-        ::SendMessage(_hwnd, CB_SETDROPPEDWIDTH, padding + max_width, 0);
+        int vsw = ::GetSystemMetrics(SM_CXVSCROLL);
+
+        ::SendMessage(_hwnd, CB_SETDROPPEDWIDTH, padding + max_width + vsw, 0);
+    }
+
+    void combobox::drawit(DRAWITEMSTRUCT* dis)
+    {
+        if(!_ondraw) return;
+        if(dis->itemID == -1) return;
+        
+        bool selected = dis->itemAction == ODA_SELECT && dis->itemState & ODS_SELECTED;
+        _ondraw(this, dis, dis->itemID, selected);
     }
 
     void combobox::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
@@ -298,9 +314,13 @@ namespace taowin{
             {CBS_SIMPLE,    _T("simple")},
             {CBS_DROPDOWN,  _T("dropdown")},
             {CBS_DROPDOWNLIST, _T("droplist")},
+            {CBS_OWNERDRAWFIXED, _T("ownerdrawfixed")},
+            {CBS_OWNERDRAWVARIABLE, _T("ownerdrawvariable")},
+            {CBS_HASSTRINGS, _T("hasstrings")},
             {0, nullptr}
         };
 
+        metas.style |= WS_VSCROLL;
         metas.classname = WC_COMBOBOX;
         metas.known_styles = __known_styles;
         metas.before_creation = [&] {
