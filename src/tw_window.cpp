@@ -147,7 +147,7 @@ namespace taowin{
         metas->caption = _T("taowin");
         metas->classname = _T("taowin");
         metas->style = WS_OVERLAPPEDWINDOW;
-        metas->exstyle = 0;
+        metas->exstyle = WS_EX_APPWINDOW;
         metas->flags = WindowFlag::center;
     }
 
