@@ -69,6 +69,7 @@ public:
     sibling* find_sib(const string& ids);
     void insert_str(sibling* popup, string sid, const string& s, bool enabled = true);
     void insert_sep(sibling* popup);
+    void set_check(string sid, bool check);
 
 protected:
     sibling* _create_sib(string sid, sibling* parent, HMENU owner, sibling* prev);

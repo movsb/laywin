@@ -167,6 +167,14 @@ void menu_manager::insert_sep(sibling* popup)
     _insert_sep(popup->self, 0);
 }
 
+void menu_manager::set_check(string ids, bool check)
+{
+    auto sib = find_sib(ids);
+    if(sib->parent && sib->parent->self) {
+        ::CheckMenuItem(sib->parent->self, sib->id, MF_BYCOMMAND | (check ? MF_CHECKED : MF_UNCHECKED));
+    }
+}
+
 void menu_manager::create(const TCHAR* xml)
 {
     PARSER_OBJECT* root = parser::parse(xml, nullptr);
