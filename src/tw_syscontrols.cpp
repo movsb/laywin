@@ -567,7 +567,9 @@ namespace taowin{
 
         // 不初始化会报潜在使用了未初始化的变量（但实际上不可能）
         int text_width = 0;
-        constexpr int text_padding = 20;
+
+        // http://stackoverflow.com/questions/51109/win32-list-view-control-subitem-padding-for-custom-drawn-subitems
+        int text_padding = Header_GetBitmapMargin(get_header()) * 2;
 
         // 2) 文本宽度超出列宽
         if(!need_tip) {
