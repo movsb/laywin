@@ -204,12 +204,11 @@ namespace taowin{
 				switch(msg->wParam)
 				{
                 case VK_ESCAPE:
-                case VK_TAB:
                 case VK_RETURN:
                     if (filter_special_key(msg->wParam))
                         return true;
-                    // pass through
-                default:
+                    break;
+                case VK_TAB:
                     // I don't want IsDialogMessage to process VK_ESCAPE, because it produces a WM_COMMAND
                     // menu message with id == 2. It is undocumented.
                     if(::IsDialogMessage(_hwnd, msg))
