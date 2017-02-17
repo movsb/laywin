@@ -163,7 +163,7 @@ void menu_manager::insert_str(sibling* popup, string sid, const string& s, bool 
 void menu_manager::insert_sep(sibling* popup)
 {
     if(!popup) popup = &_root;
-    auto sib = _create_sib(L"", popup, popup->self, nullptr);
+    auto sib = _create_sib(_T(""), popup, popup->self, nullptr);
     _insert_sep(popup->self, 0);
 }
 

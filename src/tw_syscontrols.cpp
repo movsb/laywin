@@ -156,6 +156,19 @@ namespace taowin{
         metas.classname = WC_BUTTON;
     }
 
+    bool button::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
+    {
+        if(code == BN_CLICKED) {
+            EtwLog(_T("事件：按钮点击（%s）"), name().c_str());
+            if(_on_click) {
+                _on_click();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     //////////////////////////////////////////////////////////////////////////
 	option::option()
 		: _b_has_group(false)
@@ -376,7 +389,7 @@ namespace taowin{
     }
 
     //////////////////////////////////////////////////////////////////////////
-    void listview::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+    void ListViewControl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
         static style_map __known_styles[] = {
             {LVS_SINGLESEL, _T("singlesel")},
             {LVS_OWNERDATA, _T("ownerdata")},
@@ -401,7 +414,27 @@ namespace taowin{
         };
     }
 
-	int listview::insert_item(LPCTSTR str, LPARAM param, int i)
+    bool ListViewControl::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
+    {
+        if(code == LVN_GETDISPINFO) {
+            auto pdi = reinterpret_cast<NMLVDISPINFO*>(hdr);
+            int item = pdi->item.iItem;
+            int subitem = pdi->item.iSubItem;
+            pdi->item.pszText = const_cast<LPTSTR>(_data->get(item, subitem));
+            return true;
+        }
+        else if(code == NM_DBLCLK) {
+            auto nmlv = reinterpret_cast<NMITEMACTIVATE*>(hdr);
+            if(_on_dblclick) {
+                *lr = _on_dblclick(nmlv->iItem, nmlv->iSubItem);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    int ListViewControl::insert_item(LPCTSTR str, LPARAM param, int i)
 	{
 		LVITEM lvi = {0};
 		lvi.mask = LVIF_TEXT | LVIF_PARAM;
@@ -412,7 +445,7 @@ namespace taowin{
 		return ListView_InsertItem(_hwnd, &lvi);
 	}
 
-	int listview::insert_column(LPCTSTR name, int cx, int i)
+	int ListViewControl::insert_column(LPCTSTR name, int cx, int i)
 	{
 		LVCOLUMN lvc = {0};
 		lvc.mask = LVCF_TEXT | LVCF_WIDTH;
@@ -422,17 +455,17 @@ namespace taowin{
 		return ListView_InsertColumn(_hwnd, i, &lvc);
 	}
 
-    void listview::delete_column(int i)
+    void ListViewControl::delete_column(int i)
     {
         return (void)ListView_DeleteColumn(_hwnd, i);
     }
 
-    void listview::format_columns(const string& fmt)
+    void ListViewControl::format_columns(const string& fmt)
 	{
 
 	}
 
-	int listview::set_item(int i, int isub, const TCHAR* s)
+	int ListViewControl::set_item(int i, int isub, const TCHAR* s)
 	{
 		LVITEM lvi = {0};
 		lvi.mask = LVIF_TEXT;
@@ -442,7 +475,7 @@ namespace taowin{
 		return ListView_SetItem(_hwnd, &lvi);
 	}
 
-	LPARAM listview::get_param(int i, int isub)
+	LPARAM ListViewControl::get_param(int i, int isub)
 	{
 		LVITEM lvi = {0};
 		lvi.mask = LVIF_PARAM;
@@ -454,12 +487,12 @@ namespace taowin{
 		return 0;
 	}
 
-	int listview::size() const
+	int ListViewControl::size() const
 	{
 		return ListView_GetItemCount(_hwnd);
 	}
 
-    bool listview::get_selected_items(std::vector<int>* items)
+    bool ListViewControl::get_selected_items(std::vector<int>* items)
     {
         int i = -1;
         while ((i = get_next_item(i, LVNI_SELECTED)) != -1)
@@ -467,17 +500,17 @@ namespace taowin{
         return !items->empty();
     }
 
-    void listview::set_item_state(int i, int mask, int state)
+    void ListViewControl::set_item_state(int i, int mask, int state)
     {
         ListView_SetItemState(_hwnd, i, state, mask);
     }
 
-    void listview::ensure_visible(int i)
+    void ListViewControl::ensure_visible(int i)
     {
         ListView_EnsureVisible(_hwnd, i, FALSE);
     }
 
-    void listview::show_header(int state)
+    void ListViewControl::show_header(int state)
     {
         auto style = ::GetWindowLongPtr(_hwnd, GWL_STYLE);
         bool hiding = !!(style & LVS_NOCOLUMNHEADER);
@@ -493,47 +526,47 @@ namespace taowin{
         ::SetWindowLongPtr(_hwnd, GWL_STYLE, style);
     }
 
-    int listview::get_top_index()
+    int ListViewControl::get_top_index()
     {
         return ListView_GetTopIndex(_hwnd);
     }
 
-    bool listview::get_item_position(int i, POINT * ppt)
+    bool ListViewControl::get_item_position(int i, POINT * ppt)
     {
         return !!ListView_GetItemPosition(_hwnd, i, ppt);
     }
 
-    void listview::scroll(int dx, int dy)
+    void ListViewControl::scroll(int dx, int dy)
     {
         ListView_Scroll(_hwnd, dx, dy);
     }
 
-    int listview::find_item(int start, const LVFINDINFO * lvfi)
+    int ListViewControl::find_item(int start, const LVFINDINFO * lvfi)
     {
         return ListView_FindItem(_hwnd, start, lvfi);
     }
 
-	int listview::get_column_order(int n, int * a)
+	int ListViewControl::get_column_order(int n, int * a)
 	{
 		return ListView_GetColumnOrderArray(_hwnd, n, a);
 	}
 
-    void listview::set_column_order(int n, int * a)
+    void ListViewControl::set_column_order(int n, int * a)
     {
         ListView_SetColumnOrderArray(_hwnd, n, a);
     }
 
-    int listview::subitem_hittest(LVHITTESTINFO* pht)
+    int ListViewControl::subitem_hittest(LVHITTESTINFO* pht)
     {
         return ListView_SubItemHitTest(_hwnd, pht);
     }
 
-    int listview::get_subitem_rect(int item, int subitem, RECT* rc, int code)
+    int ListViewControl::get_subitem_rect(int item, int subitem, RECT* rc, int code)
     {
         return ListView_GetSubItemRect(_hwnd, item, subitem, code, rc);
     }
 
-    bool listview::showtip_needed(const POINT& pt, const TCHAR** s)
+    bool ListViewControl::showtip_needed(const POINT& pt, const TCHAR** s)
     {
         LVHITTESTINFO hti;
         hti.pt = pt;
@@ -641,50 +674,58 @@ namespace taowin{
         return need_tip;
     }
 
-    bool listview::delete_item(int i)
+    bool ListViewControl::delete_item(int i)
 	{
 		return !!ListView_DeleteItem(_hwnd, i);
 	}
 
-    int listview::get_column_count() {
+    int ListViewControl::get_column_count() {
         HWND header = ListView_GetHeader(_hwnd);
         return Header_GetItemCount(header);
     }
 
-    void listview::set_column_width(int i, int cx)
+    void ListViewControl::update_columns()
+    {
+        _columns.update();
+        _columns.each_showing([&](int i, Column& c) {
+            insert_column(c.name.c_str(), c.width, i);
+        });
+    }
+
+    void ListViewControl::set_column_width(int i, int cx)
     {
         return (void)ListView_SetColumnWidth(_hwnd, i, cx);
     }
 
-    int listview::get_column_width(int i)
+    int ListViewControl::get_column_width(int i)
     {
         return ListView_GetColumnWidth(_hwnd, i);
     }
 
-    HWND listview::get_header()
+    HWND ListViewControl::get_header()
     {
         return ListView_GetHeader(_hwnd);
     }
 
-    int listview::get_selected_count()
+    int ListViewControl::get_selected_count()
     {
         return ListView_GetSelectedCount(_hwnd);
     }
 
-    int listview::get_next_item(int start, unsigned int flags) {
+    int ListViewControl::get_next_item(int start, unsigned int flags) {
         return ListView_GetNextItem(_hwnd, start, flags);
     }
 
-    unsigned int listview::get_item_state(int i, unsigned int flag)
+    unsigned int ListViewControl::get_item_state(int i, unsigned int flag)
     {
         return ListView_GetItemState(_hwnd, i, flag);
     }
 
-    int listview::get_item_count() {
+    int ListViewControl::get_item_count() {
         return ListView_GetItemCount(_hwnd);
     }
 
-    string listview::get_item_text(int i, int isub) {
+    string ListViewControl::get_item_text(int i, int isub) {
         TCHAR buf[1024 * 4];
         LVITEM lvi;
         lvi.iItem = i;
@@ -695,7 +736,7 @@ namespace taowin{
         return string(buf, len);
     }
 
-    int listview::get_item_data(int i, int isub) {
+    int ListViewControl::get_item_data(int i, int isub) {
         LVITEM li;
         li.iItem = i;
         li.iSubItem = isub;
@@ -705,20 +746,103 @@ namespace taowin{
     }
 
     // I used macro, so it return nothing(msdn says so).
-    void listview::set_item_text(int i, int isub, const TCHAR* text) {
+    void ListViewControl::set_item_text(int i, int isub, const TCHAR* text) {
         ListView_SetItemText(_hwnd, i, isub, (TCHAR*)text);  // TODO confirm cannot use const.
     }
 
-    bool listview::delete_all_items() {
+    bool ListViewControl::delete_all_items() {
         return !!ListView_DeleteAllItems(_hwnd);
     }
 
-    bool listview::set_item_count(int count, int flags) {
+    bool ListViewControl::set_item_count(int count, int flags) {
         return !!ListView_SetItemCountEx(_hwnd, count, flags);
     }
 
-    bool listview::redraw_items(int first, int last) {
+    bool ListViewControl::redraw_items(int first, int last) {
         return !!ListView_RedrawItems(_hwnd, first, last);
+    }
+
+    void ListViewControl::ColumnManager::update()
+    {
+        _available_indices.clear();
+        _showing_indices.clear();
+
+        int i = 0;
+
+        for(auto& c : _columns) {
+            if(c.valid) {
+                _available_indices.emplace_back(i);
+
+                if(c.show) {
+                    _showing_indices.emplace_back(i);
+                }
+            }
+
+            i++;
+        }
+    }
+
+    void ListViewControl::ColumnManager::each_all(std::function<void(int i, Column& c)> fn)
+    {
+        int i = 0;
+        for(auto& c : _columns) {
+            fn(i++, c);
+        }
+    }
+
+    void ListViewControl::ColumnManager::each_avail(std::function<void(int i, Column& c)> fn)
+    {
+        int i = 0;
+        for(auto& c : _available_indices) {
+            fn(i++, _columns[c]);
+        }
+    }
+
+    void ListViewControl::ColumnManager::each_showing(std::function<void(int i, Column& c)> fn)
+    {
+        int i = 0;
+        for(auto& c : _showing_indices) {
+            fn(i++, _columns[c]);
+        }
+    }
+
+    void ListViewControl::ColumnManager::show(int available_index, int* listview_index)
+    {
+        if(available_index < 0 || available_index >= (int)_available_indices.size())
+            return;
+
+        auto ai = _available_indices[available_index];
+        auto& c = _columns[ai];
+
+        if(!c.valid || c.show)
+            return;
+
+        int pos = 0;
+        for(auto p : _showing_indices) {
+            if(p > ai)
+                break;
+            pos++;
+        }
+
+        *listview_index = pos;
+        _showing_indices.emplace(_showing_indices.cbegin() + pos, ai);
+    }
+
+    void ListViewControl::ColumnManager::hide(bool is_listview_index, int index, int* listview_delete_index)
+    {
+        int ai = is_listview_index ? _showing_indices[index] : _available_indices[index];
+
+        int show_index = 0;
+
+        for(auto p : _showing_indices) {
+            if(p == ai) {
+                break;
+            }
+            show_index++;
+        }
+
+        if(!is_listview_index) *listview_delete_index = show_index;
+        _showing_indices.erase(_showing_indices.cbegin() + show_index);
     }
 
     //////////////////////////////////////////////////////////////////////////

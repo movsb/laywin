@@ -46,7 +46,7 @@ namespace taowin{
                     }
                 }
                 else if (_idle_handlers.empty()) {
-                    ::GetMessage(&msg, nullptr, 0, 0);
+					::GetMessage(&msg, nullptr, 0, 0);
                     if (msg.message == WM_QUIT)
                         break;
 
@@ -219,7 +219,7 @@ namespace taowin{
 			return false;
 		}
 
-        Rect get_window_Rect() const {
+        Rect get_window_rect() const {
             assert(_hwnd);
             Rect rc;
             ::GetWindowRect(_hwnd, &rc);

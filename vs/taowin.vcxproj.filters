@@ -13,59 +13,68 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\src">
+      <UniqueIdentifier>{f3e3ef71-a0ad-4f56-8d88-5d81dcf984bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test">
+      <UniqueIdentifier>{a07a93af-8a21-45a0-8370-b982b6157df1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Source.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\tw_control.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_resmgr.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tw_parser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_resmgr.cpp">
+      <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tw_syscontrols.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_window.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tw_taowin.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_util.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tw_window.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\Source.cpp">
+      <Filter>Source Files\test</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tw_menu.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\tw_control.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\tw_window.h">
+      <Filter>Source Files\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tw_resmgr.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\tw_control.h">
+      <Filter>Source Files\src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tw_parser.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tw_resmgr.h">
+      <Filter>Source Files\src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tw_syscontrols.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tw_util.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tw_window.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tw_taowin.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tw_util.h">
+      <Filter>Source Files\src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tw_menu.h">
+      <Filter>Source Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\etwlogger.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
