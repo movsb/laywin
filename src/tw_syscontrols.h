@@ -6,8 +6,6 @@
 #include <limits.h>
 #include <functional>
 
-#define ETW_LOGGER
-#define ETW_LOGGER_METHOD_COPYDATA
 #include "../etwlogger.h"
 
 #include "tw_control.h"
@@ -188,7 +186,7 @@ namespace taowin{
 	class ListViewControl : public syscontrol
 	{
     public:
-        typedef std::function<LRESULT(size_t item, size_t subitem)> OnItemMouseEvent;
+        typedef std::function<LRESULT(int item, int subitem)> OnItemMouseEvent;
 
     public:
         struct Column
@@ -258,7 +256,7 @@ namespace taowin{
         {
         public:
             virtual size_t size() const = 0;
-            virtual LPCTSTR get(size_t item, size_t subitem) const = 0;
+            virtual LPCTSTR get(int item, int subitem) const = 0;
         };
 
 	public:

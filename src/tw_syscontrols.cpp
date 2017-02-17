@@ -425,6 +425,7 @@ namespace taowin{
         }
         else if(code == NM_DBLCLK) {
             auto nmlv = reinterpret_cast<NMITEMACTIVATE*>(hdr);
+            EtwLog(_T("ListViewControl: ×ó¼üË«»÷: item: %d, subitem: %d"), nmlv->iItem, nmlv->iSubItem);
             if(_on_dblclick) {
                 *lr = _on_dblclick(nmlv->iItem, nmlv->iSubItem);
                 return true;

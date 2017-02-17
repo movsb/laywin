@@ -394,18 +394,10 @@ public:
             LogDataMsg* logmsg = reinterpret_cast<LogDataMsg*>(lParam);
             COPYDATASTRUCT cds;
             cds.dwData = 0;
-            int a = offsetof(LogData, text);
-            unsigned int b = logmsg->log.cch;
-            assert(b == logmsg->log.cch);
-            MessageBox(0, std::to_string(b).c_str(), std::to_string(logmsg->log.cch).c_str(), 0);
-            if(b == logmsg->log.cch) {
-                b = b;
-            }
-            int c = sizeof(logmsg->log.text[0]);
             cds.cbData = offsetof(LogData, text) + logmsg->log.cch * sizeof(logmsg->log.text[0]);
             cds.lpData = static_cast<void*>(logmsg);
 
-            LRESULT lr = ::SendMessage(m_HostWnd, WM_COPYDATA, WPARAM(m_hWnd), LPARAM(&cds));
+            ::SendMessage(m_HostWnd, WM_COPYDATA, WPARAM(m_hWnd), LPARAM(&cds));
 
             m_logs.destroy(logmsg);
 

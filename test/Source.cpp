@@ -1,7 +1,6 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#define ETW_LOGGER
 #include "../etwlogger.h"
 #include "../src/tw_taowin.h"
 
@@ -13,12 +12,12 @@ ETWLogger g_etwLogger(providerGUID);
 class DataSource : public taowin::ListViewControl::IDataSource
 {
 protected:
-    virtual size_t size() const
+    virtual size_t size() const override
     {
         return 100;
     }
 
-    virtual LPCTSTR get(size_t item, size_t subitem) const
+    virtual LPCTSTR get(int item, int subitem) const override
     {
         static taowin::string text;
         text = !subitem ? std::to_string(item) : std::to_string(subitem);
@@ -43,7 +42,6 @@ protected:
     </res>
     <root>
         <vertical padding="5,5,5,5">
-            <button name="btn"/>
             <listview name="lv" style="singlesel,ownerdata" exstyle="clientedge">  </listview>
         </vertical>
     </root>
@@ -66,14 +64,6 @@ protected:
             cm.push("item3", true, 150, "id3");
             lv->update_columns();
             lv->set_source(&_data);
-            lv->on_double_click([&](size_t item, size_t subitem) {
-                msgbox(std::to_string(item) + ',' + std::to_string(subitem));
-                return 0;
-            });
-
-            _root->find<taowin::button>("btn")->on_click([&] {
-                msgbox("buttn click");
-            });
 			return 0;
 		}
         case WM_CLOSE:
