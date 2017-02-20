@@ -1,5 +1,5 @@
 #include <Windows.h>
-#include "src/tw_taowin.h"
+#include "core/tw_taowin.h"
 
 // {9CEC8287-B104-4A62-AF00-3DA900848A18}
 static const GUID providerGUID = 

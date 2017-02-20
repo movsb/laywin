@@ -58,6 +58,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;ETW_LOGGER;ETW_LOGGER_METHOD_COPYDATA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -77,6 +78,7 @@
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -88,26 +90,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\core\tw_control.h" />
+    <ClInclude Include="..\core\tw_menu.h" />
+    <ClInclude Include="..\core\tw_parser.h" />
+    <ClInclude Include="..\core\tw_resmgr.h" />
+    <ClInclude Include="..\core\tw_syscontrols.h" />
+    <ClInclude Include="..\core\tw_taowin.h" />
+    <ClInclude Include="..\core\tw_util.h" />
+    <ClInclude Include="..\core\tw_window.h" />
+    <ClInclude Include="..\ctrl\button.h" />
+    <ClInclude Include="..\ctrl\combobox.h" />
+    <ClInclude Include="..\ctrl\edit.h" />
+    <ClInclude Include="..\ctrl\header.h" />
+    <ClInclude Include="..\ctrl\listview.h" />
+    <ClInclude Include="..\ctrl\progress.h" />
+    <ClInclude Include="..\ctrl\tabctrl.h" />
     <ClInclude Include="..\etwlogger.h" />
-    <ClInclude Include="..\src\tw_control.h" />
-    <ClInclude Include="..\src\tw_menu.h" />
-    <ClInclude Include="..\src\tw_taowin.h" />
-    <ClInclude Include="..\src\tw_parser.h" />
-    <ClInclude Include="..\src\tw_syscontrols.h" />
-    <ClInclude Include="..\src\tw_util.h" />
-    <ClInclude Include="..\src\tw_resmgr.h" />
-    <ClInclude Include="..\src\tw_window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\core\tw_control.cpp" />
+    <ClCompile Include="..\core\tw_menu.cpp" />
+    <ClCompile Include="..\core\tw_parser.cpp" />
+    <ClCompile Include="..\core\tw_resmgr.cpp" />
+    <ClCompile Include="..\core\tw_syscontrols.cpp" />
+    <ClCompile Include="..\core\tw_taowin.cpp" />
+    <ClCompile Include="..\core\tw_util.cpp" />
+    <ClCompile Include="..\core\tw_window.cpp" />
+    <ClCompile Include="..\ctrl\button.cpp" />
+    <ClCompile Include="..\ctrl\combobox.cpp" />
+    <ClCompile Include="..\ctrl\edit.cpp" />
+    <ClCompile Include="..\ctrl\header.cpp" />
+    <ClCompile Include="..\ctrl\listview.cpp" />
+    <ClCompile Include="..\ctrl\progress.cpp" />
+    <ClCompile Include="..\ctrl\tabctrl.cpp" />
     <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="..\src\tw_control.cpp" />
-    <ClCompile Include="..\src\tw_menu.cpp" />
-    <ClCompile Include="..\src\tw_taowin.cpp" />
-    <ClCompile Include="..\src\tw_parser.cpp" />
-    <ClCompile Include="..\src\tw_syscontrols.cpp" />
-    <ClCompile Include="..\src\tw_util.cpp" />
-    <ClCompile Include="..\src\tw_resmgr.cpp" />
-    <ClCompile Include="..\src\tw_window.cpp" />
     <ClCompile Include="..\test\test_button.cpp" />
     <ClCompile Include="..\test\test_combobox.cpp" />
     <ClCompile Include="..\test\test_edit.cpp" />

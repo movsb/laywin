@@ -13,38 +13,17 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\src">
-      <UniqueIdentifier>{f3e3ef71-a0ad-4f56-8d88-5d81dcf984bb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\test">
       <UniqueIdentifier>{a07a93af-8a21-45a0-8370-b982b6157df1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\core">
+      <UniqueIdentifier>{f3e3ef71-a0ad-4f56-8d88-5d81dcf984bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ctrl">
+      <UniqueIdentifier>{8ba4356e-17da-44a8-8d7d-cfb3297ad55d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\tw_control.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_parser.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_resmgr.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_syscontrols.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_taowin.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_util.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_window.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tw_menu.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,34 +45,100 @@
     <ClCompile Include="..\test\test_tabctrl.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
+    <ClCompile Include="..\core\tw_control.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core\tw_menu.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core\tw_parser.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core\tw_resmgr.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core\tw_syscontrols.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core\tw_taowin.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core\tw_util.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core\tw_window.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ctrl\button.cpp">
+      <Filter>Source Files\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ctrl\combobox.cpp">
+      <Filter>Source Files\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ctrl\edit.cpp">
+      <Filter>Source Files\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ctrl\header.cpp">
+      <Filter>Source Files\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ctrl\listview.cpp">
+      <Filter>Source Files\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ctrl\progress.cpp">
+      <Filter>Source Files\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ctrl\tabctrl.cpp">
+      <Filter>Source Files\ctrl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\tw_window.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tw_control.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tw_parser.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tw_resmgr.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tw_syscontrols.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tw_taowin.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tw_util.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tw_menu.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
     <ClInclude Include="..\etwlogger.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\tw_control.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\tw_menu.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\tw_parser.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\tw_resmgr.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\tw_syscontrols.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\tw_taowin.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\tw_util.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\tw_window.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ctrl\button.h">
+      <Filter>Source Files\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ctrl\combobox.h">
+      <Filter>Source Files\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ctrl\edit.h">
+      <Filter>Source Files\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ctrl\header.h">
+      <Filter>Source Files\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ctrl\listview.h">
+      <Filter>Source Files\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ctrl\progress.h">
+      <Filter>Source Files\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ctrl\tabctrl.h">
+      <Filter>Source Files\ctrl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

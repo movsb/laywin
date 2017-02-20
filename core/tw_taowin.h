@@ -14,6 +14,14 @@
 #include "tw_resmgr.h"
 #include "tw_menu.h"
 
+#include "../ctrl/button.h"
+#include "../ctrl/combobox.h"
+#include "../ctrl/edit.h"
+#include "../ctrl/header.h"
+#include "../ctrl/listview.h"
+#include "../ctrl/progress.h"
+#include "../ctrl/tabctrl.h"
+
 namespace taowin{
 
     class window_creator : public window

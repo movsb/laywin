@@ -2,7 +2,7 @@
 #include <commctrl.h>
 
 #include "../etwlogger.h"
-#include "../src/tw_taowin.h"
+#include "core/tw_taowin.h"
 
 
 class TW : public taowin::window_creator
