@@ -64,18 +64,19 @@ protected:
             cm.push("item3", true, 150, "id3");
             lv->update_columns();
             lv->set_source(&_data);
+
 			return 0;
 		}
-        case WM_CLOSE:
-            if(MessageBox(_hwnd, "ȷ�Ϲرգ�", "", MB_OKCANCEL) != IDOK) {
-                return 0;
-            }
-		default:
-			break;
 		}
         return __super::handle_message(umsg, wparam, lparam);
 	}
 
+    virtual taowin::syscontrol* filter_control(HWND hwnd) override
+    {
+        auto lv = _root->find<taowin::ListViewControl>("lv");
+        if(hwnd == lv->get_header()) return lv;
+        return nullptr;
+    }
 private:
     DataSource _data;
 };

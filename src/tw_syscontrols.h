@@ -38,6 +38,9 @@ namespace taowin{
         }
     };
 
+    typedef std::function<LRESULT()> OnNotify;
+    typedef std::function<LRESULT(NMHDR*)> OnHdrNotify;
+
     class window_creator;
 
 	class syscontrol : public control
@@ -49,11 +52,13 @@ namespace taowin{
 
 	public:
         void create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) override;
+        void attach(HWND hwnd) { _hwnd = hwnd; }
         unsigned int get_ctrl_id() const;
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) = 0;
         virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) { return false; }
+        virtual bool filter_child(HWND child, int code, NMHDR* hdr, LRESULT* lr) { return false; }
 
     private:
         void create_metas(syscontrol_metas& metas, std::map<string, string>& attrs);
@@ -125,10 +130,11 @@ namespace taowin{
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
 	};
 
-    class combobox : public syscontrol
+    class ComboboxControl : public syscontrol
     {
     public:
-        typedef std::function<void(combobox* that, DRAWITEMSTRUCT* dis, int i, bool selected)> OnDraw;
+        typedef std::function<void(ComboboxControl* that, DRAWITEMSTRUCT* dis, int i, bool selected)> OnDraw;
+        typedef std::function<LRESULT(int index, void* ud)> OnSelChange;
 
     public:
         int add_string(const TCHAR* s);
@@ -144,13 +150,17 @@ namespace taowin{
         void adjust_droplist_width(const std::vector<const TCHAR*>& strs);
         void set_ondraw(OnDraw fn) { _ondraw = fn; }
         void drawit(DRAWITEMSTRUCT* dis);
+
+    public:
+        void on_sel_change(OnSelChange callback) { _on_sel_change = callback; }
         
     protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
         virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
 
     private:
-        OnDraw _ondraw;
+        OnDraw      _ondraw;
+        OnSelChange _on_sel_change;
     };
 
 	class edit : public syscontrol
@@ -182,6 +192,26 @@ namespace taowin{
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
 	};
+
+    class HeaderControl : public syscontrol
+    {
+    public:
+        enum ReturnValue
+        {
+            RClick_NotAllowDefault      = 1,
+            RClick_AllowDefault         = 0,
+        };
+
+    public:
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+        virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
+
+    public:
+        OnNotify        on_rclick;
+        OnHdrNotify     on_end_track;
+        OnHdrNotify     on_divider_dblclick;
+        OnNotify        on_end_drag;
+    };
 
 	class ListViewControl : public syscontrol
 	{
@@ -289,6 +319,7 @@ namespace taowin{
         void set_column_width(int i, int cx);
         int get_column_width(int i);
         HWND get_header();
+        HeaderControl& get_header_control() { return _header; }
 		int size() const;
         bool get_selected_items(std::vector<int>* items);
         void set_item_state(int i, int mask, int state);
@@ -311,16 +342,32 @@ namespace taowin{
         void go_top() { ::PostMessage(_hwnd, WM_KEYDOWN, VK_HOME, 0); }
         void go_bottom() { ::PostMessage(_hwnd, WM_KEYDOWN, VK_END, 0); }
 
+        void on_right_click(OnHdrNotify callback) { _on_right_click = callback; }
         void on_double_click(OnItemMouseEvent callback) { _on_dblclick = callback; }
+        void on_custom_draw(OnHdrNotify callback) { _on_custom_draw = callback; }
+        void on_key_down(OnHdrNotify callback) { _on_key_down = callback; }
+        void on_item_changed(OnHdrNotify callback) { _on_item_changd = callback; }
+
+        void on_header_rclick(OnNotify callback) { _header.on_rclick = callback; }
+        void on_header_end_track(OnHdrNotify callback) { _header.on_end_track = callback; }
+        void on_header_divider_dblclick(OnHdrNotify callback) { _header.on_divider_dblclick = callback; }
+        void on_header_end_drag(OnNotify callback) { _header.on_end_drag = callback; }
 
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
         virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
+        virtual bool filter_child(HWND child, int code, NMHDR* hdr, LRESULT* lr) override;
 
-	private:
+    private:
+        HeaderControl       _header;
         ColumnManager       _columns;
         IDataSource*        _data;
+
         OnItemMouseEvent    _on_dblclick;
+        OnHdrNotify         _on_custom_draw;
+        OnHdrNotify         _on_right_click;
+        OnHdrNotify         _on_key_down;
+        OnHdrNotify         _on_item_changd;
 	};
 
 	class tabctrl : public syscontrol

@@ -24,7 +24,7 @@ namespace taowin{
             else if(tag == _T("group"))         ctl = new group;
             else if(tag == _T("edit"))          ctl = new edit;
             else if(tag == _T("listview"))      ctl = new ListViewControl;
-            else if(tag == _T("combobox"))      ctl = new combobox;
+            else if(tag == _T("combobox"))      ctl = new ComboboxControl;
             else if(tag == _T("tabctrl"))       ctl = new tabctrl;
 
             else                                ctl = nullptr;
@@ -96,11 +96,29 @@ namespace taowin{
             if(hwnd) { // from control message
                 syscontrol* pc = (syscontrol*)::GetWindowLongPtr(hwnd, GWL_USERDATA);
                 LRESULT lr = 0;
-                if(pc && pc->filter_notify(code, nullptr, &lr))
-                    return lr;
                 if(pc) {
-                    return on_notify(hwnd, pc, code, nullptr);
+                    NMHDR hdr;
+                    hdr.hwndFrom = hwnd;
+                    hdr.idFrom = id;
+                    hdr.code = code;
+                    if(pc->filter_notify(code, &hdr, &lr)) {
+                        return lr;
+                    }
                 }
+                else {
+                    pc = filter_control(hwnd);
+                    if(pc) {
+                        NMHDR hdr;
+                        hdr.hwndFrom = hwnd;
+                        hdr.idFrom = id;
+                        hdr.code = code;
+                        if(pc->filter_child(hwnd, code, &hdr, &lr)) {
+                            return lr;
+                        }
+                    }
+                }
+
+                return on_notify(hwnd, pc, code, nullptr);
             }
             else {
                 if(code == 0) {
@@ -121,11 +139,23 @@ namespace taowin{
 		case WM_NOTIFY:
 		{
 			NMHDR* hdr = reinterpret_cast<NMHDR*>(lparam);
+            if(!hdr) break;
             syscontrol* pc = (syscontrol*)::GetWindowLongPtr(hdr->hwndFrom, GWL_USERDATA);
-			if(!hdr) break;
             LRESULT lr = 0;
-            if(pc && pc->filter_notify(hdr->code, hdr, &lr))
-                return lr;
+            if(pc) {
+                if(pc->filter_notify(hdr->code, hdr, &lr)) {
+                    return lr;
+                }
+            }
+            else {
+                pc = filter_control(hdr->hwndFrom);
+                if(pc) {
+                    if(pc->filter_child(hdr->hwndFrom, hdr->code, hdr, &lr)) {
+                        return lr;
+                    }
+                }
+            }
+
 			return on_notify(hdr->hwndFrom, pc, hdr->code, hdr);
 		}
         case WM_CREATE:

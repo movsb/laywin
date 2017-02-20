@@ -29,6 +29,7 @@ namespace taowin{
 		virtual LPCTSTR get_skin_xml() const;
 		virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);
 		virtual LRESULT control_message(syscontrol* ctl, UINT umsg, WPARAM wparam, LPARAM lparam);
+        virtual syscontrol* filter_control(HWND hwnd) { return nullptr; }
 		virtual LRESULT on_menu(const MenuIds& ids) { return 0; }
         virtual LRESULT on_accel(int id) { return 0; }
 		virtual LRESULT on_notify(HWND hwnd, control* pc, int code, NMHDR* hdr) { return 0; }

@@ -218,12 +218,12 @@ namespace taowin{
         metas.classname = WC_BUTTON;
     }
 
-    int combobox::add_string(const TCHAR * s)
+    int ComboboxControl::add_string(const TCHAR * s)
     {
         return ComboBox_AddString(_hwnd, s);
     }
 
-    int combobox::add_string(const TCHAR * s, void * data)
+    int ComboboxControl::add_string(const TCHAR * s, void * data)
     {
         int i = add_string(s);
         if (i != -1) {
@@ -233,17 +233,17 @@ namespace taowin{
         return i;
     }
 
-    void combobox::set_item_data(int i, void * data)
+    void ComboboxControl::set_item_data(int i, void * data)
     {
         ComboBox_SetItemData(_hwnd, i, data);
     }
 
-    void * combobox::get_item_data(int i)
+    void * ComboboxControl::get_item_data(int i)
     {
         return (void*)ComboBox_GetItemData(_hwnd, i);
     }
 
-    void * combobox::get_cur_data()
+    void * ComboboxControl::get_cur_data()
     {
         void* d = nullptr;
         int i = get_cur_sel();
@@ -255,22 +255,22 @@ namespace taowin{
         return d;
     }
 
-    int combobox::get_cur_sel()
+    int ComboboxControl::get_cur_sel()
     {
         return ComboBox_GetCurSel(_hwnd);
     }
 
-    void combobox::set_cur_sel(int i)
+    void ComboboxControl::set_cur_sel(int i)
     {
         return (void)ComboBox_SetCurSel(_hwnd, i);
     }
 
-    int combobox::get_count()
+    int ComboboxControl::get_count()
     {
         return ComboBox_GetCount(_hwnd);
     }
 
-    string combobox::get_text()
+    string ComboboxControl::get_text()
     {
         static TCHAR buf[1024];
         int len = ::GetWindowTextLength(_hwnd);
@@ -282,12 +282,12 @@ namespace taowin{
         return std::move(s);
     }
 
-    void combobox::reset_content()
+    void ComboboxControl::reset_content()
     {
         ComboBox_ResetContent(_hwnd);
     }
 
-    void combobox::adjust_droplist_width(const std::vector<const TCHAR*>& strs)
+    void ComboboxControl::adjust_droplist_width(const std::vector<const TCHAR*>& strs)
     {
         HFONT hFont = (HFONT)::SendMessage(_hwnd, WM_GETFONT, 0, 0);
         HDC hDc = ::GetDC(_hwnd);
@@ -312,7 +312,7 @@ namespace taowin{
         ::SendMessage(_hwnd, CB_SETDROPPEDWIDTH, padding + max_width + vsw, 0);
     }
 
-    void combobox::drawit(DRAWITEMSTRUCT* dis)
+    void ComboboxControl::drawit(DRAWITEMSTRUCT* dis)
     {
         if(!_ondraw) return;
         if(dis->itemID == -1) return;
@@ -321,7 +321,7 @@ namespace taowin{
         _ondraw(this, dis, dis->itemID, selected);
     }
 
-    void combobox::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+    void ComboboxControl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
     {
         static style_map __known_styles[] = {
             {CBS_SIMPLE,    _T("simple")},
@@ -343,7 +343,7 @@ namespace taowin{
     }
 
 
-    void combobox::set_attr(const TCHAR* name, const TCHAR* value)
+    void ComboboxControl::set_attr(const TCHAR* name, const TCHAR* value)
     {
 		return __super::set_attr(name, value);
 	}
@@ -411,6 +411,9 @@ namespace taowin{
         metas.after_created = [&]() {
             DWORD dw = ListView_GetExtendedListViewStyle(_hwnd);
             ListView_SetExtendedListViewStyle(_hwnd, dw | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT|LVS_EX_HEADERDRAGDROP);
+            auto header = get_header();
+            assert(header != nullptr);
+            _header.attach(header);
         };
     }
 
@@ -430,6 +433,15 @@ namespace taowin{
                 *lr = _on_dblclick(nmlv->iItem, nmlv->iSubItem);
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    bool ListViewControl::filter_child(HWND child, int code, NMHDR* hdr, LRESULT* lr)
+    {
+        if(child == _header.hwnd()) {
+            return _header.filter_notify(code, hdr, lr);
         }
 
         return false;
@@ -866,6 +878,24 @@ namespace taowin{
     void tabctrl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
     {
         metas.classname = WC_TABCONTROL;
+    }
+
+    void HeaderControl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+    {
+        metas.classname = WC_HEADER;
+    }
+
+    bool HeaderControl::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
+    {
+        if(code == NM_RCLICK) {
+            EtwLog(_T("HeaderControl: ÓÒ¼üµã»÷"));
+            if(on_rclick) {
+                *lr = on_rclick();
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
