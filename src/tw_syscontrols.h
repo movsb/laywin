@@ -157,6 +157,7 @@ namespace taowin{
     protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
         virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
+        virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
 
     private:
         OnDraw      _ondraw;
@@ -189,8 +190,14 @@ namespace taowin{
         void append(const TCHAR* s);
         int size() const;
 
+        void on_change(OnNotify callback) { _on_change = callback; }
+
 	protected:
         virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+        virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
+
+    private:
+        OnNotify    _on_change;
 	};
 
     class HeaderControl : public syscontrol
@@ -342,7 +349,7 @@ namespace taowin{
         void go_top() { ::PostMessage(_hwnd, WM_KEYDOWN, VK_HOME, 0); }
         void go_bottom() { ::PostMessage(_hwnd, WM_KEYDOWN, VK_END, 0); }
 
-        void on_right_click(OnHdrNotify callback) { _on_right_click = callback; }
+        void on_right_click(OnItemMouseEvent callback) { _on_right_click = callback; }
         void on_double_click(OnItemMouseEvent callback) { _on_dblclick = callback; }
         void on_custom_draw(OnHdrNotify callback) { _on_custom_draw = callback; }
         void on_key_down(OnHdrNotify callback) { _on_key_down = callback; }
@@ -365,10 +372,23 @@ namespace taowin{
 
         OnItemMouseEvent    _on_dblclick;
         OnHdrNotify         _on_custom_draw;
-        OnHdrNotify         _on_right_click;
+        OnItemMouseEvent    _on_right_click;
         OnHdrNotify         _on_key_down;
         OnHdrNotify         _on_item_changd;
 	};
+
+    class progress : public syscontrol
+    {
+    public:
+        void set_range(int min, int max);
+        void set_pos(int pos);
+        void set_bkcolor(COLORREF color);
+        void set_color(COLORREF color);
+
+    protected:
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+        virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
+    };
 
 	class tabctrl : public syscontrol
 	{

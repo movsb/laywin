@@ -99,6 +99,7 @@
     <ClInclude Include="..\src\tw_window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\src\tw_control.cpp" />
     <ClCompile Include="..\src\tw_menu.cpp" />
     <ClCompile Include="..\src\tw_taowin.cpp" />
@@ -107,7 +108,12 @@
     <ClCompile Include="..\src\tw_util.cpp" />
     <ClCompile Include="..\src\tw_resmgr.cpp" />
     <ClCompile Include="..\src\tw_window.cpp" />
-    <ClCompile Include="..\test\Source.cpp" />
+    <ClCompile Include="..\test\test_button.cpp" />
+    <ClCompile Include="..\test\test_combobox.cpp" />
+    <ClCompile Include="..\test\test_edit.cpp" />
+    <ClCompile Include="..\test\test_listview.cpp" />
+    <ClCompile Include="..\test\test_progress.cpp" />
+    <ClCompile Include="..\test\test_tabctrl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

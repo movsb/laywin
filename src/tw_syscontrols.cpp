@@ -10,6 +10,8 @@
 
 namespace taowin{
 
+#define is_attr(a) (_tcscmp(name, a) == 0)
+
     int __map_style(DWORD* dwStyle, style_map* known_styles, std::vector<string>& styles)
     {
         int n = 0;
@@ -159,7 +161,6 @@ namespace taowin{
     bool button::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
     {
         if(code == BN_CLICKED) {
-            EtwLog(_T("ÊÂ¼þ£º°´Å¥µã»÷£¨%s£©"), name().c_str());
             if(_on_click) {
                 _on_click();
                 return true;
@@ -348,6 +349,18 @@ namespace taowin{
 		return __super::set_attr(name, value);
 	}
 
+    bool ComboboxControl::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
+    {
+        if(code == CBN_SELCHANGE) {
+            if(_on_sel_change) {
+                *lr = _on_sel_change(get_cur_sel(), get_cur_data());
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     //////////////////////////////////////////////////////////////////////////
     void edit::set_sel(int start, int end)
     {
@@ -386,6 +399,18 @@ namespace taowin{
         metas.classname = WC_EDIT;
         metas.style |= ES_AUTOHSCROLL | ES_AUTOVSCROLL;
         metas.known_styles = &__known_styles[0];
+    }
+
+    bool edit::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
+    {
+        if(code == EN_CHANGE) {
+            if(_on_change) {
+                *lr = _on_change();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -428,9 +453,15 @@ namespace taowin{
         }
         else if(code == NM_DBLCLK) {
             auto nmlv = reinterpret_cast<NMITEMACTIVATE*>(hdr);
-            EtwLog(_T("ListViewControl: ×ó¼üË«»÷: item: %d, subitem: %d"), nmlv->iItem, nmlv->iSubItem);
             if(_on_dblclick) {
                 *lr = _on_dblclick(nmlv->iItem, nmlv->iSubItem);
+                return true;
+            }
+        }
+        else if(code == NM_RCLICK) {
+            auto nmlv = reinterpret_cast<NMITEMACTIVATE*>(hdr);
+            if(_on_dblclick) {
+                *lr = _on_right_click(nmlv->iItem, nmlv->iSubItem);
                 return true;
             }
         }
@@ -888,7 +919,6 @@ namespace taowin{
     bool HeaderControl::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
     {
         if(code == NM_RCLICK) {
-            EtwLog(_T("HeaderControl: ÓÒ¼üµã»÷"));
             if(on_rclick) {
                 *lr = on_rclick();
                 return true;
@@ -896,6 +926,59 @@ namespace taowin{
         }
 
         return false;
+    }
+
+    void progress::set_range(int min, int max)
+    {
+        ::SendMessage(_hwnd, PBM_SETRANGE32, min, max);
+    }
+
+    void progress::set_pos(int pos)
+    {
+        ::SendMessage(_hwnd, PBM_SETPOS, pos, 0);
+    }
+
+    void progress::set_bkcolor(COLORREF color)
+    {
+        ::SendMessage(_hwnd, PBM_SETBKCOLOR, 0, color);
+    }
+
+    void progress::set_color(COLORREF color)
+    {
+        ::SendMessage(_hwnd, PBM_SETBARCOLOR, 0, color);
+    }
+
+    void progress::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+    {
+        metas.classname = PROGRESS_CLASS;
+        metas.after_created = [this] {
+            ::SendMessage(_hwnd, PBM_SETSTEP, 1, 0);
+        };
+    }
+
+    void progress::set_attr(const TCHAR* name, const TCHAR* value)
+    {
+        if(is_attr(_T("color"))) {
+            int r, g, b;
+            if(_stscanf(value, _T("%d,%d,%d"), &r, &g, &b) == 3) {
+                set_color(RGB(r, g, b));
+            }
+        }
+        else if(is_attr(_T("bkcolor"))) {
+            int r, g, b;
+            if(_stscanf(value, _T("%d,%d,%d"), &r, &g, &b) == 3) {
+                set_bkcolor(RGB(r, g, b));
+            }
+        }
+        else if(is_attr(_T("range"))) {
+            int min, max;
+            if(_stscanf(value, _T("%d,%d"), &min, &max) == 2) {
+                set_range(min, max);
+            }
+        }
+        else {
+            return __super::set_attr(name, value);
+        }
     }
 
 }

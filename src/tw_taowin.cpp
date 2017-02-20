@@ -26,6 +26,7 @@ namespace taowin{
             else if(tag == _T("listview"))      ctl = new ListViewControl;
             else if(tag == _T("combobox"))      ctl = new ComboboxControl;
             else if(tag == _T("tabctrl"))       ctl = new tabctrl;
+            else if(tag == _T("progress"))      ctl = new progress;
 
             else                                ctl = nullptr;
 
