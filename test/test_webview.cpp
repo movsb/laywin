@@ -19,13 +19,16 @@ protected:
     virtual LPCTSTR get_skin_xml() const override
     {
         LPCTSTR json = _T(R"tw(
-<window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
+<window title="taowinÑÝÊ¾´°¿Ú" size="800,600">
     <res>
         <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
         <font name="1" face="Î¢ÈíÑÅºÚ" size="12"/>
     </res>
     <root>
-        <webview name="c" url="https://blog.twofei.com/test" />
+        <horizontal>
+            <webview name="c" url="https://www.example.com" />
+            <listview />
+        </horizontal>
     </root>
 </window>
 )tw");
@@ -48,6 +51,12 @@ protected:
     virtual taowin::syscontrol* filter_control(HWND hwnd) override
     {
         return nullptr;
+    }
+
+    virtual bool filter_message(MSG* msg) override
+    {
+        return _c->filter_message(msg);
+
     }
 
 private:

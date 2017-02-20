@@ -11,7 +11,6 @@
 #include <mshtmhst.h>
 
 #include "util/com_hlp.hpp"
-#include "core/tw_window.h"
 
 namespace taowin {
 
@@ -217,7 +216,7 @@ protected:
     bool                        _bEnableContextMenus;           // 是否允许显示右键菜单
 };
 
-class webview:public syscontrol
+class webview:public custom_control
 {
 public:
     void navigate(const TCHAR* url)
@@ -225,10 +224,15 @@ public:
         _pwb->Navigate(url);
     }
 
+    bool filter_message(MSG* msg)
+    {
+        return _pwb->FilterMessage(msg);
+    }
+
 protected:
     virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override
     {
-        metas.classname = _T("taowin::control");
+        __super::get_metas(metas, attrs);
         metas.before_creation = [this] {
             static WebBrowserVersionSetter dummy;
         };
@@ -236,6 +240,16 @@ protected:
             _pwb = new WebBrowserContainer;
             _pwb->Create(_hwnd);
         };
+    }
+
+    virtual bool control_procedure(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lr) override
+    {
+        if(uMsg == WM_ERASEBKGND) {
+            lr = TRUE;
+            return true;
+        }
+
+        return false;
     }
 
     virtual void set_attr(const TCHAR* name, const TCHAR* value) override

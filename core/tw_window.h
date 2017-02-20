@@ -237,8 +237,8 @@ namespace taowin{
 
     private:
         friend void register_window_classes();
-		static LRESULT __stdcall __window_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
-		static LRESULT __stdcall __control_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
+        static LRESULT __stdcall __window_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
+
 	protected:
 		virtual LRESULT __handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);
 		virtual void on_first_message();

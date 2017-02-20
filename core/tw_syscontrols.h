@@ -76,6 +76,24 @@ namespace taowin{
         WNDPROC _old_wnd_proc;
 	};
 
+    class custom_control : public syscontrol
+    {
+    protected:
+        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+        {
+            static bool registered = false;
+            if(!registered) {
+                register_window_classes();
+                registered = true;
+            }
+            metas.classname = _T("taowin::control");
+        }
+
+        static LRESULT __stdcall __control_procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+        virtual bool control_procedure(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lr) = 0;
+        void register_window_classes();
+    };
+
 }
 
 #endif//__taowin_syscontrols_h__

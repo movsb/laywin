@@ -141,18 +141,43 @@ namespace taowin{
         }
     }
 
+    LRESULT __stdcall custom_control::__control_procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    {
+        custom_control* pThis = static_cast<custom_control*>(reinterpret_cast<syscontrol*>(::GetWindowLongPtr(hWnd, 4)));
 
+        if(uMsg == WM_NCCREATE) {
+            LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lParam);
+            pThis = static_cast<custom_control*>(static_cast<syscontrol*>(lpcs->lpCreateParams));
+            pThis->hwnd(hWnd);
+            ::SetWindowLongPtr(hWnd, 4, reinterpret_cast<LPARAM>(pThis));
+            return TRUE; // must
+        }
+        else if(uMsg == WM_NCDESTROY) {
+            ::SetWindowLongPtr(pThis->hwnd(), 4, 0);
+            ::DefWindowProc(hWnd, uMsg, wParam, lParam);
+            return 0;
+        }
 
+        LRESULT lr;
+        if(pThis && pThis->control_procedure(uMsg, wParam, lParam, lr))
+            return lr;
+        else
+            return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
+    }
 
-
-
-    //////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////
-
-
-
-
-
+    void custom_control::register_window_classes()
+    {
+        WNDCLASSEX wc = {0};
+        wc.cbSize = sizeof(wc);
+        wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+        wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+        wc.hIcon = wc.hIconSm = (HICON)::LoadImage(::GetModuleHandle(nullptr), (LPCTSTR)101, IMAGE_ICON, 32, 32, 0);
+        wc.hInstance = ::GetModuleHandle(nullptr);
+        wc.lpfnWndProc = &__control_procedure;
+        wc.lpszClassName = _T("taowin::control");
+        wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+        wc.cbWndExtra = sizeof(void*) * 2; // [[extra_ptr][this]]
+        ::RegisterClassEx(&wc);
+    }
 
 }
