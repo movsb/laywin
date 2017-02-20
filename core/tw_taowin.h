@@ -21,6 +21,7 @@
 #include "../ctrl/listview.h"
 #include "../ctrl/progress.h"
 #include "../ctrl/tabctrl.h"
+#include "../ctrl/webview.h"
 
 namespace taowin{
 

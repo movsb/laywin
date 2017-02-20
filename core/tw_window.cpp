@@ -1,4 +1,5 @@
 #include "tw_window.h"
+#include "tw_syscontrols.h"
 
 namespace taowin{
 
@@ -145,10 +146,33 @@ namespace taowin{
 
     void window::get_metas(WindowMeta* metas) {
         metas->caption = _T("taowin");
-        metas->classname = _T("taowin");
+        metas->classname = _T("taowin::window");
         metas->style = WS_OVERLAPPEDWINDOW;
         metas->exstyle = WS_EX_APPWINDOW;
         metas->flags = WindowFlag::center;
+    }
+
+    LRESULT window::__control_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+    {
+        syscontrol* pThis = reinterpret_cast<syscontrol*>(::GetWindowLongPtr(hwnd, 4));
+
+		if(umsg == WM_NCCREATE) {
+			LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lparam);
+			pThis = static_cast<syscontrol*>(static_cast<syscontrol*>(lpcs->lpCreateParams));
+            pThis->hwnd(hwnd);
+			::SetWindowLongPtr(hwnd, 4, reinterpret_cast<LPARAM>(pThis));
+            return TRUE; // must
+		}
+        else if(umsg == WM_NCDESTROY) {
+            ::SetWindowLongPtr(pThis->hwnd(), 4, 0);
+            ::DefWindowProc(hwnd, umsg, wparam, lparam);
+            return 0;
+		}
+        else if(umsg == WM_ERASEBKGND) {
+            return TRUE;
+        }
+
+        return ::DefWindowProc(hwnd, umsg, wparam, lparam);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -160,9 +184,13 @@ namespace taowin{
         wc.hIcon = wc.hIconSm = (HICON)::LoadImage(::GetModuleHandle(nullptr), (LPCTSTR)101, IMAGE_ICON, 32, 32, 0);
         wc.hInstance = ::GetModuleHandle(nullptr);
         wc.lpfnWndProc = &window::__window_procedure;
-        wc.lpszClassName = _T("taowin");
+        wc.lpszClassName = _T("taowin::window");
         wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
         wc.cbWndExtra = sizeof(void*)* 2; // [[extra_ptr][this]]
+        ::RegisterClassEx(&wc);
+
+        wc.lpfnWndProc = &window::__control_procedure;
+        wc.lpszClassName = _T("taowin::control");
         ::RegisterClassEx(&wc);
     }
 }

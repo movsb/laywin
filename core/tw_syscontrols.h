@@ -5,6 +5,7 @@
 #include <vector>
 #include <limits.h>
 #include <functional>
+#include <memory>
 
 #include <windows.h>
 #include <CommCtrl.h>

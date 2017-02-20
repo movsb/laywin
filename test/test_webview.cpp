@@ -11,6 +11,11 @@ public:
     }
 
 protected:
+    virtual void get_metas(WindowMeta* metas) override
+    {
+        __super::get_metas(metas);
+        metas->style |= WS_CLIPCHILDREN;
+    }
     virtual LPCTSTR get_skin_xml() const override
     {
         LPCTSTR json = _T(R"tw(
@@ -20,9 +25,7 @@ protected:
         <font name="1" face="Î¢ÈíÑÅºÚ" size="12"/>
     </res>
     <root>
-        <vertical padding="5,5,5,5">
-            <button name="c" />
-        </vertical>
+        <webview name="c" url="https://blog.twofei.com/test" />
     </root>
 </window>
 )tw");
@@ -34,10 +37,7 @@ protected:
         switch(umsg) {
         case WM_CREATE:
         {
-            _c = _root->find<taowin::button>(_T("c"));
-            _c->on_click([this] {
-                EtwLog(_T("°´Å¥µã»÷"));
-            });
+            _c = _root->find<taowin::webview>(_T("c"));
 
             return 0;
         }
@@ -51,12 +51,12 @@ protected:
     }
 
 private:
-    taowin::button* _c;
+    taowin::webview* _c;
 };
 
 }
 
-void test_button()
+void test_webview()
 {
     auto w = new TW;
     w->create();

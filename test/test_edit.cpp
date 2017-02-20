@@ -15,7 +15,7 @@ public:
 protected:
 	virtual LPCTSTR get_skin_xml() const override
 	{
-        LPCTSTR json = R"tw(
+        LPCTSTR json = _T(R"tw(
 <window title="taowin演示窗口" size="500,300">
     <res>
         <font name="default" face="微软雅黑" size="12"/>
@@ -26,7 +26,7 @@ protected:
         </vertical>
     </root>
 </window>
-)tw";
+)tw");
 		return json;
 	}
 
@@ -36,7 +36,7 @@ protected:
 		{
 		case WM_CREATE:
 		{
-            _c = _root->find<taowin::edit>("c");
+            _c = _root->find<taowin::edit>(_T("c"));
             _c->on_change([this] {
                 EtwLog(_T("内容改变：%s\n"), _c->get_text().c_str());
                 return 0;

@@ -17,7 +17,7 @@ protected:
     virtual LPCTSTR get(int item, int subitem) const override
     {
         static taowin::string text;
-        text = !subitem ? std::to_string(item) : std::to_string(subitem);
+        // text = !subitem ? std::to_string(item) : std::to_string(subitem);
         return text.c_str();
     }
 };
@@ -32,7 +32,7 @@ public:
 protected:
     virtual LPCTSTR get_skin_xml() const override
     {
-        LPCTSTR json = R"tw(
+        LPCTSTR json = _T(R"tw(
 <window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
     <res>
         <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
@@ -44,7 +44,7 @@ protected:
         </vertical>
     </root>
 </window>
-)tw";
+)tw");
         return json;
     }
 
@@ -54,11 +54,11 @@ protected:
         case WM_CREATE:
         {
             //center();
-            auto lv = _root->find<taowin::ListViewControl>("lv");
+            auto lv = _root->find<taowin::ListViewControl>(_T("lv"));
             auto& cm = lv->get_column_manager();
-            cm.push("item1", true, 50, "id1");
-            cm.push("item2", true, 100, "id2");
-            cm.push("item3", true, 150, "id3");
+            cm.push(_T("item1"), true, 50, _T("id1"));
+            cm.push(_T("item2"), true, 100, _T("id2"));
+            cm.push(_T("item3"), true, 150, _T("id3"));
             lv->update_columns();
             lv->set_source(&_data);
 
@@ -115,7 +115,7 @@ protected:
 
     virtual taowin::syscontrol* filter_control(HWND hwnd) override
     {
-        auto lv = _root->find<taowin::ListViewControl>("lv");
+        auto lv = _root->find<taowin::ListViewControl>(_T("lv"));
         if(hwnd == lv->get_header()) return lv;
         return nullptr;
     }

@@ -28,6 +28,8 @@ namespace taowin{
             else if(tag == _T("tabctrl"))       ctl = new tabctrl;
             else if(tag == _T("progress"))      ctl = new progress;
 
+            else if(tag == _T("webview"))       ctl = new webview;
+
             else                                ctl = nullptr;
 
             if(!ctl) {
@@ -242,6 +244,7 @@ namespace taowin{
     }
 
     void init() {
+        ::CoInitialize(nullptr);
         register_window_classes();
 
         ::ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);

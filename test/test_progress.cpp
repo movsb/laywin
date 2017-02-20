@@ -15,7 +15,7 @@ public:
 protected:
 	virtual LPCTSTR get_skin_xml() const override
 	{
-        LPCTSTR json = R"tw(
+        LPCTSTR json = _T(R"tw(
 <window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
     <res>
         <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
@@ -26,7 +26,7 @@ protected:
         </vertical>
     </root>
 </window>
-)tw";
+)tw");
 		return json;
 	}
 
@@ -36,7 +36,7 @@ protected:
 		{
 		case WM_CREATE:
 		{
-            _c = _root->find<taowin::progress>("c");
+            _c = _root->find<taowin::progress>(_T("c"));
             _c->set_pos(50);
 			return 0;
 		}
