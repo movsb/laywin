@@ -6,7 +6,7 @@ namespace taowin {
 
 namespace _webview {
 
-using Callable = std::function<ComRet(int argc, VARIANTARG* argv, VARIANT* result)>;
+using Callable = std::function<ComRet(DispParamsVisitor args, VARIANT* result)>;
 
 class WebBrowserVersionSetter
 {
@@ -63,6 +63,7 @@ public:
 
     virtual void AddCallable(const wchar_t* name, Callable call) = 0;
     virtual void RemoveCallable(const wchar_t* name) = 0;
+    virtual void FireEvent(const wchar_t* name, UINT argc, VARIANT* argv) = 0;
 
 protected:
 
@@ -104,6 +105,11 @@ public:
     void remove_callable(const TCHAR* name)
     {
         return _pwb->RemoveCallable(name);
+    }
+
+    void fire_event(const TCHAR* name, UINT argc = 0, VARIANT* argv = nullptr)
+    {
+        return _pwb->FireEvent(name, argc, argv);
     }
 
 private:

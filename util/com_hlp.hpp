@@ -17,6 +17,30 @@ protected:
     HRESULT _hr;
 };
 
+class DispParamsVisitor
+{
+public:
+    DispParamsVisitor(UINT argc, VARIANT* argv)
+        : _argc(argc)
+        , _argv(argv)
+    {
+
+    }
+
+    VARIANT& operator[](UINT i)
+    {
+        return _argv[_argc - i - 1];
+    }
+
+    UINT size() const
+    {
+        return _argc;
+    }
+
+protected:
+    UINT        _argc;
+    VARIANT*    _argv;
+};
 
 template<class T>
 class ComPtrBase
@@ -134,6 +158,18 @@ class ComPtr<IDispatch>
     : public ComPtrBase<IDispatch>
 {
 public:
+    ComPtr()
+        : ComPtrBase<IDispatch>(nullptr)
+    {
+
+    }
+
+    ComPtr(IDispatch* disp)
+        : ComPtrBase<IDispatch>(disp)
+    {
+
+    }
+
     HRESULT GetIDOfName(LPCOLESTR name, DISPID* id)
     {
         return _p->GetIDsOfNames(IID_NULL, const_cast<LPOLESTR*>(&name), 1, LOCALE_USER_DEFAULT, id);
@@ -199,11 +235,30 @@ public:
     HRESULT Invoke(LPCOLESTR name, VARIANT* v1, VARIANT* ret)
     {
         DISPID id;
-        HRESULT hr;
+        ComRet hr;
 
         hr = GetIDOfName(name, &id);
-        if(SUCCEEDED(hr))
+        if(hr)
             hr = Invoke(id, v1, ret);
+
+        return hr;
+    }
+
+    HRESULT Invoke(DISPID id, UINT argc, VARIANT* argv, VARIANT* ret)
+    {
+        DISPPARAMS args = {argv, nullptr, argc, 0};
+        return _p->Invoke(id, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &args, ret, nullptr, nullptr);
+    }
+
+    HRESULT Invoke(LPCOLESTR name, UINT argc, VARIANT* argv, VARIANT* ret)
+    {
+        DISPID id;
+        ComRet hr;
+
+        hr = GetIDOfName(name, &id);
+        if(hr) {
+            hr = Invoke(id, argc, argv, ret);
+        }
 
         return hr;
     }

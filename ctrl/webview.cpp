@@ -26,6 +26,9 @@ public:
 
     void AddCallable(const std::wstring& name, Callable callable);
     void RemoveCallable(const std::wstring& name);
+    unsigned int AddListener(const std::wstring& name, IDispatch* disp);
+    void RemoveListener(const std::wstring& name, unsigned int cookie);
+    void FireEvent(const std::wstring& name, int argc, VARIANTARG* argv);
 
     // IUnknown methods
     virtual STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override;
@@ -39,10 +42,11 @@ public:
     virtual STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr);
 
 private:
-    long                                    _nRefs;
-    unsigned int                            _nNextDispId;
-    std::map<std::wstring, unsigned int>    _name_dispid_map;
-    std::map<unsigned int, Callable>        _dispid_callback_map;
+    long                                                        _nRefs;
+    unsigned int                                                _nNextDispId;
+    std::map<std::wstring, unsigned int>                        _name_dispid_map;
+    std::map<unsigned int, Callable>                            _dispid_callback_map;
+    std::map<std::wstring, std::map<unsigned int, IDispatch*>>  _event_listener;
 };
 
 class WebBrowserEventsHandler
@@ -120,6 +124,7 @@ public:
 
     virtual void AddCallable(const wchar_t* name, Callable call) override;
     virtual void RemoveCallable(const wchar_t* name) override;
+    virtual void FireEvent(const wchar_t* name, UINT argc, VARIANT* argv) override;
 
     // 执行指定语言的脚本程序
     // lang 默认为 Javascript, result 可以为空
@@ -226,7 +231,39 @@ ExternalDispatch::ExternalDispatch()
     : _nRefs(1)
     , _nNextDispId(1)
 {
+    AddCallable(_T("AddListener"), [this](DispParamsVisitor args, VARIANT* result) {
+        ComRet hr;
 
+        if(args.size() == 2) {
+            if(args[0].vt == VT_BSTR && args[1].vt == VT_DISPATCH) {
+                auto name = (const wchar_t*)args[0].bstrVal;
+                auto disp = args[1].pdispVal;
+                auto id = AddListener(name, disp);
+                if(result) {
+                    result->vt = VT_I4;
+                    result->intVal = id;
+                }
+                hr = S_OK;
+            }
+        }
+
+        return hr;
+    });
+
+    AddCallable(_T("RemoveListener"), [this](DispParamsVisitor args, VARIANT* result) {
+        ComRet hr;
+
+        if(args.size() == 2) {
+            if(args[0].vt == VT_BSTR && args[1].vt == VT_INT) {
+                auto name = (const wchar_t*)args[0].bstrVal;
+                auto id = args[1].intVal;
+                RemoveListener(name, id);
+                hr = S_OK;
+            }
+        }
+
+        return hr;
+    });
 }
 
 ExternalDispatch::~ExternalDispatch()
@@ -247,6 +284,33 @@ void ExternalDispatch::RemoveCallable(const std::wstring & name)
     if(it != _name_dispid_map.cend()) {
         _dispid_callback_map.erase(it->second);
         _name_dispid_map.erase(it);
+    }
+}
+
+unsigned int ExternalDispatch::AddListener(const std::wstring& name, IDispatch * disp)
+{
+    auto id = _nNextDispId++;
+    auto& set = _event_listener[name];
+    set[id] = disp;
+    disp->AddRef();
+    return id;
+}
+
+void ExternalDispatch::RemoveListener(const std::wstring& name, unsigned int cookie)
+{
+    auto& set = _event_listener[name];
+    auto it = set.find(cookie);
+    if(it != set.cend()) {
+        it->second->Release();
+        set.erase(it);
+    }
+}
+
+void ExternalDispatch::FireEvent(const std::wstring& name, int argc, VARIANTARG* argv)
+{
+    auto& set = _event_listener[name];
+    for(auto& it : set) {
+        ComPtr<IDispatch>(it.second).Invoke(DISPID(0), argc, argv, nullptr);
     }
 }
 
@@ -279,7 +343,7 @@ HRESULT ExternalDispatch::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD 
 
     auto it = _dispid_callback_map.find(dispIdMember);
     if(it != _dispid_callback_map.cend()) {
-        hr = it->second(pDispParams->cArgs, pDispParams->rgvarg, pVarResult);
+        hr = it->second({pDispParams->cArgs, pDispParams->rgvarg}, pVarResult);
     }
 
     return hr;
@@ -722,6 +786,11 @@ void WebBrowserContainer::AddCallable(const wchar_t * name, Callable call)
 void WebBrowserContainer::RemoveCallable(const wchar_t * name)
 {
     _pExternalDispatch->RemoveCallable(name);
+}
+
+void WebBrowserContainer::FireEvent(const wchar_t * name, UINT argc, VARIANT * argv)
+{
+    _pExternalDispatch->FireEvent(name, argc, argv);
 }
 
 ComRet WebBrowserContainer::ExecScript(const std::wstring& script, VARIANT* result, const std::wstring& lang)
