@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <CommCtrl.h>
 #include <WindowsX.h>
+#include <MsHTML.h>
 
 #include "../etwlogger.h"
 

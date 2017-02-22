@@ -158,5 +158,8 @@
     <ClInclude Include="..\test\test_webview.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
+    <ClInclude Include="..\util\win_hlp.hpp">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

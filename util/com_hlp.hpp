@@ -4,6 +4,20 @@
 
 namespace taowin {
 
+class ComRet
+{
+public:
+    ComRet() : _hr(E_FAIL) {}
+    ComRet(HRESULT hr) : _hr(hr) {}
+
+    operator bool() const { return SUCCEEDED(_hr); }
+    operator HRESULT() const { return _hr; }
+
+protected:
+    HRESULT _hr;
+};
+
+
 template<class T>
 class ComPtrBase
 {

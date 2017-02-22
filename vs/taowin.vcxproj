@@ -110,6 +110,7 @@
     <ClInclude Include="..\etwlogger.h" />
     <ClInclude Include="..\test\test_webview.h" />
     <ClInclude Include="..\util\com_hlp.hpp" />
+    <ClInclude Include="..\util\win_hlp.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\core\tw_control.cpp" />
