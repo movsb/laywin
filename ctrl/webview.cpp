@@ -17,6 +17,34 @@
 namespace taowin {
 namespace _webview {
 
+class ExternalDispatch final
+    : public IDispatch
+{
+public:
+    ExternalDispatch(void);
+    ~ExternalDispatch(void);
+
+    void AddCallable(const std::wstring& name, Callable callable);
+    void RemoveCallable(const std::wstring& name);
+
+    // IUnknown methods
+    virtual STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override;
+    virtual STDMETHODIMP_(ULONG) AddRef() override;
+    virtual STDMETHODIMP_(ULONG) Release() override;
+
+    // IDispatch methods
+    virtual STDMETHODIMP GetTypeInfoCount(UINT *pctinfo);
+    virtual STDMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo);
+    virtual STDMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId);
+    virtual STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr);
+
+private:
+    long                                    _nRefs;
+    unsigned int                            _nNextDispId;
+    std::map<std::wstring, unsigned int>    _name_dispid_map;
+    std::map<unsigned int, Callable>        _dispid_callback_map;
+};
+
 class WebBrowserEventsHandler
     : public DWebBrowserEvents2
 {
@@ -90,13 +118,25 @@ public:
     virtual void Refresh(bool force) override;
     virtual void Stop() override;
 
+    virtual void AddCallable(const wchar_t* name, Callable call) override;
+    virtual void RemoveCallable(const wchar_t* name) override;
+
     // 执行指定语言的脚本程序
     // lang 默认为 Javascript, result 可以为空
     // window.execScript 返回值总是空，考虑换用 eval（从 IE11 开始）
     virtual ComRet ExecScript(const std::wstring& script, VARIANT* result, const std::wstring& lang);
 
     // 获取页面文档
-    virtual ComRet GetDocument(IHTMLDocument2** ppDocument);
+    virtual ComRet GetDocument(IHTMLDocument2** ppDocument) override;
+
+    // 获取 <html> 元素
+    virtual ComRet GetRootElement(IHTMLElement** ppElement) override;
+
+
+    // 获取当前页面源代码，基于 <html> 元素，整体源代码太难拿了
+	// 通过 document.getElementsByTagName('html')[0].outerHTML 的方式拿到
+	// 所以，拿到的并不是真正的原始源代码，这包括脚本所作的改动
+    virtual std::wstring GetSource() override;
 
     // 查询窗口的 IWebBrowser2* 指针
     IWebBrowser2* GetWebBrowser() const;
@@ -174,12 +214,110 @@ private:
     IOleInPlaceActiveObject*    _pOleInPlaceActiveObject;       // 在位激活对象
 
     WebBrowserEventsHandler*    _pEventsHandler;
+    ExternalDispatch*           _pExternalDispatch;
 
     DWORD                       _dwDWebBrowserEvents2Cookie;    // DIID_DWebBrowserEvents2 cookie
 
 protected:
     bool                        _bEnableContextMenus;           // 是否允许显示右键菜单
 };
+
+ExternalDispatch::ExternalDispatch()
+    : _nRefs(1)
+    , _nNextDispId(1)
+{
+
+}
+
+ExternalDispatch::~ExternalDispatch()
+{
+
+}
+
+void ExternalDispatch::AddCallable(const std::wstring & name, Callable callable)
+{
+    auto id = _nNextDispId++;
+    _name_dispid_map[name] = id;
+    _dispid_callback_map[id] = callable;
+}
+
+void ExternalDispatch::RemoveCallable(const std::wstring & name)
+{
+    auto it = _name_dispid_map.find(name);
+    if(it != _name_dispid_map.cend()) {
+        _dispid_callback_map.erase(it->second);
+        _name_dispid_map.erase(it);
+    }
+}
+
+HRESULT ExternalDispatch::GetTypeInfoCount(UINT *pctinfo)
+{
+    return E_NOTIMPL;
+}
+
+HRESULT ExternalDispatch::GetTypeInfo(UINT iTInfo,LCID lcid,ITypeInfo **ppTInfo)
+{
+    return E_NOTIMPL;
+}
+
+HRESULT ExternalDispatch::GetIDsOfNames(REFIID riid,LPOLESTR *rgszNames,UINT cNames,LCID lcid,DISPID *rgDispId)
+{
+    HRESULT hr = DISP_E_UNKNOWNNAME;
+
+    auto it = _name_dispid_map.find(*rgszNames);
+    if(it != _name_dispid_map.cend()) {
+        *rgDispId = it->second;
+        hr = S_OK;
+    }
+
+    return hr;
+}
+
+HRESULT ExternalDispatch::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD wFlags,DISPPARAMS *pDispParams,VARIANT *pVarResult,EXCEPINFO *pExcepInfo,UINT *puArgErr)
+{
+    HRESULT hr = E_NOTIMPL;
+
+    auto it = _dispid_callback_map.find(dispIdMember);
+    if(it != _dispid_callback_map.cend()) {
+        hr = it->second(pDispParams->cArgs, pDispParams->rgvarg, pVarResult);
+    }
+
+    return hr;
+}
+
+// IUnknown methods
+STDMETHODIMP ExternalDispatch::QueryInterface(REFIID riid, void** ppvObject)
+{
+    *ppvObject = nullptr;
+
+    if(riid == IID_IUnknown)
+        *ppvObject = this;
+    else if(riid == IID_IDispatch)
+        *ppvObject = static_cast<IDispatch*>(this);
+
+    if(*ppvObject) {
+        AddRef();
+        return S_OK;
+    }
+    else {
+        return E_NOINTERFACE;
+    }
+}
+
+STDMETHODIMP_(ULONG) ExternalDispatch::AddRef()
+{
+    return ::InterlockedIncrement(&_nRefs);
+}
+
+STDMETHODIMP_(ULONG) ExternalDispatch::Release()
+{
+    if(::InterlockedDecrement(&_nRefs) <= 0) {
+        delete this;
+        return 0;
+    }
+
+    return _nRefs;
+}
 
 WebBrowserEventsHandler::WebBrowserEventsHandler()
     : _nRefs(1)
@@ -402,6 +540,7 @@ WebBrowserContainer::WebBrowserContainer()
     , _bEnableContextMenus(true)
 {
     _pEventsHandler = new WebBrowserEventsHandler;
+    _pExternalDispatch = new ExternalDispatch;
 }
 
 WebBrowserContainer::~WebBrowserContainer()
@@ -575,6 +714,16 @@ void WebBrowserContainer::Stop()
     }
 }
 
+void WebBrowserContainer::AddCallable(const wchar_t * name, Callable call)
+{
+    _pExternalDispatch->AddCallable(name, call);
+}
+
+void WebBrowserContainer::RemoveCallable(const wchar_t * name)
+{
+    _pExternalDispatch->RemoveCallable(name);
+}
+
 ComRet WebBrowserContainer::ExecScript(const std::wstring& script, VARIANT* result, const std::wstring& lang)
 {
     ComRet hr;
@@ -616,6 +765,44 @@ ComRet WebBrowserContainer::GetDocument(IHTMLDocument2** ppDocument)
 	}
 
     return hr;
+}
+
+ComRet WebBrowserContainer::GetRootElement(IHTMLElement** ppElement)
+{
+    ComRet hr;
+
+	ComPtr<IHTMLDocument2> spDoc2;
+
+	if(ComRet(GetDocument(&spDoc2)))
+	{
+        if(ComQIPtr<IHTMLDocument3> spDoc3 = spDoc2)
+        {
+            ComPtr<IHTMLElement> spDispElement;
+            if(ComRet(spDoc3->get_documentElement(&spDispElement)) && spDispElement)
+            {
+                hr = spDispElement.CopyTo(ppElement);
+            }
+        }
+	}
+
+    return hr;
+}
+
+std::wstring WebBrowserContainer::GetSource()
+{
+    std::wstring source;
+
+	ComPtr<IHTMLElement> spRootElement;
+	if(ComRet(GetRootElement(&spRootElement)))
+	{
+		CComBSTR str;
+		if(ComRet(spRootElement->get_outerHTML(&str)))
+		{
+			source = (const wchar_t*)str;
+		}
+	}
+
+    return source;
 }
 
 bool WebBrowserContainer::FilterMessage(MSG* pMsg)
@@ -957,8 +1144,9 @@ STDMETHODIMP WebBrowserContainer::GetDropTarget(IDropTarget *pDropTarget, IDropT
 
 STDMETHODIMP WebBrowserContainer::GetExternal(IDispatch **ppDispatch)
 {
-    EtwLog(L"Enter");
-    return E_NOTIMPL;
+    *ppDispatch = _pExternalDispatch;
+    _pExternalDispatch->AddRef();
+    return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::TranslateUrl(DWORD dwTranslate, OLECHAR *pchURLIn, OLECHAR **ppchURLOut)

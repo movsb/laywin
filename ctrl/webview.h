@@ -6,6 +6,8 @@ namespace taowin {
 
 namespace _webview {
 
+using Callable = std::function<ComRet(int argc, VARIANTARG* argv, VARIANT* result)>;
+
 class WebBrowserVersionSetter
 {
 public:
@@ -55,7 +57,12 @@ public:
     virtual void Stop() = 0;
 
     virtual ComRet GetDocument(IHTMLDocument2** ppDocument) = 0;
+	virtual std::wstring GetSource() = 0;
+    virtual ComRet GetRootElement(IHTMLElement** ppElement) = 0;
     virtual ComRet ExecScript(const std::wstring& script, VARIANT* result, const std::wstring& lang) = 0;
+
+    virtual void AddCallable(const wchar_t* name, Callable call) = 0;
+    virtual void RemoveCallable(const wchar_t* name) = 0;
 
 protected:
 
@@ -79,9 +86,24 @@ public:
         return _pwb->ExecScript(script, result, _T(""));
     }
 
+    std::wstring get_source()
+    {
+        return _pwb->GetSource();
+    }
+
     bool filter_message(MSG* msg)
     {
         return _pwb->Focus() && _pwb->FilterMessage(msg);
+    }
+
+    void add_callable(const TCHAR* name, _webview::Callable call)
+    {
+        return _pwb->AddCallable(name, call);
+    }
+
+    void remove_callable(const TCHAR* name)
+    {
+        return _pwb->RemoveCallable(name);
     }
 
 private:

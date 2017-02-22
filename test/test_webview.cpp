@@ -41,6 +41,11 @@ protected:
         {
             _c = _root->find<taowin::webview>(_T("c"));
 
+            _c->add_callable(_T("test"), [this](int argc, VARIANTARG* argv, VARIANTARG* result) {
+                msgbox(_T("calling test"));
+                return S_OK;
+            });
+
             _c->on_before_navigate([this](const wchar_t* uri, bool top) {
                 EtwLog(_T("开始导航：[%d] %s"), top, uri);
             });
@@ -49,7 +54,7 @@ protected:
             });
             _c->on_document_complete([this](const wchar_t* uri, bool top) {
                 EtwLog(_T("文档完成：[%d] %s"), top, uri);
-                _c->exec_script(_T("alert('execScript')"));
+                _c->exec_script(_T("alert('execScript'); external.test('string', 1234,true);"));
             });
             _c->on_new_window([this](const wchar_t* uri, const wchar_t* ref, bool* cancel, IDispatch** disp) {
                 EtwLog(_T("新开窗口：uri: %s, ref: %s"), uri, ref);
