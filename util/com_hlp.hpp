@@ -150,7 +150,21 @@ protected:
 template<class T>
 class ComPtr : public ComPtrBase<T>
 {
+public:
+    T* operator=(T* p)
+    {
+        if(_p != p) {
+            if(_p) _p->Release();
+            _p = p;
+            if(_p) _p->AddRef();
+        }
+        return _p;
+    }
 
+    T* operator=(const ComPtr<T>& p)
+    {
+        return operator=(p._p);
+    }
 };
 
 template<>

@@ -59,7 +59,7 @@ public:
     virtual ~WebBrowserEventsHandler();
 
     void SetDelegate(EventDelegate* pDelegate) { _pDelegate = pDelegate; }
-    void SetWebBrowser(IDispatch* pDisp) { _pDispOfWB = pDisp; }
+    void SetWebBrowser(IDispatch* pDisp, WebBrowserContainer* wrapper) { _pDispOfWB = pDisp; _spWrapper = wrapper; }
 
     void OnSetStatusText(const wchar_t* text) { if(_pDelegate) _pDelegate->OnSetStatusText(text); }
 
@@ -76,10 +76,11 @@ public:
     virtual STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr) override;
 
 protected:
-    long            _nRefs;                         // 引用计数
-    EventDelegate*  _pDelegate;                     // 事件托管处理者
-    IDispatch*      _pDispOfWB;                     // IDispatch of IWebBrowser2
-    bool            _bCanGoBack, _bCanGoForward;    // 是否可以后退与前进
+    long                _nRefs;                         // 引用计数
+    EventDelegate*      _pDelegate;                     // 事件托管处理者
+    ComPtr<IDispatch>   _pDispOfWB;                     // IDispatch of IWebBrowser2
+    ComPtr<WebBrowserContainer> _spWrapper;
+    bool                _bCanGoBack, _bCanGoForward;    // 是否可以后退与前进
 };
 
 
@@ -90,8 +91,11 @@ class WebBrowserContainer
     , public IOleInPlaceSite
     , public IOleInPlaceFrame
     , public IDocHostUIHandler
+    , public IOleCommandTarget
     , public IWebBrowserContainer
 {
+    friend class WebBrowserEventsHandler;
+
     struct BrowserState
     {
         typedef const unsigned int Type;
@@ -146,7 +150,9 @@ public:
     // 查询窗口的 IWebBrowser2* 指针
     IWebBrowser2* GetWebBrowser() const;
 
-public:
+protected:
+    bool IsTopFrame(IDispatch* pDisp);
+    void SetDefaultHandler(IDispatch* pDisp);
 
 public:
     // IUnknown methods
@@ -205,6 +211,10 @@ protected:
     virtual STDMETHODIMP TranslateUrl(DWORD dwTranslate, OLECHAR *pchURLIn, OLECHAR **ppchURLOut) override;
     virtual STDMETHODIMP FilterDataObject(IDataObject *pDO, IDataObject **ppDORet) override;
 
+    // IOleCommandTarget
+    virtual STDMETHODIMP QueryStatus(const GUID *pguidCmdGroup, ULONG cCmds, OLECMD prgCmds[], OLECMDTEXT *pCmdText) override;
+    virtual STDMETHODIMP Exec(const GUID *pguidCmdGroup, DWORD nCmdID, DWORD nCmdexecopt, VARIANT *pvaIn, VARIANT *pvaOut) override;
+
 private:
     long                        _nRefs;                         // 引用计数
     unsigned int                _state;                         // 内部状态
@@ -220,6 +230,9 @@ private:
 
     WebBrowserEventsHandler*    _pEventsHandler;
     ExternalDispatch*           _pExternalDispatch;
+
+    ComPtr<IOleCommandTarget>   _spCommandTarget;
+    ComPtr<IDocHostUIHandler>   _spDocHostUIHandler;
 
     DWORD                       _dwDWebBrowserEvents2Cookie;    // DIID_DWebBrowserEvents2 cookie
 
@@ -403,6 +416,7 @@ HRESULT WebBrowserEventsHandler::QueryInterface(REFIID riid, void ** ppvObject)
     *ppvObject = nullptr;
 
     if(riid == __uuidof(DWebBrowserEvents2))        *ppvObject = reinterpret_cast<DWebBrowserEvents2*>(this);
+    else if(riid == IID_IDispatch)                  *ppvObject = static_cast<IDispatch*>(this);
 
     if(*ppvObject) {
         AddRef();
@@ -483,6 +497,8 @@ STDMETHODIMP WebBrowserEventsHandler::Invoke(DISPID dispIdMember, REFIID riid, L
         const wchar_t* uri = pDispParams->rgvarg[0].pvarVal->bstrVal;
 
         uri = uri ? uri : L"";
+
+        // _spWrapper->SetDefaultHandler(pDispParams->rgvarg[1].pdispVal);
 
         _pDelegate->OnNavigateComplete(uri, top);
 
@@ -651,6 +667,9 @@ void WebBrowserContainer::Create(HWND hParent)
         SetStatus(BrowserState::fail);
         return;
     }
+
+    ComPtr<IDispatch> pDispWebBrowser(_pWebBrowser);
+    _pEventsHandler->SetWebBrowser(pDispWebBrowser, this);
 
     hr = _pOleObject->QueryInterface(IID_PPV_ARGS(&_pOleInPlaceObject));
     if(FAILED(hr) || !_pOleInPlaceObject) {
@@ -888,6 +907,41 @@ IWebBrowser2* WebBrowserContainer::GetWebBrowser() const
     return _pWebBrowser;
 }
 
+bool WebBrowserContainer::IsTopFrame(IDispatch * pDisp)
+{
+    ComQIPtr<IDispatch> pDisp2(_pWebBrowser);
+    return pDisp2.IsEqualObject(pDisp);
+}
+
+void WebBrowserContainer::SetDefaultHandler(IDispatch * pDisp)
+{
+    assert(IsTopFrame(pDisp));
+
+    _spCommandTarget = nullptr;
+    _spDocHostUIHandler = nullptr;
+
+    if(ComQIPtr<IWebBrowser2> spWebBrowser = pDisp) {
+        ComPtr<IDispatch> spDispDoc;
+        if((ComRet)spWebBrowser->get_Document(&spDispDoc)) {
+            if(ComQIPtr<ICustomDoc> spCustomDoc = spDispDoc) {
+                if(ComQIPtr<IOleObject> spOleObject = spCustomDoc) {
+                    ComPtr<IOleClientSite> spOleClientSite;
+                    if((ComRet)spOleObject->GetClientSite(&spOleClientSite)) {
+                        if(ComQIPtr<IOleCommandTarget> spCommandTarget = spOleClientSite) {
+                            _spCommandTarget = spCommandTarget;
+                        }
+                        if(ComQIPtr<IDocHostUIHandler> spDocHostUIHandler = spOleClientSite) {
+                            _spDocHostUIHandler = spDocHostUIHandler;
+                        }
+                    }
+                }
+                spCustomDoc->SetUIHandler(this);
+            }
+        }
+    }
+
+}
+
 void WebBrowserContainer::SetPos(const Rect& r)
 {
     if(_pOleObject && _pOleInPlaceObject) {
@@ -914,6 +968,7 @@ STDMETHODIMP WebBrowserContainer::QueryInterface(REFIID riid, void** ppvObject)
     else if(riid == IID_IOleInPlaceFrame)           *ppvObject = static_cast<IOleInPlaceFrame*>(this);
     else if(riid == IID_IOleInPlaceUIWindow)        *ppvObject = static_cast<IOleInPlaceUIWindow*>(this);
     else if(riid == IID_IDocHostUIHandler)          *ppvObject = static_cast<IDocHostUIHandler*>(this);
+    // else if(riid == IID_IOleCommandTarget)          *ppvObject = static_cast<IOleCommandTarget*>(this);
 
     if(*ppvObject) {
         AddRef();
@@ -923,6 +978,7 @@ STDMETHODIMP WebBrowserContainer::QueryInterface(REFIID riid, void** ppvObject)
     HRESULT hr = E_NOINTERFACE;
 
     if(riid == DIID_DWebBrowserEvents2)             hr = _pEventsHandler->QueryInterface(riid, ppvObject);
+    else if(riid == IID_IDispatch)                  hr = _pEventsHandler->QueryInterface(riid, ppvObject);
 
     return hr;
 }
@@ -1228,6 +1284,26 @@ STDMETHODIMP WebBrowserContainer::FilterDataObject(IDataObject *pDO, IDataObject
 {
     EtwLog(L"Enter");
     return E_NOTIMPL;
+}
+
+HRESULT WebBrowserContainer::QueryStatus(const GUID * pguidCmdGroup, ULONG cCmds, OLECMD prgCmds[], OLECMDTEXT * pCmdText)
+{
+    return E_NOTIMPL;
+}
+
+HRESULT WebBrowserContainer::Exec(const GUID * pguidCmdGroup, DWORD nCmdID, DWORD nCmdexecopt, VARIANT * pvaIn, VARIANT * pvaOut)
+{
+    //if(!pguidCmdGroup) {
+    // CGID_DocHostCommandHandler
+        if(nCmdID == OLECMDID_SHOWSCRIPTERROR) {
+            nCmdID = nCmdID;
+            assert(0);
+        }
+    //}
+
+        assert(_spCommandTarget != static_cast<IOleCommandTarget*>(this));
+
+    return _spCommandTarget ? _spCommandTarget->Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut) : E_NOTIMPL;
 }
 
 //////////////////////////////////////////////////////////////////////////
