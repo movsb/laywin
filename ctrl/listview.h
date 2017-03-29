@@ -71,9 +71,8 @@ public:
         TypeIndices     _showing_indices;
     };
 
-    class IDataSource
+    struct IDataSource
     {
-    public:
         virtual size_t size() const = 0;
         virtual LPCTSTR get(int item, int subitem) const = 0;
     };
@@ -122,7 +121,7 @@ public:
     void set_column_order(int n, int* a);
     int subitem_hittest(LVHITTESTINFO* pht);
     void set_source(IDataSource* source) { _data = source; update_source(); }
-    void update_source() { set_item_count(_data->size(), 0); }
+    void update_source(int flags = 0) { set_item_count(_data->size(), flags); }
 
     // return non-zero on success
     int get_subitem_rect(int item, int subitem, RECT* rc, int code = LVIR_BOUNDS);
