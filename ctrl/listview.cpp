@@ -148,9 +148,7 @@ void ListViewControl::ensure_visible(int i)
 void ListViewControl::show_header(int state)
 {
     auto style = ::GetWindowLongPtr(_hwnd, GWL_STYLE);
-    bool hiding = !!(style & LVS_NOCOLUMNHEADER);
-
-    if (state == -1) state = hiding ? 1 : 0;
+    if (state == -1) state = !is_header_visible() ? 1 : 0;
 
     switch(state)
     {
@@ -159,6 +157,13 @@ void ListViewControl::show_header(int state)
     }
 
     ::SetWindowLongPtr(_hwnd, GWL_STYLE, style);
+}
+
+bool ListViewControl::is_header_visible()
+{
+    auto style = ::GetWindowLongPtr(_hwnd, GWL_STYLE);
+    bool hiding = !!(style & LVS_NOCOLUMNHEADER);
+    return !hiding;
 }
 
 int ListViewControl::get_top_index()

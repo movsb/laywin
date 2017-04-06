@@ -113,6 +113,7 @@ public:
     void set_item_state(int i, int mask, int state);
     void ensure_visible(int i);
     void show_header(int state); // 1:show, 0, hide, -1: toggle
+    bool is_header_visible();
     int get_top_index();
     bool get_item_position(int i, POINT* ppt);
     void scroll(int dx, int dy);
