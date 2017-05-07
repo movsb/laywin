@@ -113,7 +113,6 @@
     <ClInclude Include="..\ctrl\progress.h" />
     <ClInclude Include="..\ctrl\tabctrl.h" />
     <ClInclude Include="..\ctrl\webview.h" />
-    <ClInclude Include="..\etwlogger.h" />
     <ClInclude Include="..\test\test_webview.h" />
     <ClInclude Include="..\util\com_hlp.hpp" />
     <ClInclude Include="..\util\win_hlp.hpp" />

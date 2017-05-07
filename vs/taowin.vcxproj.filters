@@ -101,9 +101,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\etwlogger.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\core\tw_control.h">
       <Filter>Source Files\core</Filter>
     </ClInclude>
