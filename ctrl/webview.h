@@ -77,14 +77,14 @@ class webview
     , private _webview::EventDelegate
 {
 public:
-    void navigate(const TCHAR* url)
+    void navigate(const wchar_t* url)
     {
         _pwb->Navigate(url);
     }
 
-    ComRet exec_script(const TCHAR* script, VARIANT* result = nullptr)
+    ComRet exec_script(const wchar_t* script, VARIANT* result = nullptr)
     {
-        return _pwb->ExecScript(script, result, _T(""));
+        return _pwb->ExecScript(script, result, L"");
     }
 
     std::wstring get_source()
@@ -97,17 +97,17 @@ public:
         return _pwb->Focus() && _pwb->FilterMessage(msg);
     }
 
-    void add_callable(const TCHAR* name, _webview::Callable call)
+    void add_callable(const wchar_t* name, _webview::Callable call)
     {
         return _pwb->AddCallable(name, call);
     }
 
-    void remove_callable(const TCHAR* name)
+    void remove_callable(const wchar_t* name)
     {
         return _pwb->RemoveCallable(name);
     }
 
-    void fire_event(const TCHAR* name, UINT argc = 0, VARIANT* argv = nullptr)
+    void fire_event(const wchar_t* name, UINT argc = 0, VARIANT* argv = nullptr)
     {
         return _pwb->FireEvent(name, argc, argv);
     }

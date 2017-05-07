@@ -1,8 +1,7 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#include "../etwlogger.h"
-#include "core/tw_taowin.h"
+#include <taowin/core/tw_taowin.h>
 
 namespace {
 
@@ -38,7 +37,7 @@ protected:
 		{
             _c = _root->find<taowin::edit>(_T("c"));
             _c->on_change([this] {
-                EtwLog(_T("内容改变：%s\n"), _c->get_text().c_str());
+                LogLog(_T("内容改变：%s\n"), _c->get_text().c_str());
                 return 0;
             });
 			return 0;

@@ -1,8 +1,7 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#include "../etwlogger.h"
-#include "core/tw_taowin.h"
+#include <taowin/core/tw_taowin.h>
 
 
 class TW : public taowin::window_creator
@@ -42,7 +41,7 @@ protected:
             _c->add_string(_T("333"));
 
             _c->on_sel_change([this](int index, void* ud) {
-                EtwLog(_T("选中改变 %d,%p"), index, ud);
+                LogLog(_T("选中改变 %d,%p"), index, ud);
                 return 0;
             });
 

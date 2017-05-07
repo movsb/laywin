@@ -1,8 +1,7 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#include "../etwlogger.h"
-#include "core/tw_taowin.h"
+#include <taowin/core/tw_taowin.h>
 
 namespace {
 

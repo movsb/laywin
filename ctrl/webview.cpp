@@ -12,8 +12,8 @@
 
 // #include <etwlogger.h>
 #include <atlcomcli.h>
-#undef EtwLog
-#define EtwLog(...) 
+#undef LogLog
+#define LogLog(...) 
 
 namespace taowin {
 namespace _webview {
@@ -245,7 +245,7 @@ ExternalDispatch::ExternalDispatch()
     : _nRefs(1)
     , _nNextDispId(1)
 {
-    AddCallable(_T("AddListener"), [this](DispParamsVisitor args, VARIANT* result) {
+    AddCallable(L"AddListener", [this](DispParamsVisitor args, VARIANT* result) {
         ComRet hr;
 
         if(args.size() == 2) {
@@ -264,7 +264,7 @@ ExternalDispatch::ExternalDispatch()
         return hr;
     });
 
-    AddCallable(_T("RemoveListener"), [this](DispParamsVisitor args, VARIANT* result) {
+    AddCallable(L"RemoveListener", [this](DispParamsVisitor args, VARIANT* result) {
         ComRet hr;
 
         if(args.size() == 2) {
@@ -1002,69 +1002,69 @@ STDMETHODIMP_(ULONG) WebBrowserContainer::Release()
 // IOleClientSite methods
 STDMETHODIMP WebBrowserContainer::SaveObject()
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::GetMoniker(DWORD dwAssign, DWORD dwWhichMoniker, IMoniker **ppmk)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::GetContainer(IOleContainer **ppContainer)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_FAIL;
 }
 
 STDMETHODIMP WebBrowserContainer::ShowObject()
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::OnShowWindow(BOOL fShow)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::RequestNewObjectLayout()
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 // IOleInPlaceSite methods
 STDMETHODIMP WebBrowserContainer::GetWindow(HWND *phwnd)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     *phwnd = _hOwner;
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::ContextSensitiveHelp(BOOL fEnterMode)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::CanInPlaceActivate()
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::OnInPlaceActivate()
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::OnUIActivate()
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     if(!_hWndIE) {
         // 窗口层次关系：BrowserWindow / Shell Embedding / Shell DocObject View / Internet Explorer_Server / <etc>
         _hWndIE = ::GetWindow(::GetWindow(::GetWindow(_hOwner, GW_CHILD), GW_CHILD), GW_CHILD);
@@ -1080,7 +1080,7 @@ STDMETHODIMP WebBrowserContainer::OnUIActivate()
 
 STDMETHODIMP WebBrowserContainer::GetWindowContext(IOleInPlaceFrame **ppFrame, IOleInPlaceUIWindow **ppDoc, LPRECT lprcPosRect, LPRECT lprcClipRect, LPOLEINPLACEFRAMEINFO lpFrameInfo)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     *ppFrame = static_cast<IOleInPlaceFrame*>(this);
     AddRef();
 
@@ -1101,107 +1101,107 @@ STDMETHODIMP WebBrowserContainer::GetWindowContext(IOleInPlaceFrame **ppFrame, I
 
 STDMETHODIMP WebBrowserContainer::Scroll(SIZE scrollExtant)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::OnUIDeactivate(BOOL fUndoable)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::OnInPlaceDeactivate()
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::DiscardUndoState()
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::DeactivateAndUndo()
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::OnPosRectChange(LPCRECT lprcPosRect)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 // IOleInPlaceFrame methods
 STDMETHODIMP WebBrowserContainer::GetBorder(LPRECT lprectBorder)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     ::GetClientRect(_hOwner, lprectBorder);
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::RequestBorderSpace(LPCBORDERWIDTHS pborderwidths)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::SetBorderSpace(LPCBORDERWIDTHS pborderwidths)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::SetActiveObject(IOleInPlaceActiveObject *pActiveObject, LPCOLESTR pszObjName)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::InsertMenus(HMENU hmenuShared, LPOLEMENUGROUPWIDTHS lpMenuWidths)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::SetMenu(HMENU hmenuShared, HOLEMENU holemenu, HWND hwndActiveObject)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::RemoveMenus(HMENU hmenuShared)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::SetStatusText(LPCOLESTR pszStatusText)
 {
-    EtwLog(L"%s", pszStatusText);
+    LogLog(L"%s", pszStatusText);
     _pEventsHandler->OnSetStatusText(pszStatusText ? pszStatusText : L"");
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::EnableModeless(BOOL fEnable)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::TranslateAccelerator(LPMSG lpmsg, WORD wID)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 // IDocHostUIHandler
 STDMETHODIMP WebBrowserContainer::ShowContextMenu(DWORD dwID, POINT *ppt, IUnknown *pcmdtReserved, IDispatch *pdispReserved)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return _bEnableContextMenus
         ? S_FALSE   // 默认
         : S_OK      // 不允许
@@ -1210,61 +1210,61 @@ STDMETHODIMP WebBrowserContainer::ShowContextMenu(DWORD dwID, POINT *ppt, IUnkno
 
 STDMETHODIMP WebBrowserContainer::GetHostInfo(DOCHOSTUIINFO *pInfo)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     pInfo->dwFlags |= DOCHOSTUIFLAG_NO3DOUTERBORDER;
     return S_OK;
 }
 
 STDMETHODIMP WebBrowserContainer::ShowUI(DWORD dwID, IOleInPlaceActiveObject *pActiveObject, IOleCommandTarget *pCommandTarget, IOleInPlaceFrame *pFrame, IOleInPlaceUIWindow *pDoc)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::HideUI(void)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::UpdateUI(void)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::OnDocWindowActivate(BOOL fActivate)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 STDMETHODIMP WebBrowserContainer::OnFrameWindowActivate(BOOL fActivate)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::ResizeBorder(LPCRECT prcBorder, IOleInPlaceUIWindow *pUIWindow, BOOL fRameWindow)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::TranslateAccelerator(LPMSG lpMsg, const GUID *pguidCmdGroup, DWORD nCmdID)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::GetOptionKeyPath(LPOLESTR *pchKey, DWORD dw)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::GetDropTarget(IDropTarget *pDropTarget, IDropTarget **ppDropTarget)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
@@ -1277,13 +1277,13 @@ STDMETHODIMP WebBrowserContainer::GetExternal(IDispatch **ppDispatch)
 
 STDMETHODIMP WebBrowserContainer::TranslateUrl(DWORD dwTranslate, OLECHAR *pchURLIn, OLECHAR **ppchURLOut)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
 STDMETHODIMP WebBrowserContainer::FilterDataObject(IDataObject *pDO, IDataObject **ppDORet)
 {
-    EtwLog(L"Enter");
+    LogLog(L"Enter");
     return E_NOTIMPL;
 }
 
@@ -1412,7 +1412,8 @@ bool webview::control_procedure(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT
 void webview::set_attr(const TCHAR* name, const TCHAR* value)
 {
     if(is_attr(_T("url"))) {
-        navigate(value);
+		assert(0);
+        // navigate(value);
     }
     else {
         return __super::set_attr(name, value);

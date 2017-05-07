@@ -7,21 +7,23 @@
 #include <CommCtrl.h>
 #include <windowsx.h>
 
-#include "tw_util.h"
-#include "tw_control.h"
-#include "tw_syscontrols.h"
-#include "tw_window.h"
-#include "tw_resmgr.h"
-#include "tw_menu.h"
+#include <taowin/core/tw_util.h>
+#include <taowin/core/tw_control.h>
+#include <taowin/core/tw_syscontrols.h>
+#include <taowin/core/tw_window.h>
+#include <taowin/core/tw_resmgr.h>
+#include <taowin/core/tw_menu.h>
 
-#include "../ctrl/button.h"
-#include "../ctrl/combobox.h"
-#include "../ctrl/edit.h"
-#include "../ctrl/header.h"
-#include "../ctrl/listview.h"
-#include "../ctrl/progress.h"
-#include "../ctrl/tabctrl.h"
-#include "../ctrl/webview.h"
+#include <taowin/ctrl/button.h>
+#include <taowin/ctrl/combobox.h>
+#include <taowin/ctrl/edit.h>
+#include <taowin/ctrl/header.h>
+#include <taowin/ctrl/listview.h>
+#include <taowin/ctrl/progress.h>
+#include <taowin/ctrl/tabctrl.h>
+#include <taowin/ctrl/webview.h>
+
+#include "../taolog.h"
 
 namespace taowin{
 

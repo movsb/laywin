@@ -1,8 +1,7 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#include "../etwlogger.h"
-#include "core/tw_taowin.h"
+#include <taowin/core/tw_taowin.h>
 
 namespace {
 
@@ -63,47 +62,47 @@ protected:
             lv->set_source(&_data);
 
             lv->on_custom_draw([this](NMHDR* hdr) {
-                EtwLog(_T("自绘"));
+                LogLog(_T("自绘"));
                 return 0;
             });
 
             lv->on_double_click([this](int item, int subitem) {
-                EtwLog(_T("双击（%d, %d）"), item, subitem);
+                LogLog(_T("双击（%d, %d）"), item, subitem);
                 return 0;
             });
 
             lv->on_header_divider_dblclick([this](NMHDR* hdr) {
-                EtwLog(_T("表头分隔线双击"));
+                LogLog(_T("表头分隔线双击"));
                 return 0;
             });
 
             lv->on_header_end_drag([this]() {
-                EtwLog(_T("结束拖放"));
+                LogLog(_T("结束拖放"));
                 return 0;
             });
 
             lv->on_header_end_track([this](NMHDR* hdr) {
-                EtwLog(_T("结束拖动"));
+                LogLog(_T("结束拖动"));
                 return 0;
             });
 
             lv->on_header_rclick([this]() {
-                EtwLog(_T("表头右键单击"));
+                LogLog(_T("表头右键单击"));
                 return 0;
             });
 
             lv->on_item_changed([this](NMHDR* hdr) {
-                EtwLog(_T("状态改变"));
+                LogLog(_T("状态改变"));
                 return 0;
             });
 
             lv->on_key_down([this](NMHDR* hdr) {
-                EtwLog(_T("按键按下"));
+                LogLog(_T("按键按下"));
                 return 0;
             });
 
             lv->on_right_click([this](int item, int subitem) {
-                EtwLog(_T("右键单击 %d,%d"), item, subitem);
+                LogLog(_T("右键单击 %d,%d"), item, subitem);
                 return 0;
             });
 

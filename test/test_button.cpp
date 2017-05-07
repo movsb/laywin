@@ -1,5 +1,4 @@
-#include "../etwlogger.h"
-#include "core/tw_taowin.h"
+#include <taowin/core/tw_taowin.h>
 
 namespace {
 
@@ -36,7 +35,7 @@ protected:
         {
             _c = _root->find<taowin::button>(_T("c"));
             _c->on_click([this] {
-                EtwLog(_T("按钮点击"));
+                LogLog(_T("按钮点击"));
             });
 
             return 0;

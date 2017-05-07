@@ -1,5 +1,4 @@
-#include "../etwlogger.h"
-#include "core/tw_taowin.h"
+#include <taowin/core/tw_taowin.h>
 
 namespace {
 
@@ -41,34 +40,34 @@ protected:
         {
             _c = _root->find<taowin::webview>(_T("c"));
 
-            _c->add_callable(_T("test"), [this](taowin::DispParamsVisitor args, VARIANTARG* result) {
+            _c->add_callable(L"test", [this](taowin::DispParamsVisitor args, VARIANTARG* result) {
                 msgbox(_T("calling test"));
-                _c->fire_event(_T("event"), 0, nullptr);
+                _c->fire_event(L"event", 0, nullptr);
                 return S_OK;
             });
 
             _c->on_before_navigate([this](const wchar_t* uri, bool top) {
-                EtwLog(_T("开始导航：[%d] %s"), top, uri);
+                LogLog(_T("开始导航：[%d] %s"), top, uri);
             });
             _c->on_navigate_complete([this](const wchar_t* uri, bool top) {
-                EtwLog(_T("导航完成：[%d] %s"), top, uri);
+                LogLog(_T("导航完成：[%d] %s"), top, uri);
             });
             _c->on_document_complete([this](const wchar_t* uri, bool top) {
-                EtwLog(_T("文档完成：[%d] %s"), top, uri);
-                _c->exec_script(_T(R"(
+                LogLog(_T("文档完成：[%d] %s"), top, uri);
+                _c->exec_script(LR"(
                     alert('execScript');
                     external.AddListener('event', function() { alert('event received'); });
                     external.test('string', 1234,true);
-                )"));
+                )");
             });
             _c->on_new_window([this](const wchar_t* uri, const wchar_t* ref, bool* cancel, IDispatch** disp) {
-                EtwLog(_T("新开窗口：uri: %s, ref: %s"), uri, ref);
+                LogLog(_T("新开窗口：uri: %s, ref: %s"), uri, ref);
             });
             _c->on_title_change([this](const wchar_t* title) {
-                EtwLog(_T("标题改变：%s"), title);
+                LogLog(_T("标题改变：%s"), title);
             });
             _c->on_set_status_text([this](const wchar_t* text) {
-                EtwLog(_T("状态改变：%s"), text);
+                LogLog(_T("状态改变：%s"), text);
             });
 
             ::SetTimer(_hwnd, 0, 1000, nullptr);
@@ -82,7 +81,7 @@ protected:
                 if(hFocus) {
                     TCHAR cls[MAX_PATH];
                     ::GetClassName(hFocus, cls, _countof(cls));
-                    EtwLog(_T("焦点窗口：%s"), cls);
+                    LogLog(_T("焦点窗口：%s"), cls);
                 }
                 return 0;
             }

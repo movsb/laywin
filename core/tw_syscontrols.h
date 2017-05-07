@@ -12,7 +12,7 @@
 #include <WindowsX.h>
 #include <MsHTML.h>
 
-#include "../etwlogger.h"
+#include "../taolog.h"
 
 #include "tw_control.h"
 #include "tw_util.h"
