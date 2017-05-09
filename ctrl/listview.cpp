@@ -5,6 +5,12 @@
 
 namespace taowin {
 
+ListViewControl::ListViewControl()
+: _data(nullptr)
+{
+
+}
+
 void ListViewControl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
     static style_map __known_styles[] = {
         {LVS_SINGLESEL, _T("singlesel")},
@@ -39,7 +45,7 @@ bool ListViewControl::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
         auto pdi = reinterpret_cast<NMLVDISPINFO*>(hdr);
         int item = pdi->item.iItem;
         int subitem = pdi->item.iSubItem;
-        pdi->item.pszText = const_cast<LPTSTR>(_data->get(item, subitem));
+        pdi->item.pszText = _data != nullptr ? const_cast<LPTSTR>(_data->get(item, subitem)) : _T("");
         return true;
     }
     else if(code == NM_DBLCLK) {
@@ -199,6 +205,12 @@ void ListViewControl::set_column_order(int n, int * a)
 int ListViewControl::subitem_hittest(LVHITTESTINFO* pht)
 {
     return ListView_SubItemHitTest(_hwnd, pht);
+}
+
+void ListViewControl::update_source(int flags /*= 0*/)
+{
+	auto n = _data != nullptr ? _data->size() : 0;
+	set_item_count(n, flags);
 }
 
 int ListViewControl::get_subitem_rect(int item, int subitem, RECT* rc, int code)

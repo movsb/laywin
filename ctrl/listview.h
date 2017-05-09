@@ -78,6 +78,9 @@ public:
     };
 
 public:
+	ListViewControl();
+
+public:
     bool redraw_items(int first, int last);
     bool set_item_count(int count, int flags);
     int get_item_count();
@@ -122,7 +125,7 @@ public:
     void set_column_order(int n, int* a);
     int subitem_hittest(LVHITTESTINFO* pht);
     void set_source(IDataSource* source) { _data = source; update_source(); }
-    void update_source(int flags = 0) { set_item_count(_data->size(), flags); }
+    void update_source(int flags = 0);
 
     // return non-zero on success
     int get_subitem_rect(int item, int subitem, RECT* rc, int code = LVIR_BOUNDS);

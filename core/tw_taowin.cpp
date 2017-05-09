@@ -121,7 +121,9 @@ namespace taowin{
                     }
                 }
 
-                return on_notify(hwnd, pc, code, nullptr);
+				if (pc != nullptr) {
+					return on_notify(hwnd, pc, code, nullptr);
+				}
             }
             else {
                 if(code == 0) {
@@ -159,7 +161,11 @@ namespace taowin{
                 }
             }
 
-			return on_notify(hdr->hwndFrom, pc, hdr->code, hdr);
+			if (pc != nullptr) {
+				return on_notify(hdr->hwndFrom, pc, hdr->code, hdr);
+			}
+
+			break;
 		}
         case WM_CREATE:
         {
