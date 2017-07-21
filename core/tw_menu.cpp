@@ -12,9 +12,9 @@ using namespace taowin::parser;
 
 namespace taowin {
 
-int menu_manager::_id = 0x0f;
+int MenuManager::_id = 0x0f;
 
-menu_manager::sibling* menu_manager::_create_sib(string sid, sibling* parent, HMENU owner, sibling* prev)
+MenuManager::Sibling* MenuManager::_create_sib(string sid, Sibling* parent, HMENU owner, Sibling* prev)
 {
     auto sib = _alloc_sib();
 
@@ -36,14 +36,14 @@ menu_manager::sibling* menu_manager::_create_sib(string sid, sibling* parent, HM
     return sib;
 }
 
-void menu_manager::_create_items(HMENU hMenu, PARSER_OBJECT* c, sibling* rel)
+void MenuManager::_create_items(HMENU hMenu, PARSER_OBJECT* c, Sibling* rel)
 {
     rel->prev = nullptr;
     rel->next = nullptr;
     rel->child = nullptr;
 
-    sibling _dummy_child;
-    sibling* prev_child = &_dummy_child;
+    Sibling _dummy_child;
+    Sibling* prev_child = &_dummy_child;
 
     _dummy_child.next = nullptr;
 
@@ -74,7 +74,7 @@ void menu_manager::_create_items(HMENU hMenu, PARSER_OBJECT* c, sibling* rel)
     if(rel->child) rel->child->prev = nullptr;
 }
 
-void menu_manager::_insert_sep(HMENU hMenu, UINT id) const
+void MenuManager::_insert_sep(HMENU hMenu, UINT id) const
 {
     MENUITEMINFO m {0};
     m.cbSize        = sizeof(m);
@@ -86,7 +86,7 @@ void menu_manager::_insert_sep(HMENU hMenu, UINT id) const
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
 }
 
-void menu_manager::_insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enabled)
+void MenuManager::_insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enabled)
 {
     MENUITEMINFO m {0};
     m.cbSize        = sizeof(m);
@@ -101,7 +101,7 @@ void menu_manager::_insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const strin
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
 }
 
-void menu_manager::_insert_str(HMENU hMenu, UINT id, const string& s, bool enabled)
+void MenuManager::_insert_str(HMENU hMenu, UINT id, const string& s, bool enabled)
 {
     MENUITEMINFO m {0};
     m.cbSize        = sizeof(m);
@@ -115,17 +115,17 @@ void menu_manager::_insert_str(HMENU hMenu, UINT id, const string& s, bool enabl
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
 }
 
-menu_manager::sibling* menu_manager::_alloc_sib()
+MenuManager::Sibling* MenuManager::_alloc_sib()
 {
-    return new sibling;
+    return new Sibling;
 }
 
-void menu_manager::_dealloc_sib(sibling* sib)
+void MenuManager::_dealloc_sib(Sibling* sib)
 {
     delete sib;
 }
 
-menu_manager::sibling* menu_manager::find_sib(const string& ids_)
+MenuManager::Sibling* MenuManager::find_sib(const string& ids_)
 {
     string ids = ids_ + _T('\0');
 #ifdef _UNICODE
@@ -153,21 +153,21 @@ menu_manager::sibling* menu_manager::find_sib(const string& ids_)
     return p;
 }
 
-void menu_manager::insert_str(sibling* popup, string sid, const string& s, bool enabled)
+void MenuManager::insert_str(Sibling* popup, string sid, const string& s, bool enabled)
 {
     if(!popup) popup = &_root;
     auto sib = _create_sib(sid, popup, popup->self, nullptr);
     _insert_str(popup->self, sib->id, s, enabled);
 }
 
-void menu_manager::insert_sep(sibling* popup)
+void MenuManager::insert_sep(Sibling* popup)
 {
     if(!popup) popup = &_root;
     auto sib = _create_sib(_T(""), popup, popup->self, nullptr);
     _insert_sep(popup->self, 0);
 }
 
-void menu_manager::set_check(string ids, bool check)
+void MenuManager::set_check(string ids, bool check)
 {
     auto sib = find_sib(ids);
     if(sib->parent && sib->parent->self) {
@@ -175,10 +175,10 @@ void menu_manager::set_check(string ids, bool check)
     }
 }
 
-void menu_manager::create(const TCHAR* xml)
+void MenuManager::create(const TCHAR* xml)
 {
     PARSER_OBJECT* root = parser::parse(xml, nullptr);
-    if(!root || root->tag != _T("menutree")) return;
+    if(!root || root->tag != _T("MenuTree")) return;
 
     _hmenu = ::CreatePopupMenu();
     _root.parent = nullptr;
@@ -188,7 +188,7 @@ void menu_manager::create(const TCHAR* xml)
     _create_items(_hmenu, root, &_root);
 }
 
-void menu_manager::destroy()
+void MenuManager::destroy()
 {
     if(_hmenu) {
         ::DestroyMenu(_hmenu);
@@ -196,7 +196,7 @@ void menu_manager::destroy()
     }
 }
 
-void menu_manager::track(const POINT* pt_, HWND owner)
+void MenuManager::track(const POINT* pt_, HWND owner)
 {
     POINT pt;
     POINT const *ppt = pt_;
@@ -208,7 +208,7 @@ void menu_manager::track(const POINT* pt_, HWND owner)
     ::TrackPopupMenu(_hmenu, TPM_LEFTBUTTON | TPM_LEFTALIGN, ppt->x, ppt->y, 0, owner, nullptr);
 }
 
-std::vector<string> menu_manager::get_ids(int id) const
+std::vector<string> MenuManager::get_ids(int id) const
 {
     std::vector<string> ids;
 
@@ -225,14 +225,14 @@ std::vector<string> menu_manager::get_ids(int id) const
     return std::move(ids);
 }
 
-void menu_manager::enable(const string& ids, bool b)
+void MenuManager::enable(const string& ids, bool b)
 {
     if(auto sib = find_sib(ids)) {
         ::EnableMenuItem(sib->owner, sib->id, b ? MF_ENABLED : MF_GRAYED);
     }
 }
 
-menu_manager::sibling * menu_manager::get_popup(int id) const
+MenuManager::Sibling * MenuManager::get_popup(int id) const
 {
     auto it = _idmap.find(id);
     if(it == _idmap.cend())
@@ -241,7 +241,7 @@ menu_manager::sibling * menu_manager::get_popup(int id) const
     return it->second;
 }
 
-menu_manager::sibling* menu_manager::match_popup(const string& ids, HMENU popup)
+MenuManager::Sibling* MenuManager::match_popup(const string& ids, HMENU popup)
 {
     auto sib = find_sib(ids);
     if(sib && sib->self == popup)
@@ -249,7 +249,7 @@ menu_manager::sibling* menu_manager::match_popup(const string& ids, HMENU popup)
     return nullptr;
 }
 
-void menu_manager::clear_popup(sibling* sib)
+void MenuManager::clear_popup(Sibling* sib)
 {
     if(sib && sib->self) {
         int count = ::GetMenuItemCount(sib->self);

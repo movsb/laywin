@@ -3,7 +3,7 @@
 namespace taowin {
 
 
-class tabctrl : public syscontrol
+class TabCtrl : public SystemControl
 {
 public:
     // 插入一个标签
@@ -18,7 +18,7 @@ public:
     void adjust_rect(bool large, RECT* rc);
 
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
 };
 
 }

@@ -2,7 +2,7 @@
 
 namespace taowin {
 
-class ListViewControl : public syscontrol
+class ListView : public SystemControl
 {
 public:
     typedef std::function<LRESULT(int item, int subitem)> OnItemMouseEvent;
@@ -78,7 +78,7 @@ public:
     };
 
 public:
-	ListViewControl();
+	ListView();
 
 public:
     bool redraw_items(int first, int last);
@@ -146,7 +146,7 @@ public:
     void on_header_end_drag(OnNotify callback) { _header.on_end_drag = callback; }
 
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
     virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
     virtual bool filter_child(HWND child, int code, NMHDR* hdr, LRESULT* lr) override;
 

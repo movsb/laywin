@@ -72,8 +72,8 @@ protected:
 
 } // namespace _webview
 
-class webview
-    : public custom_control
+class WebView
+    : public CustomControl
     , private _webview::EventDelegate
 {
 public:
@@ -143,7 +143,7 @@ public:
     void on_set_status_text         (OnSetStatusTextT callback)         { _on_set_status_text       = callback; }
 
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
     virtual bool control_procedure(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lr) override;
     virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
     virtual void pos(const Rect& rc) override;

@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taowin", "pro\taowin.vcxproj", "{C28D44BF-69D9-4077-BE36-D30D9E1958AE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "pro\test.vcxproj", "{FE1D0562-368B-493B-ADD6-68428935F5AD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C28D44BF-69D9-4077-BE36-D30D9E1958AE} = {C28D44BF-69D9-4077-BE36-D30D9E1958AE}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

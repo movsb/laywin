@@ -2,7 +2,7 @@
 
 namespace {
 
-class TW : public taowin::window_creator
+class TW : public taowin::WindowCreator
 {
 public:
     TW()
@@ -18,17 +18,17 @@ protected:
     virtual LPCTSTR get_skin_xml() const override
     {
         LPCTSTR json = _T(R"tw(
-<window title="taowinÑÝÊ¾´°¿Ú" size="800,600">
-    <res>
-        <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
-        <font name="1" face="Î¢ÈíÑÅºÚ" size="12"/>
-    </res>
-    <root>
+<Window title="taowinÑÝÊ¾´°¿Ú" size="800,600">
+    <Resource>
+        <Font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
+        <Font name="1" face="Î¢ÈíÑÅºÚ" size="12"/>
+    </Resource>
+    <Root>
         <horizontal>
-            <webview name="c" url="https://blog.twofei.com/" />
+            <WebView name="c" url="https://blog.twofei.com/" />
         </horizontal>
-    </root>
-</window>
+    </Root>
+</Window>
 )tw");
         return json;
     }
@@ -38,7 +38,7 @@ protected:
         switch(umsg) {
         case WM_CREATE:
         {
-            _c = _root->find<taowin::webview>(_T("c"));
+            _c = _root->find<taowin::WebView>(_T("c"));
 
             _c->add_callable(L"test", [this](taowin::DispParamsVisitor args, VARIANTARG* result) {
                 msgbox(_T("calling test"));
@@ -91,7 +91,7 @@ protected:
         return __super::handle_message(umsg, wparam, lparam);
     }
 
-    virtual taowin::syscontrol* filter_control(HWND hwnd) override
+    virtual taowin::SystemControl* filter_control(HWND hwnd) override
     {
         return nullptr;
     }
@@ -103,7 +103,7 @@ protected:
     }
 
 private:
-    taowin::webview* _c;
+    taowin::WebView* _c;
 };
 
 }

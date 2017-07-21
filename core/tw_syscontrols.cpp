@@ -28,15 +28,15 @@ namespace taowin{
         return n;
     }
 
-	syscontrol::syscontrol()
+	SystemControl::SystemControl()
         : _old_wnd_proc(0)
         , _owner(0)
 	{
 
 	}
 
-    void syscontrol::create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) {
-        syscontrol_metas metas;
+    void SystemControl::create(HWND parent, std::map<string, string>& attrs, ResourceManager& mgr) {
+        SystemControlMetas metas;
         create_metas(metas, attrs);
 
         if(metas.before_creation)
@@ -54,7 +54,7 @@ namespace taowin{
 
         decltype(attrs.begin()) it;
 
-        it = attrs.find(_T("font"));
+        it = attrs.find(_T("Font"));
         HFONT font = it == attrs.end()
             ? mgr.get_font(_T("default"))
             : mgr.get_font(it->second.c_str());
@@ -71,12 +71,12 @@ namespace taowin{
             set_attr(it->first.c_str(), it->second.c_str());
     }
 
-    unsigned int syscontrol::get_ctrl_id() const
+    unsigned int SystemControl::get_ctrl_id() const
     {
         return ::GetWindowLongPtr(_hwnd, GWL_ID);
     }
 
-    void syscontrol::create_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+    void SystemControl::create_metas(SystemControlMetas& metas, std::map<string, string>& attrs)
     {
         static style_map __known_styles[] =
         {
@@ -141,13 +141,13 @@ namespace taowin{
         }
     }
 
-    LRESULT __stdcall custom_control::__control_procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT __stdcall CustomControl::__control_procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        custom_control* pThis = static_cast<custom_control*>(reinterpret_cast<syscontrol*>(::GetWindowLongPtr(hWnd, 4)));
+        CustomControl* pThis = static_cast<CustomControl*>(reinterpret_cast<SystemControl*>(::GetWindowLongPtr(hWnd, 4)));
 
         if(uMsg == WM_NCCREATE) {
             LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lParam);
-            pThis = static_cast<custom_control*>(static_cast<syscontrol*>(lpcs->lpCreateParams));
+            pThis = static_cast<CustomControl*>(static_cast<SystemControl*>(lpcs->lpCreateParams));
             pThis->hwnd(hWnd);
             ::SetWindowLongPtr(hWnd, 4, reinterpret_cast<LPARAM>(pThis));
             return TRUE; // must
@@ -165,7 +165,7 @@ namespace taowin{
             return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
 
-    void custom_control::register_window_classes()
+    void CustomControl::register_window_classes()
     {
         WNDCLASSEX wc = {0};
         wc.cbSize = sizeof(wc);

@@ -16,34 +16,34 @@
 
 #include <taowin/ctrl/button.h>
 #include <taowin/ctrl/combobox.h>
-#include <taowin/ctrl/edit.h>
+#include <taowin/ctrl/TextBox.h>
 #include <taowin/ctrl/header.h>
 #include <taowin/ctrl/listview.h>
-#include <taowin/ctrl/progress.h>
-#include <taowin/ctrl/tabctrl.h>
+#include <taowin/ctrl/Progress.h>
+#include <taowin/ctrl/TabCtrl.h>
 #include <taowin/ctrl/webview.h>
 
 #include "../taolog.h"
 
 namespace taowin{
 
-    class window_creator : public window
+    class WindowCreator : public Window
 	{
     public:
-        window_creator();
-        virtual ~window_creator();
+        WindowCreator();
+        virtual ~WindowCreator();
 
-        void subclass_control(syscontrol* ctl);
-        void add_menu(const menu_manager* menu) { _menus.add(menu); }
+        void subclass_control(SystemControl* ctl);
+        void add_menu(const MenuManager* menu) { _menus.add(menu); }
 
 	protected:
 		virtual LPCTSTR get_skin_xml() const;
 		virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);
-		virtual LRESULT control_message(syscontrol* ctl, UINT umsg, WPARAM wparam, LPARAM lparam);
-        virtual syscontrol* filter_control(HWND hwnd) { return nullptr; }
+		virtual LRESULT control_message(SystemControl* ctl, UINT umsg, WPARAM wparam, LPARAM lparam);
+        virtual SystemControl* filter_control(HWND hwnd) { return nullptr; }
 		virtual LRESULT on_menu(const MenuIds& ids) { return 0; }
         virtual LRESULT on_accel(int id) { return 0; }
-		virtual LRESULT on_notify(HWND hwnd, control* pc, int code, NMHDR* hdr) { return 0; }
+		virtual LRESULT on_notify(HWND hwnd, Control* pc, int code, NMHDR* hdr) { return 0; }
 
         void async_call(std::function<void()> fn) {
             __window_manager.add_async_call(fn);
@@ -55,10 +55,10 @@ namespace taowin{
 
 	protected:
         bool            _window_created;
-        window_container* _window;
-        root_control*   _root;
-        resmgr          _mgr;
-        array<const menu_manager*> _menus;
+        WindowContainer* _window;
+        RootControl*   _root;
+        ResourceManager          _mgr;
+        Array<const MenuManager*> _menus;
 	};
 
     void init();

@@ -45,7 +45,7 @@ string last_error()
     return std::move(r);
 }
 
-void set_track_mouse(const control* p)
+void set_track_mouse(const Control* p)
 {
     TRACKMOUSEEVENT tme = {0};
     tme.cbSize = sizeof(tme);

@@ -3,7 +3,7 @@
 
 namespace taowin {
 
-void button::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+void Button::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs)
 {
     static style_map __known_styles[] =
     {
@@ -17,7 +17,7 @@ void button::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
     metas.classname = WC_BUTTON;
 }
 
-bool button::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
+bool Button::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
 {
     if(code == BN_CLICKED) {
         if(_on_click) {
@@ -29,28 +29,28 @@ bool button::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
     return false;
 }
 
-option::option()
+RadioButton::RadioButton()
     : _b_has_group(false)
 {
 }
 
-void option::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+void RadioButton::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) {
     metas.classname = WC_BUTTON;
     metas.style |= BS_AUTORADIOBUTTON;
 }
 
 //////////////////////////////////////////////////////////////////////////
-void check::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+void CheckBox::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) {
     metas.classname = WC_BUTTON;
     metas.style |= BS_AUTOCHECKBOX;
 }
 
-bool check::get_chekc()
+bool CheckBox::get_chekc()
 {
     return !!Button_GetCheck(_hwnd);
 }
 
-void check::set_attr(const TCHAR* name, const TCHAR* value)
+void CheckBox::set_attr(const TCHAR* name, const TCHAR* value)
 {
     if(_tcscmp(name, _T("checked")) == 0) {
         bool checked = _tcscmp(value, _T("true")) == 0;
@@ -60,7 +60,7 @@ void check::set_attr(const TCHAR* name, const TCHAR* value)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void label::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+void Label::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) {
     static style_map __known_styles[] =
     {
         {SS_CENTER, _T("center")},
@@ -72,7 +72,7 @@ void label::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) 
 }
 
 //////////////////////////////////////////////////////////////////////////
-void group::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) {
+void Group::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) {
     metas.style |= BS_GROUPBOX;
     metas.classname = WC_BUTTON;
 }

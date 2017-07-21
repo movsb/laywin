@@ -6,21 +6,21 @@
 #include "tw_util.h"
 
 namespace taowin{
-    class window_creator;
-    class control;
-    class syscontrol;
+    class WindowCreator;
+    class Control;
+    class SystemControl;
 
-    class resmgr {
+    class ResourceManager {
     public:
-        typedef std::map<string, HFONT> font_maps_t;
+        typedef std::map<string, HFONT> FontMap;
 
-        friend class window_creator;
-        friend class control;
-        friend class syscontrol;
+        friend class WindowCreator;
+        friend class Control;
+        friend class SystemControl;
 
 	public:
-		resmgr();
-		~resmgr();
+		ResourceManager();
+		~ResourceManager();
 
 		void    add_font(const TCHAR* name, const TCHAR* face, int size);
         HFONT   get_font(const TCHAR* name) {
@@ -44,8 +44,8 @@ namespace taowin{
 
 	private:
 		HWND        _hwnd;
-        font_maps_t _fonts;
-        window_creator* _owner;
+        FontMap _fonts;
+        WindowCreator* _owner;
         unsigned int    _next_ctrl_id;
 	};
 }

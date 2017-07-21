@@ -54,9 +54,6 @@
     <ClCompile Include="..\ctrl\combobox.cpp">
       <Filter>Source Files\ctrl</Filter>
     </ClCompile>
-    <ClCompile Include="..\ctrl\edit.cpp">
-      <Filter>Source Files\ctrl</Filter>
-    </ClCompile>
     <ClCompile Include="..\ctrl\header.cpp">
       <Filter>Source Files\ctrl</Filter>
     </ClCompile>
@@ -70,6 +67,9 @@
       <Filter>Source Files\ctrl</Filter>
     </ClCompile>
     <ClCompile Include="..\ctrl\webview.cpp">
+      <Filter>Source Files\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ctrl\TextBox.cpp">
       <Filter>Source Files\ctrl</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,9 +104,6 @@
     <ClInclude Include="..\ctrl\combobox.h">
       <Filter>Source Files\ctrl</Filter>
     </ClInclude>
-    <ClInclude Include="..\ctrl\edit.h">
-      <Filter>Source Files\ctrl</Filter>
-    </ClInclude>
     <ClInclude Include="..\ctrl\header.h">
       <Filter>Source Files\ctrl</Filter>
     </ClInclude>
@@ -127,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="..\util\win_hlp.hpp">
       <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ctrl\TextBox.h">
+      <Filter>Source Files\ctrl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@
 
 namespace {
 
-class TW : public taowin::window_creator
+class TW : public taowin::WindowCreator
 {
 public:
 	TW()
@@ -15,16 +15,16 @@ protected:
 	virtual LPCTSTR get_skin_xml() const override
 	{
         LPCTSTR json = _T(R"tw(
-<window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
-    <res>
-        <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
-    </res>
-    <root>
-        <vertical padding="5,5,5,5">
-            <progress height="40" name="c" range="0,100" color="255,0,0" bkcolor="255,255,0" />
-        </vertical>
-    </root>
-</window>
+<Window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
+    <Resource>
+        <Font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
+    </Resource>
+    <Root>
+        <Vertical padding="5,5,5,5">
+            <Progress height="40" name="c" range="0,100" color="255,0,0" bkcolor="255,255,0" />
+        </Vertical>
+    </Root>
+</Window>
 )tw");
 		return json;
 	}
@@ -35,7 +35,7 @@ protected:
 		{
 		case WM_CREATE:
 		{
-            _c = _root->find<taowin::progress>(_T("c"));
+            _c = _root->find<taowin::Progress>(_T("c"));
             _c->set_pos(50);
 			return 0;
 		}
@@ -43,13 +43,13 @@ protected:
         return __super::handle_message(umsg, wparam, lparam);
 	}
 
-    virtual taowin::syscontrol* filter_control(HWND hwnd) override
+    virtual taowin::SystemControl* filter_control(HWND hwnd) override
     {
         return nullptr;
     }
 
 private:
-    taowin::progress* _c;
+    taowin::Progress* _c;
 };
 
 }

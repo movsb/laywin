@@ -6,10 +6,10 @@
 #include <tchar.h>
 
 namespace taowin{
-class control;
-class container;
+class Control;
+class Container;
 
-	class csize
+	class Size
 	{
 	public:
 		int cx;
@@ -98,10 +98,10 @@ class container;
 #endif
 
 	template<class T>
-	class array
+	class Array
 	{
 	public:
-		array(int size = 0)
+		Array(int size = 0)
 			: _pt(NULL)
 			, _count(0)
 			, _alloc(0)
@@ -110,7 +110,7 @@ class container;
 				_pt = new T[size];
 			}
 		}
-		~array(){
+		~Array(){
 			clear();
 		}
 
@@ -185,5 +185,5 @@ class container;
     void split_string(std::vector<string>* vec, LPCTSTR str, TCHAR delimiter = ',');
 
     string last_error();
-    void set_track_mouse(const control* p);
+    void set_track_mouse(const Control* p);
 }

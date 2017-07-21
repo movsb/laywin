@@ -4,7 +4,7 @@
 #include <taowin/core/tw_taowin.h>
 
 
-class TW : public taowin::window_creator
+class TW : public taowin::WindowCreator
 {
 public:
 	TW()
@@ -14,17 +14,17 @@ protected:
 	virtual LPCTSTR get_skin_xml() const override
 	{
         LPCTSTR json = _T(R"tw(
-<window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
-    <res>
-        <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
-        <font name="1" face="Î¢ÈíÑÅºÚ" size="12"/>
-    </res>
-    <root>
-        <vertical padding="5,5,5,5">
+<Window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
+    <Resource>
+        <Font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
+        <Font name="1" face="Î¢ÈíÑÅºÚ" size="12"/>
+    </Resource>
+    <Root>
+        <Vertical padding="5,5,5,5">
             <combobox name="c" />
-        </vertical>
-    </root>
-</window>
+        </Vertical>
+    </Root>
+</Window>
 )tw");
 		return json;
 	}
@@ -35,7 +35,7 @@ protected:
 		{
 		case WM_CREATE:
 		{
-            _c = _root->find<taowin::ComboboxControl>(_T("c"));
+            _c = _root->find<taowin::ComboBox>(_T("c"));
             _c->add_string(_T("111"));
             _c->add_string(_T("222"));
             _c->add_string(_T("333"));
@@ -51,12 +51,12 @@ protected:
         return __super::handle_message(umsg, wparam, lparam);
 	}
 
-    virtual taowin::syscontrol* filter_control(HWND hwnd) override
+    virtual taowin::SystemControl* filter_control(HWND hwnd) override
     {
         return nullptr;
     }
 
-    taowin::ComboboxControl* _c;
+    taowin::ComboBox* _c;
 };
 
 void test_combobox()

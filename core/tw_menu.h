@@ -29,15 +29,15 @@ protected:
     std::vector<string> ids;
 };
 
-class menu_manager
+class MenuManager
 {
 public:
-    struct sibling
+    struct Sibling
     {
-        sibling* parent;
-        sibling* prev;
-        sibling* next;
-        sibling* child;
+        Sibling* parent;
+        Sibling* prev;
+        Sibling* next;
+        Sibling* child;
 
         UINT     id;
         string   sid;
@@ -47,12 +47,12 @@ public:
     };
 
 public:
-    menu_manager()
+    MenuManager()
         : _hmenu(nullptr)
     {
     }
 
-    ~menu_manager()
+    ~MenuManager()
     {
         destroy();
     }
@@ -63,30 +63,30 @@ public:
     void track(const POINT* pt = nullptr, HWND owner = ::GetActiveWindow());
     std::vector<string> get_ids(int id) const;
     void enable(const string& ids, bool b);
-    sibling* get_popup(int id) const;
-    sibling* match_popup(const string& ids, HMENU popup);
-    void clear_popup(sibling* sib);
-    sibling* find_sib(const string& ids);
-    void insert_str(sibling* popup, string sid, const string& s, bool enabled = true);
-    void insert_sep(sibling* popup);
+    Sibling* get_popup(int id) const;
+    Sibling* match_popup(const string& ids, HMENU popup);
+    void clear_popup(Sibling* sib);
+    Sibling* find_sib(const string& ids);
+    void insert_str(Sibling* popup, string sid, const string& s, bool enabled = true);
+    void insert_sep(Sibling* popup);
     void set_check(string sid, bool check);
 
 protected:
-    sibling* _create_sib(string sid, sibling* parent, HMENU owner, sibling* prev);
-    void _create_items(HMENU hMenu, parser::PARSER_OBJECT* c, sibling* rel);
+    Sibling* _create_sib(string sid, Sibling* parent, HMENU owner, Sibling* prev);
+    void _create_items(HMENU hMenu, parser::PARSER_OBJECT* c, Sibling* rel);
     void _insert_sep(HMENU hMenu, UINT id) const;
     void _insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enalbed = true);
     void _insert_str(HMENU hMenu, UINT id, const string& s, bool enabled = true);
 
 protected:
-    sibling* _alloc_sib();
-    void _dealloc_sib(sibling* sib);
+    Sibling* _alloc_sib();
+    void _dealloc_sib(Sibling* sib);
 
 protected:
     static int   _id;
     HMENU _hmenu;
-    sibling _root;
-    std::map<int, sibling*> _idmap;
+    Sibling _root;
+    std::map<int, Sibling*> _idmap;
 };
 
 

@@ -3,7 +3,7 @@
 
 namespace taowin {
 
-void HeaderControl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+void HeaderControl::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs)
 {
     metas.classname = WC_HEADER;
 }

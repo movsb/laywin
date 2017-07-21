@@ -1386,7 +1386,7 @@ void WebBrowserVersionSetter::UnInitInternetExplorer()
 
 using namespace _webview;
 
-void webview::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+void WebView::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs)
 {
     __super::get_metas(metas, attrs);
     metas.before_creation = [this] {
@@ -1399,7 +1399,7 @@ void webview::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs
     };
 }
 
-bool webview::control_procedure(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lr)
+bool WebView::control_procedure(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lr)
 {
     if(uMsg == WM_ERASEBKGND) {
         lr = TRUE;
@@ -1409,7 +1409,7 @@ bool webview::control_procedure(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT
     return false;
 }
 
-void webview::set_attr(const TCHAR* name, const TCHAR* value)
+void WebView::set_attr(const TCHAR* name, const TCHAR* value)
 {
     if(is_attr(_T("url"))) {
 		assert(0);
@@ -1420,7 +1420,7 @@ void webview::set_attr(const TCHAR* name, const TCHAR* value)
     }
 }
 
-void webview::pos(const Rect& rc)
+void WebView::pos(const Rect& rc)
 {
     __super::pos(rc);
     _pwb->SetPos(rc);

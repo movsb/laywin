@@ -5,7 +5,7 @@
 
 namespace {
 
-class TW : public taowin::window_creator
+class TW : public taowin::WindowCreator
 {
 public:
 	TW()
@@ -15,16 +15,16 @@ protected:
 	virtual LPCTSTR get_skin_xml() const override
 	{
         LPCTSTR json = _T(R"tw(
-<window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
-    <res>
-        <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
-    </res>
-    <root>
-        <vertical padding="5,5,5,5">
-            <edit name="c" />
-        </vertical>
-    </root>
-</window>
+<Window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
+    <Resource>
+        <Font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
+    </Resource>
+    <Root>
+        <Vertical padding="5,5,5,5">
+            <TextBox name="c" />
+        </Vertical>
+    </Root>
+</Window>
 )tw");
 		return json;
 	}
@@ -35,7 +35,7 @@ protected:
 		{
 		case WM_CREATE:
 		{
-            _c = _root->find<taowin::edit>(_T("c"));
+            _c = _root->find<taowin::TextBox>(_T("c"));
             _c->on_change([this] {
                 LogLog(_T("ÄÚÈÝ¸Ä±ä£º%s\n"), _c->get_text().c_str());
                 return 0;
@@ -46,13 +46,13 @@ protected:
         return __super::handle_message(umsg, wparam, lparam);
 	}
 
-    virtual taowin::syscontrol* filter_control(HWND hwnd) override
+    virtual taowin::SystemControl* filter_control(HWND hwnd) override
     {
         return nullptr;
     }
 
 private:
-    taowin::edit* _c;
+    taowin::TextBox* _c;
 };
 
 }

@@ -2,7 +2,7 @@
 
 namespace taowin {
 
-class button : public syscontrol
+class Button : public SystemControl
 {
 public:
     typedef std::function<void()> OnMouseEvent;
@@ -15,26 +15,26 @@ public:
     void on_click(OnMouseEvent callback) { _on_click = callback; }
 
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
     virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
 
 protected:
     OnMouseEvent    _on_click;
 };
 
-class option : public syscontrol
+class RadioButton : public SystemControl
 {
 public:
-    option();
+    RadioButton();
 
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
 
 protected:
     bool _b_has_group;
 };
 
-class check : public syscontrol
+class CheckBox : public SystemControl
 {
 public:
     bool get_chekc();
@@ -42,10 +42,10 @@ public:
     virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
 
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
 };
 
-class label : public syscontrol
+class Label : public SystemControl
 {
 public:
     void set_text(const TCHAR* s)
@@ -54,13 +54,13 @@ public:
     }
 
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
 };
 
-class group : public syscontrol
+class Group : public SystemControl
 {
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
 };
 
 }

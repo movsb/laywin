@@ -1,10 +1,10 @@
 #pragma once
 
 namespace taowin {
-class ComboboxControl : public syscontrol
+class ComboBox : public SystemControl
 {
 public:
-    typedef std::function<void(ComboboxControl* that, DRAWITEMSTRUCT* dis, int i, bool selected)> OnDraw;
+    typedef std::function<void(ComboBox* that, DRAWITEMSTRUCT* dis, int i, bool selected)> OnDraw;
     typedef std::function<LRESULT(int index, void* ud)> OnSelChange;
 
 public:
@@ -26,7 +26,7 @@ public:
     void on_sel_change(OnSelChange callback) { _on_sel_change = callback; }
     
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
     virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
     virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
 

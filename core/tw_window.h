@@ -21,10 +21,10 @@ namespace taowin{
 		virtual bool filter_message(MSG* msg) = 0;
 	};
 
-	class window_manager{
+	class WindowManager{
 	public:
-        window_manager() {}
-        ~window_manager() {}
+        WindowManager() {}
+        ~WindowManager() {}
 
         int loop_message()
         {
@@ -124,20 +124,20 @@ namespace taowin{
         }
 
 	private:
-		array<IMessageFilter*>              _message_filters;
+		Array<IMessageFilter*>              _message_filters;
         std::vector<std::function<void()>>  _idle_handlers;
 		std::vector<std::function<void()>>  _async_calls;
 	};
 
-    extern window_manager __window_manager;
+    extern WindowManager __window_manager;
 
     void register_window_classes();
 
-    struct window_extra_t {
+    struct WindowExtra {
 
     };
 
-    class window
+    class Window
 		: public IMessageFilter
 	{
     protected:
@@ -154,17 +154,17 @@ namespace taowin{
         };
 
 	public:
-		window();
-		virtual ~window();
+		Window();
+		virtual ~Window();
 
 		HWND hwnd() const { return _hwnd; }
 		operator HWND() const { return hwnd(); }
 
         HWND create(HWND owner = nullptr);
-        HWND create(window* w) { return create(w->hwnd()); }
+        HWND create(Window* w) { return create(w->hwnd()); }
 
         int  domodal(HWND owner = nullptr);
-        int  domodal(window* w) { return domodal(*w); }
+        int  domodal(Window* w) { return domodal(*w); }
 
 		void close(int code = 0);
 

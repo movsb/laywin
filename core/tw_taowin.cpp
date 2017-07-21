@@ -6,29 +6,29 @@
 namespace taowin{
     // TODO this is temporary
     // lambda cannot be called by itself, so we separated it here
-    static void _create_children(container* p, parser::PARSER_OBJECT* o, resmgr* mgr) {
+    static void _create_children(Container* p, parser::PARSER_OBJECT* o, ResourceManager* mgr) {
         o->dump_children([&](parser::PARSER_OBJECT* c) {
-            control* ctl = nullptr;
+            Control* ctl = nullptr;
             auto& tag = c->tag;
 
-            if(tag == _T("control"))            ctl = new control;
-            else if(tag == _T("container"))     ctl = new container;
+            if(tag == _T("Control"))            ctl = new Control;
+            else if(tag == _T("Container"))     ctl = new Container;
 
-            else if(tag == _T("horizontal"))    ctl = new horizontal;
-            else if(tag == _T("vertical"))      ctl = new vertical;
+            else if(tag == _T("Horizontal"))    ctl = new Horizontal;
+            else if(tag == _T("Vertical"))      ctl = new Vertical;
 
-            else if(tag == _T("button"))        ctl = new button;
-            else if(tag == _T("option"))        ctl = new option;
-            else if(tag == _T("check"))         ctl = new check;
-            else if(tag == _T("label"))         ctl = new label;
-            else if(tag == _T("group"))         ctl = new group;
-            else if(tag == _T("edit"))          ctl = new edit;
-            else if(tag == _T("listview"))      ctl = new ListViewControl;
-            else if(tag == _T("combobox"))      ctl = new ComboboxControl;
-            else if(tag == _T("tabctrl"))       ctl = new tabctrl;
-            else if(tag == _T("progress"))      ctl = new progress;
+            else if(tag == _T("Button"))        ctl = new Button;
+            else if(tag == _T("RadioButton"))   ctl = new RadioButton;
+            else if(tag == _T("CheckBox"))      ctl = new CheckBox;
+            else if(tag == _T("Label"))         ctl = new Label;
+            else if(tag == _T("Group"))         ctl = new Group;
+            else if(tag == _T("TextBox"))       ctl = new TextBox;
+            else if(tag == _T("ListView"))      ctl = new ListView;
+            else if(tag == _T("ComboBox"))      ctl = new ComboBox;
+            else if(tag == _T("TabCtrl"))       ctl = new TabCtrl;
+            else if(tag == _T("Progress"))      ctl = new Progress;
 
-            else if(tag == _T("webview"))       ctl = new webview;
+            else if(tag == _T("WebView"))       ctl = new WebView;
 
             else                                ctl = nullptr;
 
@@ -48,40 +48,40 @@ namespace taowin{
 
             if(ctl->is_container() && c->count_children()) {
                 ctl->hwnd(p->hwnd());
-                _create_children((container*)ctl, c, mgr);
+                _create_children((Container*)ctl, c, mgr);
             }
         });
     }
 
-    window_creator::window_creator()
-        : _root(new root_control)  // fake, keep _root valid always
+    WindowCreator::WindowCreator()
+        : _root(new RootControl)  // fake, keep _root valid always
         , _window(nullptr)
         , _window_created(false)
     {
 
     }
 
-    window_creator::~window_creator() {
+    WindowCreator::~WindowCreator() {
         delete _root;
     }
 
-    void window_creator::subclass_control(syscontrol* ctl)
+    void WindowCreator::subclass_control(SystemControl* ctl)
     {
         assert(::IsWindow(ctl->hwnd()));
         ctl->_old_wnd_proc = (WNDPROC)::SetWindowLongPtr(ctl->hwnd(), GWL_WNDPROC, (LONG)__control_procedure);
     }
 
-    LPCTSTR window_creator::get_skin_xml() const
+    LPCTSTR WindowCreator::get_skin_xml() const
 	{
 		return _T("");
 	}
 
-	LRESULT window_creator::handle_message(UINT umsg, WPARAM wparam, LPARAM lparam)
+	LRESULT WindowCreator::handle_message(UINT umsg, WPARAM wparam, LPARAM lparam)
 	{
 		return __super::__handle_message(umsg, wparam, lparam);
 	}
 
-	LRESULT window_creator::__handle_message(UINT umsg, WPARAM wparam, LPARAM lparam)
+	LRESULT WindowCreator::__handle_message(UINT umsg, WPARAM wparam, LPARAM lparam)
 	{
 		switch(umsg)
 		{
@@ -97,7 +97,7 @@ namespace taowin{
 			int code = HIWORD(wparam);
 
             if(hwnd) { // from control message
-                syscontrol* pc = (syscontrol*)::GetWindowLongPtr(hwnd, GWL_USERDATA);
+                SystemControl* pc = (SystemControl*)::GetWindowLongPtr(hwnd, GWL_USERDATA);
                 LRESULT lr = 0;
                 if(pc) {
                     NMHDR hdr;
@@ -145,7 +145,7 @@ namespace taowin{
 		{
 			NMHDR* hdr = reinterpret_cast<NMHDR*>(lparam);
             if(!hdr) break;
-            syscontrol* pc = (syscontrol*)::GetWindowLongPtr(hdr->hwndFrom, GWL_USERDATA);
+            SystemControl* pc = (SystemControl*)::GetWindowLongPtr(hdr->hwndFrom, GWL_USERDATA);
             LRESULT lr = 0;
             if(pc) {
                 if(pc->filter_notify(hdr->code, hdr, &lr)) {
@@ -180,8 +180,8 @@ namespace taowin{
                 break;
             }
 
-            if(p->tag == _T("window")) {
-                auto window = new window_container;
+            if(p->tag == _T("Window")) {
+                auto window = new WindowContainer;
                 window->_hwnd = _hwnd;
                 p->dump_attr([&](const TCHAR* a, const TCHAR* v) {
                     window->set_attr(a, v);
@@ -194,18 +194,18 @@ namespace taowin{
                 get_metas(&metas);
 
                 p->dump_children([&](PARSER_OBJECT* c) {
-                    if(c->tag == _T("res")) {
+                    if(c->tag == _T("Resource")) {
                         c->dump_children([&](PARSER_OBJECT* c) {
-                            if(c->tag == _T("font")) {
+                            if(c->tag == _T("Font")) {
                                 string name = c->get_attr(_T("name"));
                                 string face = c->get_attr(_T("face"));
                                 int size = std::stoi(c->get_attr(_T("size"), _T("12")));
                                 _mgr.add_font(name.c_str(), face.c_str(), size);
                             }
                         });
-                    } else if(c->tag == _T("root")) {
+                    } else if(c->tag == _T("Root")) {
                         if(_root) delete _root; // delete fake
-                        _root = new root_control;
+                        _root = new RootControl;
                         _root->hwnd(_hwnd);
 
                         _create_children(_root, c, &_mgr);
@@ -234,14 +234,14 @@ namespace taowin{
 		return handle_message(umsg, wparam, lparam);
 	}
 
-    LRESULT window_creator::control_message(syscontrol* ctl, UINT umsg, WPARAM wparam, LPARAM lparam)
+    LRESULT WindowCreator::control_message(SystemControl* ctl, UINT umsg, WPARAM wparam, LPARAM lparam)
     {
         return ::CallWindowProc(ctl->_old_wnd_proc, ctl->_hwnd, umsg, wparam, lparam);
     }
 
-    LRESULT window_creator::__control_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+    LRESULT WindowCreator::__control_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
     {
-        syscontrol* ctl = (syscontrol*)::GetWindowLongPtr(hwnd, GWL_USERDATA);
+        SystemControl* ctl = (SystemControl*)::GetWindowLongPtr(hwnd, GWL_USERDATA);
         return ctl->_owner->control_message(ctl, umsg, wparam, lparam);
     }
 

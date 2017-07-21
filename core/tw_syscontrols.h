@@ -27,7 +27,7 @@ namespace taowin{
 		LPCTSTR strStyle;
 	};
 
-    struct syscontrol_metas {
+    struct SystemControlMetas {
         DWORD           style;
         DWORD           exstyle;
         const TCHAR*    caption;
@@ -37,7 +37,7 @@ namespace taowin{
         std::function<void()> after_created;
         std::function<void()> before_creation;
 
-        syscontrol_metas() {
+        SystemControlMetas() {
             style = WS_CHILD | WS_VISIBLE;
             exstyle = 0;
             caption = _T("");
@@ -50,37 +50,37 @@ namespace taowin{
     typedef std::function<LRESULT()> OnNotify;
     typedef std::function<LRESULT(NMHDR*)> OnHdrNotify;
 
-    class window_creator;
+    class WindowCreator;
 
-	class syscontrol : public control
+	class SystemControl : public Control
 	{
-        friend class window_creator;
+        friend class WindowCreator;
 
 	public:
-		syscontrol();
+		SystemControl();
 
 	public:
-        void create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) override;
+        void create(HWND parent, std::map<string, string>& attrs, ResourceManager& mgr) override;
         void attach(HWND hwnd) { _hwnd = hwnd; }
         unsigned int get_ctrl_id() const;
 
 	protected:
-        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) = 0;
+        virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) = 0;
         virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) { return false; }
         virtual bool filter_child(HWND child, int code, NMHDR* hdr, LRESULT* lr) { return false; }
 
     private:
-        void create_metas(syscontrol_metas& metas, std::map<string, string>& attrs);
+        void create_metas(SystemControlMetas& metas, std::map<string, string>& attrs);
 
     private:
-        window_creator* _owner;
+        WindowCreator* _owner;
         WNDPROC _old_wnd_proc;
 	};
 
-    class custom_control : public syscontrol
+    class CustomControl : public SystemControl
     {
     protected:
-        virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+        virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs)
         {
             static bool registered = false;
             if(!registered) {

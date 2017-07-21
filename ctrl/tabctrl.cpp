@@ -1,9 +1,9 @@
 #include <taowin/core/tw_syscontrols.h>
-#include "tabctrl.h"
+#include "TabCtrl.h"
 
 namespace taowin {
 
-int tabctrl::insert_item(int i, const TCHAR* s, const void* p)
+int TabCtrl::insert_item(int i, const TCHAR* s, const void* p)
 {
     TCITEM item = {0};
     item.mask = TCIF_TEXT | TCIF_PARAM;
@@ -13,12 +13,12 @@ int tabctrl::insert_item(int i, const TCHAR* s, const void* p)
     return TabCtrl_InsertItem(_hwnd, i, &item);
 }
 
-void tabctrl::adjust_rect(bool large, RECT * rc)
+void TabCtrl::adjust_rect(bool large, RECT * rc)
 {
     TabCtrl_AdjustRect(_hwnd, !!large, rc);
 }
 
-void tabctrl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+void TabCtrl::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs)
 {
     metas.classname = WC_TABCONTROL;
 }

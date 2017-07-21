@@ -3,12 +3,12 @@
 
 namespace taowin {
 
-int ComboboxControl::add_string(const TCHAR * s)
+int ComboBox::add_string(const TCHAR * s)
 {
     return ComboBox_AddString(_hwnd, s);
 }
 
-int ComboboxControl::add_string(const TCHAR * s, void * data)
+int ComboBox::add_string(const TCHAR * s, void * data)
 {
     int i = add_string(s);
     if (i != -1) {
@@ -18,17 +18,17 @@ int ComboboxControl::add_string(const TCHAR * s, void * data)
     return i;
 }
 
-void ComboboxControl::set_item_data(int i, void * data)
+void ComboBox::set_item_data(int i, void * data)
 {
     ComboBox_SetItemData(_hwnd, i, data);
 }
 
-void * ComboboxControl::get_item_data(int i)
+void * ComboBox::get_item_data(int i)
 {
     return (void*)ComboBox_GetItemData(_hwnd, i);
 }
 
-void * ComboboxControl::get_cur_data()
+void * ComboBox::get_cur_data()
 {
     void* d = nullptr;
     int i = get_cur_sel();
@@ -40,22 +40,22 @@ void * ComboboxControl::get_cur_data()
     return d;
 }
 
-int ComboboxControl::get_cur_sel()
+int ComboBox::get_cur_sel()
 {
     return ComboBox_GetCurSel(_hwnd);
 }
 
-void ComboboxControl::set_cur_sel(int i)
+void ComboBox::set_cur_sel(int i)
 {
     return (void)ComboBox_SetCurSel(_hwnd, i);
 }
 
-int ComboboxControl::get_count()
+int ComboBox::get_count()
 {
     return ComboBox_GetCount(_hwnd);
 }
 
-string ComboboxControl::get_text()
+string ComboBox::get_text()
 {
     static TCHAR buf[1024];
     int len = ::GetWindowTextLength(_hwnd);
@@ -67,12 +67,12 @@ string ComboboxControl::get_text()
     return std::move(s);
 }
 
-void ComboboxControl::reset_content()
+void ComboBox::reset_content()
 {
     ComboBox_ResetContent(_hwnd);
 }
 
-void ComboboxControl::adjust_droplist_width(const std::vector<const TCHAR*>& strs)
+void ComboBox::adjust_droplist_width(const std::vector<const TCHAR*>& strs)
 {
     HFONT hFont = (HFONT)::SendMessage(_hwnd, WM_GETFONT, 0, 0);
     HDC hDc = ::GetDC(_hwnd);
@@ -97,7 +97,7 @@ void ComboboxControl::adjust_droplist_width(const std::vector<const TCHAR*>& str
     ::SendMessage(_hwnd, CB_SETDROPPEDWIDTH, padding + max_width + vsw, 0);
 }
 
-void ComboboxControl::drawit(DRAWITEMSTRUCT* dis)
+void ComboBox::drawit(DRAWITEMSTRUCT* dis)
 {
     if(!_ondraw) return;
     if(dis->itemID == -1) return;
@@ -106,7 +106,7 @@ void ComboboxControl::drawit(DRAWITEMSTRUCT* dis)
     _ondraw(this, dis, dis->itemID, selected);
 }
 
-void ComboboxControl::get_metas(syscontrol_metas& metas, std::map<string, string>& attrs)
+void ComboBox::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs)
 {
     static style_map __known_styles[] = {
         {CBS_SIMPLE,    _T("simple")},
@@ -128,12 +128,12 @@ void ComboboxControl::get_metas(syscontrol_metas& metas, std::map<string, string
 }
 
 
-void ComboboxControl::set_attr(const TCHAR* name, const TCHAR* value)
+void ComboBox::set_attr(const TCHAR* name, const TCHAR* value)
 {
     return __super::set_attr(name, value);
 }
 
-bool ComboboxControl::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
+bool ComboBox::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
 {
     if(code == CBN_SELCHANGE) {
         if(_on_sel_change) {

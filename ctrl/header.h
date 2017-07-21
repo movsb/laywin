@@ -2,7 +2,7 @@
 
 namespace taowin {
 
-class HeaderControl : public syscontrol
+class HeaderControl : public SystemControl
 {
 public:
     enum ReturnValue
@@ -12,7 +12,7 @@ public:
     };
 
 public:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
     virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
 
 public:

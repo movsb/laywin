@@ -10,7 +10,7 @@
 
 namespace taowin{
 	
-	control::control()
+	Control::Control()
 		: _hwnd(nullptr)
 		, _width(0)
 		, _height(0)
@@ -27,12 +27,12 @@ namespace taowin{
 
 	}
 
-	control::~control()
+	Control::~Control()
 	{
 
 	}
 
-	bool control::focus()
+	bool Control::focus()
 	{
 		if (::IsWindow(_hwnd)){
 			::SetFocus(_hwnd);
@@ -42,17 +42,17 @@ namespace taowin{
 		return false;
 	}
 
-	control* control::find(HWND h)
+	Control* Control::find(HWND h)
 	{
 		return h == _hwnd ? this : NULL;
 	}
 
-	control* control::find(LPCTSTR n)
+	Control* Control::find(LPCTSTR n)
 	{
 		return n == _name ? this : NULL;
 	}
 
-	void control::need_parent_update()
+	void Control::need_parent_update()
 	{
         if (_parent){
             _parent->need_update();
@@ -62,7 +62,7 @@ namespace taowin{
         }
 	}
 
-	void control::set_attr(const TCHAR* name, const TCHAR* value)
+	void Control::set_attr(const TCHAR* name, const TCHAR* value)
 	{
 		if(_tcscmp(name, _T("name")) == 0){
 			_name = value;
@@ -103,12 +103,12 @@ namespace taowin{
 		}
 	}
 
-	csize control::estimate_size(const csize& available)
+	Size Control::estimate_size(const Size& available)
 	{
 		return { _width, _height };
 	}
 
-	void control::pos(const Rect& rc)
+	void Control::pos(const Rect& rc)
 	{
 		_pos = rc;
 		if(_pos.right < _pos.left) _pos.right = _pos.left;
@@ -131,13 +131,13 @@ namespace taowin{
         }
 	}
 
-    void control::create(HWND parent, std::map<string, string>& attrs, resmgr& mgr) {
+    void Control::create(HWND parent, std::map<string, string>& attrs, ResourceManager& mgr) {
         for(auto it = attrs.cbegin(); it != attrs.cend(); it++)
             set_attr(it->first.c_str(), it->second.c_str());
     }
 
     //////////////////////////////////////////////////////////////////////////
-	void container::pos(const Rect& rc)
+	void Container::pos(const Rect& rc)
 	{
 		__super::pos(rc);
 
@@ -150,60 +150,60 @@ namespace taowin{
 		r.bottom    -= _padding.bottom;
 
 		for(int i = 0; i < _items.size(); i++){
-			control* c = _items[i];
+			Control* c = _items[i];
 			if(!c->is_visible()) continue;
 			c->pos(r);
 		}
 	}
 
-	void container::set_visible(bool visible_)
+	void Container::set_visible(bool visible_)
 	{
 		_b_visible = visible_;
 
 		for(int i = 0; i < _items.size(); i++){
-			_items[i]->set_visible_by_parent(control::is_visible());
+			_items[i]->set_visible_by_parent(Control::is_visible());
 		}
 
 		need_parent_update();
 	}
 
-	void container::displayed(bool displayed_)
+	void Container::displayed(bool displayed_)
 	{
 		_b_displayed = displayed_;
 
 		for(int i = 0; i < _items.size(); i++){
-			_items[i]->set_visible_by_parent(control::is_visible());
+			_items[i]->set_visible_by_parent(Control::is_visible());
 		}
 
 		need_update();
 	}
 
-	control* container::find(LPCTSTR n)
+	Control* Container::find(LPCTSTR n)
 	{
 		if(_name == n) return this;
 
 		for(int i = 0; i < _items.size(); i++){
-			control* pc = _items[i]->find(n);
+			Control* pc = _items[i]->find(n);
 			if(pc) return pc;
 		}
 		return NULL;
 	}
 
-	control* container::find(HWND h)
+	Control* Container::find(HWND h)
 	{
 		if(h == _hwnd) return this;
 
 		for(int i = 0; i < _items.size(); ++i){
-			control* pc = _items[i]->find(h);
+			Control* pc = _items[i]->find(h);
 			if(pc) return pc;
 		}
 
 		return NULL;
 	}
 
-	void horizontal::pos(const Rect& rc)
+	void Horizontal::pos(const Rect& rc)
 	{
-		control::pos(rc);
+		Control::pos(rc);
 
 		if(_items.size() == 0) return;
 
@@ -213,17 +213,17 @@ namespace taowin{
 		r.right     -= _padding.right;
 		r.bottom    -= _padding.bottom;
 
-		csize szAvailable = {r.width(), r.height()};
+		Size szAvailable = {r.width(), r.height()};
 
 		int nAdjustables = 0;
 		int cxFixed = 0;
 		int nEstimate = 0;
 
 		for(int i = 0; i < _items.size(); i++){
-			control* pc = _items[i];
+			Control* pc = _items[i];
 			if(!pc->is_visible()) continue;
 
-			csize sz = pc->estimate_size(szAvailable);
+			Size sz = pc->estimate_size(szAvailable);
 			if(sz.cx == 0){
 				nAdjustables++;
 			}
@@ -242,16 +242,16 @@ namespace taowin{
 		if(nAdjustables > 0)
 			cxExpand = std::max(0, (szAvailable.cx - cxFixed) / nAdjustables);
 
-		csize szRemaining = szAvailable;
+		Size szRemaining = szAvailable;
 		int iPosX = r.left;
 		int iAdjustable = 0;
 		int cxFixedRemaining = cxFixed;
 
 		for(int i = 0; i < _items.size(); i++){
-			control* pc = _items[i];
+			Control* pc = _items[i];
 			if(!pc->is_visible()) continue;
 
-			csize sz = pc->estimate_size(szRemaining);
+			Size sz = pc->estimate_size(szRemaining);
 			if(sz.cx == 0){
 				iAdjustable++;
 				sz.cx = cxExpand;
@@ -286,9 +286,9 @@ namespace taowin{
 	}
 
 
-	void vertical::pos(const Rect& rc)
+	void Vertical::pos(const Rect& rc)
 	{
-		control::pos(rc);
+		Control::pos(rc);
 
 		if(_items.size() == 0) return;
 
@@ -298,17 +298,17 @@ namespace taowin{
 		r.right     -= _padding.right;
 		r.bottom    -= _padding.bottom;
 
-		csize szAvailable = {r.width(), r.height()};
+		Size szAvailable = {r.width(), r.height()};
 
 		int nAdjustables = 0;
 		int cyFixed = 0;
 		int nEstimate = 0;
 
 		for(int i = 0; i < _items.size(); i++){
-			control* pc = _items[i];
+			Control* pc = _items[i];
 			if(!pc->is_visible()) continue;
 
-			csize sz = pc->estimate_size(szAvailable);
+			Size sz = pc->estimate_size(szAvailable);
 			if(sz.cy == 0){
 				nAdjustables++;
 			}
@@ -327,17 +327,17 @@ namespace taowin{
 		if(nAdjustables > 0)
 			cyExpand = std::max(0, (szAvailable.cy - cyFixed) / nAdjustables);
 
-		csize szRemaining = szAvailable;
+		Size szRemaining = szAvailable;
 		int iPosY = r.top;
 		int iPosX = r.left;
 		int iAdjustable = 0;
 		int cyFixedRemaining = cyFixed;
 
 		for(int i = 0; i < _items.size(); i++){
-			control* pc = _items[i];
+			Control* pc = _items[i];
 			if(!pc->is_visible()) continue;
 
-			csize sz = pc->estimate_size(szRemaining);
+			Size sz = pc->estimate_size(szRemaining);
 			if(sz.cy == 0){
 				iAdjustable++;
 				sz.cy = cyExpand;
@@ -372,13 +372,13 @@ namespace taowin{
         _post_size = {_pos.width(), cyNeeded + _padding.top + _padding.bottom};
 	}
 
-	window_container::window_container()
+	WindowContainer::WindowContainer()
 	{
 		_init_size.cx = 512;
 		_init_size.cy = 480;
 	}
 
-	void window_container::set_attr(const TCHAR* name, const TCHAR* value)
+	void WindowContainer::set_attr(const TCHAR* name, const TCHAR* value)
 	{
 		if(_tcscmp(name, _T("title")) == 0){
             ::SetWindowText(_hwnd, value);

@@ -107,7 +107,7 @@
     <ClInclude Include="..\core\tw_window.h" />
     <ClInclude Include="..\ctrl\button.h" />
     <ClInclude Include="..\ctrl\combobox.h" />
-    <ClInclude Include="..\ctrl\edit.h" />
+    <ClInclude Include="..\ctrl\TextBox.h" />
     <ClInclude Include="..\ctrl\header.h" />
     <ClInclude Include="..\ctrl\listview.h" />
     <ClInclude Include="..\ctrl\progress.h" />
@@ -127,7 +127,7 @@
     <ClCompile Include="..\core\tw_window.cpp" />
     <ClCompile Include="..\ctrl\button.cpp" />
     <ClCompile Include="..\ctrl\combobox.cpp" />
-    <ClCompile Include="..\ctrl\edit.cpp" />
+    <ClCompile Include="..\ctrl\TextBox.cpp" />
     <ClCompile Include="..\ctrl\header.cpp" />
     <ClCompile Include="..\ctrl\listview.cpp" />
     <ClCompile Include="..\ctrl\progress.cpp" />

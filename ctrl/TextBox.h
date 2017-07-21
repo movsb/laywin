@@ -2,7 +2,7 @@
 
 namespace taowin {
 
-class edit : public syscontrol
+class TextBox : public SystemControl
 {
 public:
     void set_text(const TCHAR* text) {
@@ -31,7 +31,7 @@ public:
     void on_change(OnNotify callback) { _on_change = callback; }
 
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
     virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
 
 private:

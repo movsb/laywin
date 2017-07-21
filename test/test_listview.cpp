@@ -5,7 +5,7 @@
 
 namespace {
 
-class DataSource : public taowin::ListViewControl::IDataSource
+class DataSource : public taowin::ListView::IDataSource
 {
 protected:
     virtual size_t size() const override
@@ -21,7 +21,7 @@ protected:
     }
 };
 
-class TW : public taowin::window_creator
+class TW : public taowin::WindowCreator
 {
 public:
     TW()
@@ -32,17 +32,17 @@ protected:
     virtual LPCTSTR get_skin_xml() const override
     {
         LPCTSTR json = _T(R"tw(
-<window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
-    <res>
-        <font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
-        <font name="1" face="Î¢ÈíÑÅºÚ" size="12"/>
-    </res>
-    <root>
-        <vertical padding="5,5,5,5">
+<Window title="taowinÑÝÊ¾´°¿Ú" size="500,300">
+    <Resource>
+        <Font name="default" face="Î¢ÈíÑÅºÚ" size="12"/>
+        <Font name="1" face="Î¢ÈíÑÅºÚ" size="12"/>
+    </Resource>
+    <Root>
+        <Vertical padding="5,5,5,5">
             <listview name="lv" style="singlesel,ownerdata" exstyle="clientedge">  </listview>
-        </vertical>
-    </root>
-</window>
+        </Vertical>
+    </Root>
+</Window>
 )tw");
         return json;
     }
@@ -53,7 +53,7 @@ protected:
         case WM_CREATE:
         {
             //center();
-            auto lv = _root->find<taowin::ListViewControl>(_T("lv"));
+            auto lv = _root->find<taowin::ListView>(_T("lv"));
             auto& cm = lv->get_column_manager();
             cm.push(_T("item1"), true, 50, _T("id1"));
             cm.push(_T("item2"), true, 100, _T("id2"));
@@ -112,9 +112,9 @@ protected:
         return __super::handle_message(umsg, wparam, lparam);
     }
 
-    virtual taowin::syscontrol* filter_control(HWND hwnd) override
+    virtual taowin::SystemControl* filter_control(HWND hwnd) override
     {
-        auto lv = _root->find<taowin::ListViewControl>(_T("lv"));
+        auto lv = _root->find<taowin::ListView>(_T("lv"));
         if(hwnd == lv->get_header()) return lv;
         return nullptr;
     }

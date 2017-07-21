@@ -2,7 +2,7 @@
 
 namespace taowin {
 
-class progress : public syscontrol
+class Progress : public SystemControl
 {
 public:
     void set_range(int min, int max);
@@ -11,7 +11,7 @@ public:
     void set_color(COLORREF color);
 
 protected:
-    virtual void get_metas(syscontrol_metas& metas, std::map<string, string>& attrs) override;
+    virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
     virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
 };
 

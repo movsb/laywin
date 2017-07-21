@@ -3,21 +3,21 @@
 
 namespace taowin{
 
-    window_manager __window_manager;
+    WindowManager __window_manager;
 
-	window::window()
+	Window::Window()
 		: _hwnd(NULL)
         , _return_code(0)
 	{
 
 	}
 
-	window::~window()
+	Window::~Window()
 	{
 
 	}
 
-	HWND window::create(HWND owner)
+	HWND Window::create(HWND owner)
 	{
         WindowMeta metas;
         get_metas(&metas);
@@ -27,7 +27,7 @@ namespace taowin{
 		return _hwnd;
 	}
 
-	int window::domodal(HWND owner)
+	int Window::domodal(HWND owner)
 	{
         assert(owner != nullptr);
         WindowMeta metas;
@@ -40,13 +40,13 @@ namespace taowin{
         return __window_manager.loop_message();
 	}
 
-	void window::show(bool show /*= true*/, bool focus /*= true*/)
+	void Window::show(bool show /*= true*/, bool focus /*= true*/)
 	{
 		assert(::IsWindow(_hwnd));
 		::ShowWindow(_hwnd, show ? (focus ? SW_SHOWNORMAL : SW_SHOWNOACTIVATE) : SW_HIDE);
 	}
 
-	void window::center()
+	void Window::center()
 	{
 		assert(::IsWindow(_hwnd));
 		assert((GetWindowLongPtr(_hwnd, GWL_STYLE)&WS_CHILD) == 0);
@@ -85,7 +85,7 @@ namespace taowin{
 		::SetWindowPos(_hwnd, NULL, xLeft, yTop, -1, -1, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 
-	LRESULT window::__handle_message(UINT umsg, WPARAM wparam, LPARAM lparam)
+	LRESULT Window::__handle_message(UINT umsg, WPARAM wparam, LPARAM lparam)
 	{
         if(umsg == WM_CLOSE) {
             HWND owner = ::GetWindow(_hwnd, GW_OWNER);
@@ -100,23 +100,23 @@ namespace taowin{
         return ::DefWindowProc(_hwnd, umsg, wparam, lparam);
 	}
 
-	void window::on_first_message()
+	void Window::on_first_message()
 	{
 
 	}
 
-	void window::on_final_message()
+	void Window::on_final_message()
 	{
 
 	}
 
-	LRESULT __stdcall window::__window_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+	LRESULT __stdcall Window::__window_procedure(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 	{
-		window* pThis = reinterpret_cast<window*>(::GetWindowLongPtr(hwnd, 4));
+		Window* pThis = reinterpret_cast<Window*>(::GetWindowLongPtr(hwnd, 4));
 
 		if(umsg == WM_NCCREATE) {
 			LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lparam);
-			pThis = static_cast<window*>(lpcs->lpCreateParams);
+			pThis = static_cast<Window*>(lpcs->lpCreateParams);
 			pThis->_hwnd = hwnd;
 			::SetWindowLongPtr(hwnd, 4, reinterpret_cast<LPARAM>(pThis));
             __window_manager.add_message_filter(pThis);
@@ -138,15 +138,15 @@ namespace taowin{
             : ::DefWindowProc(hwnd, umsg, wparam, lparam);
 	}
 
-	void window::close(int code)
+	void Window::close(int code)
 	{
         _return_code = code;
 		send_message(WM_CLOSE);
 	}
 
-    void window::get_metas(WindowMeta* metas) {
+    void Window::get_metas(WindowMeta* metas) {
         metas->caption = _T("taowin");
-        metas->classname = _T("taowin::window");
+        metas->classname = _T("taowin::Window");
         metas->style = WS_OVERLAPPEDWINDOW;
         metas->exstyle = WS_EX_APPWINDOW;
         metas->flags = WindowFlag::center;
@@ -160,8 +160,8 @@ namespace taowin{
         wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
         wc.hIcon = wc.hIconSm = (HICON)::LoadImage(::GetModuleHandle(nullptr), (LPCTSTR)101, IMAGE_ICON, 32, 32, 0);
         wc.hInstance = ::GetModuleHandle(nullptr);
-        wc.lpfnWndProc = &window::__window_procedure;
-        wc.lpszClassName = _T("taowin::window");
+        wc.lpfnWndProc = &Window::__window_procedure;
+        wc.lpszClassName = _T("taowin::Window");
         wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
         wc.cbWndExtra = sizeof(void*)* 2; // [[extra_ptr][this]]
         ::RegisterClassEx(&wc);

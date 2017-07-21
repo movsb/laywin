@@ -5,18 +5,18 @@
 
 namespace taowin{
 
-	class resmgr;
-	class container;
+	class ResourceManager;
+	class Container;
 
-	class control {
-        friend class container;
-        friend class horizontal;
-        friend class vertical;
+	class Control {
+        friend class Container;
+        friend class Horizontal;
+        friend class Vertical;
 	public:
-		control();
-		virtual ~control();
+		Control();
+		virtual ~Control();
 
-        virtual void create(HWND parent, std::map<string, string>& attrs, resmgr& mgr);
+        virtual void create(HWND parent, std::map<string, string>& attrs, ResourceManager& mgr);
 
         HWND hwnd() const {
             return _hwnd;
@@ -69,7 +69,7 @@ namespace taowin{
 			}
 		}
 
-		virtual csize estimate_size(const csize& available);
+		virtual Size estimate_size(const Size& available);
 
         virtual void set_attr(const TCHAR* name, const TCHAR* value);
 
@@ -79,22 +79,22 @@ namespace taowin{
 
 		virtual void need_parent_update();
 
-		virtual container* parent() const{
-			return reinterpret_cast<container*>(_parent);
+		virtual Container* parent() const{
+			return reinterpret_cast<Container*>(_parent);
 		}
-		virtual void parent(container* pa){
-			_parent = reinterpret_cast<control*>(pa);
+		virtual void parent(Container* pa){
+			_parent = reinterpret_cast<Control*>(pa);
 		}
 
-		virtual control* find(LPCTSTR n);
-		virtual control* find(HWND h);
+		virtual Control* find(LPCTSTR n);
+		virtual Control* find(HWND h);
 
 	protected:
         string          _name;      // 控件的名字，不要重复
 		HWND            _hwnd;      // 所绑定的控件的句柄
 
 		Rect            _pos;       // 在界面上的位置
-        csize           _post_size; // 最终被设置的大小
+        Size           _post_size; // 最终被设置的大小
 		Rect            _padding;   // 内边距
 
 		int             _width;     // 设置的宽度，默认为0
@@ -109,19 +109,19 @@ namespace taowin{
 		bool            _b_visible_by_parent;   // 父控件所设置的显示属性
 		bool            _b_displayed;           // 同CSS，false时不占空间
 
-		control*        _parent;    // 父控件
+		Control*        _parent;    // 父控件
 
 		void*           _ud;        // 用户数据
 	};
 
-	class container : public control
+	class Container : public Control
 	{
 	public:
-		container()
+		Container()
 			: _enable_update(true)
 		{}
 
-		virtual ~container(){
+		virtual ~Container(){
 			remove_all();
 		}
 
@@ -131,11 +131,11 @@ namespace taowin{
 			return _items.size();
 		}
 
-		bool add(control* c){
+		bool add(Control* c){
 			return _items.add(c);
 		}
 
-		bool remove(control* c){
+		bool remove(Control* c){
 			return _items.remove(c);
 		}
 
@@ -144,7 +144,7 @@ namespace taowin{
 			return true;
 		}
 
-		control* operator[](int i){
+		Control* operator[](int i){
 			return _items[i];
 		}
 
@@ -153,8 +153,8 @@ namespace taowin{
 		virtual void set_visible(bool visible_) override;
 		virtual void displayed(bool displayed_) override;
 
-		virtual control* find(LPCTSTR n) override;
-		virtual control* find(HWND h) override;
+		virtual Control* find(LPCTSTR n) override;
+		virtual Control* find(HWND h) override;
         template<class T>
         T* find(LPCTSTR n) {
             return static_cast<T*>(find(n));
@@ -165,39 +165,39 @@ namespace taowin{
         }
 
 	protected:
-		array<control*> _items;
+		Array<Control*> _items;
 		bool _enable_update;
 	};
 
-	class horizontal : public container
+	class Horizontal : public Container
 	{
 	public:
 		virtual void pos(const Rect& rc) override;
 	};
 
-	class vertical : public container
+	class Vertical : public Container
 	{
 	public:
 		virtual void pos(const Rect& rc) override;
 	};
 
-	class window_container : public container
+	class WindowContainer : public Container
 	{
-        friend class window_creator;
+        friend class WindowCreator;
 	public:
-		window_container();
+		WindowContainer();
 
 	protected:
-		void resmgr_(resmgr* mgr);
+		void resmgr_(ResourceManager* mgr);
 		virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
 
     private:
-		csize _init_size;
+		Size _init_size;
 	};
 
-    class root_control : public container {
+    class RootControl : public Container {
     public:
-        const csize& get_post_size() const {
+        const Size& get_post_size() const {
             return _post_size;
         }
     };
