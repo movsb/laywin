@@ -3,6 +3,14 @@
 #include "tw_taowin.h"
 #include "tw_parser.h"
 
+#ifdef TAOLOG_ENABLED
+// {C9268865-FA3A-4F23-96FF-865D548C20B3}
+static const GUID providerGuid =
+{ 0xC9268865, 0xFA3A, 0x4F23, { 0x96, 0xFF, 0x86, 0x5D, 0x54, 0x8C, 0x20, 0xB3 } };
+TaoLogger g_taoLogger(providerGuid);
+#endif
+
+
 namespace taowin{
     // TODO this is temporary
     // lambda cannot be called by itself, so we separated it here
