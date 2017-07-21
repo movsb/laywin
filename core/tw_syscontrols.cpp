@@ -54,7 +54,7 @@ namespace taowin{
 
         decltype(attrs.begin()) it;
 
-        it = attrs.find(_T("Font"));
+        it = attrs.find(_T("font"));
         HFONT font = it == attrs.end()
             ? mgr.get_font(_T("default"))
             : mgr.get_font(it->second.c_str());
