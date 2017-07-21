@@ -59,7 +59,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;ETW_LOGGER;ETW_LOGGER_METHOD_COPYDATA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)/3rd</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../../</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,7 +82,7 @@
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir)/3rd</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../../</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -113,7 +113,6 @@
     <ClInclude Include="..\ctrl\progress.h" />
     <ClInclude Include="..\ctrl\tabctrl.h" />
     <ClInclude Include="..\ctrl\webview.h" />
-    <ClInclude Include="..\test\test_webview.h" />
     <ClInclude Include="..\util\com_hlp.hpp" />
     <ClInclude Include="..\util\win_hlp.hpp" />
   </ItemGroup>
@@ -134,14 +133,6 @@
     <ClCompile Include="..\ctrl\progress.cpp" />
     <ClCompile Include="..\ctrl\tabctrl.cpp" />
     <ClCompile Include="..\ctrl\webview.cpp" />
-    <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="..\test\test_button.cpp" />
-    <ClCompile Include="..\test\test_combobox.cpp" />
-    <ClCompile Include="..\test\test_edit.cpp" />
-    <ClCompile Include="..\test\test_listview.cpp" />
-    <ClCompile Include="..\test\test_progress.cpp" />
-    <ClCompile Include="..\test\test_tabctrl.cpp" />
-    <ClCompile Include="..\test\test_webview.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

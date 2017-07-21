@@ -39,6 +39,9 @@ protected:
             _c->insert_item(0, _T("Tab1"), nullptr);
             _c->insert_item(1, _T("Tab2"), nullptr);
             _c->insert_item(2, _T("Tab3"), nullptr);
+
+			taowin::button* p = nullptr;
+			p->set_text(_T("laskd"));
 			return 0;
 		}
 		}

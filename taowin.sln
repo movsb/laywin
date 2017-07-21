@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taowin", "taowin.vcxproj", "{C28D44BF-69D9-4077-BE36-D30D9E1958AE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taowin", "pro\taowin.vcxproj", "{C28D44BF-69D9-4077-BE36-D30D9E1958AE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "pro\test.vcxproj", "{FE1D0562-368B-493B-ADD6-68428935F5AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{C28D44BF-69D9-4077-BE36-D30D9E1958AE}.Debug|Win32.Build.0 = Debug|Win32
 		{C28D44BF-69D9-4077-BE36-D30D9E1958AE}.Release|Win32.ActiveCfg = Release|Win32
 		{C28D44BF-69D9-4077-BE36-D30D9E1958AE}.Release|Win32.Build.0 = Release|Win32
+		{FE1D0562-368B-493B-ADD6-68428935F5AD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FE1D0562-368B-493B-ADD6-68428935F5AD}.Debug|Win32.Build.0 = Debug|Win32
+		{FE1D0562-368B-493B-ADD6-68428935F5AD}.Release|Win32.ActiveCfg = Release|Win32
+		{FE1D0562-368B-493B-ADD6-68428935F5AD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\test">
-      <UniqueIdentifier>{a07a93af-8a21-45a0-8370-b982b6157df1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\core">
       <UniqueIdentifier>{f3e3ef71-a0ad-4f56-8d88-5d81dcf984bb}</UniqueIdentifier>
     </Filter>
@@ -27,27 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_combobox.cpp">
-      <Filter>Source Files\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_listview.cpp">
-      <Filter>Source Files\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_button.cpp">
-      <Filter>Source Files\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_edit.cpp">
-      <Filter>Source Files\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_progress.cpp">
-      <Filter>Source Files\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_tabctrl.cpp">
-      <Filter>Source Files\test</Filter>
-    </ClCompile>
     <ClCompile Include="..\core\tw_control.cpp">
       <Filter>Source Files\core</Filter>
     </ClCompile>
@@ -95,9 +71,6 @@
     </ClCompile>
     <ClCompile Include="..\ctrl\webview.cpp">
       <Filter>Source Files\ctrl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_webview.cpp">
-      <Filter>Source Files\test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,9 +124,6 @@
     </ClInclude>
     <ClInclude Include="..\ctrl\webview.h">
       <Filter>Source Files\ctrl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\test\test_webview.h">
-      <Filter>Source Files\test</Filter>
     </ClInclude>
     <ClInclude Include="..\util\win_hlp.hpp">
       <Filter>Source Files\util</Filter>

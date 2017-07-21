@@ -20,7 +20,9 @@ protected:
     </res>
     <root>
         <vertical padding="5,5,5,5">
-            <button name="c" />
+            <button name="btn1" text="按钮" width="100" height="50"/>
+            <button name="btn2" text="按钮" width="100" height="50"/>
+            <button name="btn3" text="按钮" width="100" height="50"/>
         </vertical>
     </root>
 </window>
@@ -32,11 +34,14 @@ protected:
     {
         switch(umsg) {
         case WM_CREATE:
-        {
-            _c = _root->find<taowin::button>(_T("c"));
-            _c->on_click([this] {
-                LogLog(_T("按钮点击"));
-            });
+		{
+			taowin::button *btn1, *btn2, *btn3;
+            btn1 = _root->find<taowin::button>(_T("btn1"));
+            btn2 = _root->find<taowin::button>(_T("btn2"));
+            btn3 = _root->find<taowin::button>(_T("btn3"));
+            btn1->on_click([=] { LogLog(_T("按钮 「%s」 点击"), btn1->name().c_str()); });
+            btn2->on_click([=] { LogLog(_T("按钮 「%s」 点击"), btn2->name().c_str()); });
+            btn3->on_click([=] { LogLog(_T("按钮 「%s」 点击"), btn3->name().c_str()); });
 
             return 0;
         }
@@ -48,9 +53,6 @@ protected:
     {
         return nullptr;
     }
-
-private:
-    taowin::button* _c;
 };
 
 }
