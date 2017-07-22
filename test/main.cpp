@@ -10,7 +10,7 @@ TaoLogger g_taoLogger(providerGuid);
 #endif
 */
 
-#define pmain test_button
+#define pmain test_combobox
 
 
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)

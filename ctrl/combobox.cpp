@@ -3,6 +3,17 @@
 
 namespace taowin {
 
+ComboBox::ComboBox()
+:_source(nullptr)
+{
+
+}
+
+ComboBox::~ComboBox()
+{
+
+}
+
 int ComboBox::add_string(const TCHAR * s)
 {
     return ComboBox_AddString(_hwnd, s);
@@ -47,7 +58,13 @@ int ComboBox::get_cur_sel()
 
 void ComboBox::set_cur_sel(int i)
 {
-    return (void)ComboBox_SetCurSel(_hwnd, i);
+    auto n = get_count();
+    if (i == -1 || (i >= 0 && i < n)) {
+        return (void)ComboBox_SetCurSel(_hwnd, i);
+    }
+    else {
+        LogWrn(_T("无效当前索引：%d"), i);
+    }
 }
 
 int ComboBox::get_count()
@@ -67,7 +84,7 @@ string ComboBox::get_text()
     return std::move(s);
 }
 
-void ComboBox::reset_content()
+void ComboBox::clear()
 {
     ComboBox_ResetContent(_hwnd);
 }
@@ -104,6 +121,13 @@ void ComboBox::drawit(DRAWITEMSTRUCT* dis)
     
     bool selected = dis->itemAction == ODA_SELECT && dis->itemState & ODS_SELECTED;
     _ondraw(this, dis, dis->itemID, selected);
+}
+
+void ComboBox::set_source(IDataSource* source)
+{
+    _source = source;
+
+    reload();
 }
 
 void ComboBox::get_metas(SystemControlMetas& metas, std::map<string, string>& attrs)
@@ -145,5 +169,32 @@ bool ComboBox::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
     return false;
 }
 
+
+void ComboBox::reload()
+{
+    clear();
+
+    if (_source == nullptr) {
+        LogWrn(_T("no data to be load"));
+        return;
+    }
+
+    auto n = _source->Size();
+    LogLog(_T("size = %u"), n);
+
+    for (decltype(n) i = 0; i < n; ++i) {
+        TCHAR const* text = _T("");
+        void* tag = nullptr;
+
+        _source->GetAt(i, &text, &tag);
+
+        if (text == nullptr) {
+            LogWrn(_T("index=%d: text == nullptr"), i);
+            text = _T("");
+        }
+
+        add_string(text, tag);
+    }
+}
 
 }

@@ -10,6 +10,37 @@ public:
 	TW()
 	{}
 
+    class DataSource : public taowin::ComboBox::IDataSource
+    {
+    public:
+        virtual size_t Size() override
+        {
+            return _strs.size();
+        }
+
+
+        virtual void GetAt(size_t index, TCHAR const** text, void** tag) override
+        {
+            *text = _strs[index];
+            *tag =  reinterpret_cast<void*>(index * index);
+        }
+
+        DataSource()
+        {
+            _strs.emplace_back(_T("1"));
+            _strs.emplace_back(_T("2"));
+            _strs.emplace_back(_T("3"));
+            _strs.emplace_back(_T("4"));
+            _strs.emplace_back(_T("5"));
+            _strs.emplace_back(_T("6"));
+            _strs.emplace_back(_T("7"));
+            _strs.emplace_back(_T("8"));
+        }
+
+    protected:
+        std::vector<const TCHAR*> _strs;
+    };
+
 protected:
 	virtual LPCTSTR get_skin_xml() const override
 	{
@@ -21,7 +52,7 @@ protected:
     </Resource>
     <Root>
         <Vertical padding="5,5,5,5">
-            <combobox name="c" />
+            <ComboBox name="c" />
         </Vertical>
     </Root>
 </Window>
@@ -36,9 +67,9 @@ protected:
 		case WM_CREATE:
 		{
             _c = _root->find<taowin::ComboBox>(_T("c"));
-            _c->add_string(_T("111"));
-            _c->add_string(_T("222"));
-            _c->add_string(_T("333"));
+            _c->set_source(&_source);
+            _c->set_cur_sel(0);
+
 
             _c->on_sel_change([this](int index, void* ud) {
                 LogLog(_T("选中改变 %d,%p"), index, ud);
@@ -56,6 +87,7 @@ protected:
         return nullptr;
     }
 
+    DataSource _source;
     taowin::ComboBox* _c;
 };
 
