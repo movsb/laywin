@@ -22,11 +22,12 @@ public:
         virtual void GetAt(size_t index, TCHAR const** text, void** tag) override
         {
             *text = _strs[index];
-            *tag =  reinterpret_cast<void*>(index * index);
+            *tag =  reinterpret_cast<void*>(std::stoi(*text));
         }
 
         DataSource()
         {
+            _strs.emplace_back(_T("0"));
             _strs.emplace_back(_T("1"));
             _strs.emplace_back(_T("2"));
             _strs.emplace_back(_T("3"));
@@ -34,7 +35,11 @@ public:
             _strs.emplace_back(_T("5"));
             _strs.emplace_back(_T("6"));
             _strs.emplace_back(_T("7"));
-            _strs.emplace_back(_T("8"));
+        }
+
+        void reverse()
+        {
+            std::reverse(_strs.begin(), _strs.end());
         }
 
     protected:
@@ -53,6 +58,7 @@ protected:
     <Root>
         <Vertical padding="5,5,5,5">
             <ComboBox name="c" />
+            <Button name="btn" text="Reverse"/>
         </Vertical>
     </Root>
 </Window>
@@ -72,8 +78,17 @@ protected:
 
 
             _c->on_sel_change([this](int index, void* ud) {
-                LogLog(_T("选中改变 %d,%p"), index, ud);
+                LogLog(_T("选中索引改变 index=%d, tag=%p"), index, ud);
                 return 0;
+            });
+
+            _root->find<taowin::Button>(_T("btn"))->on_click([this] {
+                auto p = _c->get_cur_data();
+                LogLog(_T("当前选中项：tag=%p"), p);
+                _source.reverse();
+                _c->reload();
+                _c->set_cur_sel(p);
+                LogLog(_T("Reverse"));
             });
 
 			return 0;

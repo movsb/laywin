@@ -47,6 +47,9 @@ void * ComboBox::get_cur_data()
     if (i != -1) {
         d = get_item_data(i);
     }
+    else {
+        LogWrn(_T("当前没有选中项，返回 NULL"));
+    }
 
     return d;
 }
@@ -64,6 +67,41 @@ void ComboBox::set_cur_sel(int i)
     }
     else {
         LogWrn(_T("无效当前索引：%d"), i);
+    }
+}
+
+void ComboBox::set_cur_sel(void* p)
+{
+    bool set = false;
+
+    if(_source == nullptr) {
+        auto n = get_count();
+        for(decltype(n) i = 0; i < n; ++i) {
+            auto v = get_item_data(i);
+            if(v == p) {
+                set_cur_sel(i);
+                set = true;
+                LogLog(_T("选中第 %d 项"), i);
+                break;
+            }
+        }
+    }
+    else {
+        for(int i = 0, n = _source->Size(); i < n; ++i) {
+            const TCHAR* text;
+            void* tag;
+            _source->GetAt(i, &text, &tag);
+            if(tag == p) {
+                set_cur_sel(i);
+                set = true;
+                LogLog(_T("选中第 %d 项"), i);
+                break;
+            }
+        }
+    }
+
+    if(!set) {
+        LogWrn(_T("未能设置到指定数据项，因为没找到"));
     }
 }
 

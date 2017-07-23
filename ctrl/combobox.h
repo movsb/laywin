@@ -30,7 +30,8 @@ public:
     int get_cur_sel();
 
     // 设置当前选中索引
-    void set_cur_sel(int i);
+    void set_cur_sel(int i);    // 为指定索引号
+    void set_cur_sel(void* p);  // 为指定数据
 
 
     int get_count();
