@@ -224,8 +224,17 @@ bool ComboBox::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
 }
 
 
-void ComboBox::reload()
+void ComboBox::reload(bool keep_selection)
 {
+    int back_index = -1;
+    void* back_tag = nullptr;
+
+    if(keep_selection) {
+        back_index = get_cur_sel();
+        back_tag = get_cur_data();
+        LogLog(_T("备份当前选中项：index=%d, tag=%p"), back_index, back_tag);
+    }
+
     clear();
 
     if (_source == nullptr) {
@@ -248,6 +257,16 @@ void ComboBox::reload()
         }
 
         add_string(text, tag);
+    }
+
+    if(keep_selection) {
+        LogLog(_T("恢复选中数据项：index=%d, tag=%p"), back_index, back_tag);
+        if(back_index== -1) {
+            set_cur_sel(back_index);
+        }
+        else {
+            set_cur_sel(back_tag);
+        }
     }
 
     // 默认自动更新下拉宽度

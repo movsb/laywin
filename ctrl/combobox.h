@@ -26,13 +26,12 @@ public:
     void* get_item_data(int i);
     void* get_cur_data();
 
-    // 获取当前选中索引
+    // 获取当前选中
     int get_cur_sel();
 
     // 设置当前选中索引
     void set_cur_sel(int i);    // 为指定索引号
     void set_cur_sel(void* p);  // 为指定数据
-
 
     int get_count();
     string get_text();
@@ -41,7 +40,7 @@ public:
     void drawit(DRAWITEMSTRUCT* dis);
 
     // 重新装载当前数据源
-    void reload();
+    void reload(bool keep_selection = false);
 
     // 设置数据源
     void set_source(IDataSource* source);

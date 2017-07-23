@@ -74,7 +74,7 @@ protected:
 		{
             _c = _root->find<taowin::ComboBox>(_T("c"));
             _c->set_source(&_source);
-            _c->set_cur_sel(0);
+            //_c->set_cur_sel(0);
 
 
             _c->on_sel_change([this](int index, void* ud) {
@@ -83,12 +83,9 @@ protected:
             });
 
             _root->find<taowin::Button>(_T("btn"))->on_click([this] {
-                auto p = _c->get_cur_data();
-                LogLog(_T("当前选中项：tag=%p"), p);
-                _source.reverse();
-                _c->reload();
-                _c->set_cur_sel(p);
                 LogLog(_T("Reverse"));
+                _source.reverse();
+                _c->reload(true);
             });
 
 			return 0;
