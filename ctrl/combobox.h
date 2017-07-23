@@ -37,7 +37,6 @@ public:
     int get_count();
     string get_text();
     void clear();
-    void adjust_droplist_width(const std::vector<const TCHAR*>& strs);
     void set_ondraw(OnDraw fn) { _ondraw = fn; }
     void drawit(DRAWITEMSTRUCT* dis);
 
@@ -49,7 +48,10 @@ public:
 
 public:
     void on_sel_change(OnSelChange callback) { _on_sel_change = callback; }
-    
+
+private:
+    void adjust_droplist_width();
+
 protected:
     virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
     virtual void set_attr(const TCHAR* name, const TCHAR* value) override;

@@ -127,29 +127,45 @@ void ComboBox::clear()
     ComboBox_ResetContent(_hwnd);
 }
 
-void ComboBox::adjust_droplist_width(const std::vector<const TCHAR*>& strs)
+void ComboBox::adjust_droplist_width()
 {
+    if(_source == nullptr) {
+        LogWrn(_T("没有数据源可用。"));
+        return;
+    }
+
     HFONT hFont = (HFONT)::SendMessage(_hwnd, WM_GETFONT, 0, 0);
     HDC hDc = ::GetDC(_hwnd);
     HFONT hOldFont = SelectFont(hDc, hFont);
 
-    int padding = 12;
+    int padding = 6;
     int max_width = 0;
 
-    for(auto& s : strs) {
+    for(int i = 0, n = _source->Size(); i < n; ++i) {
         SIZE sz;
-        if(::GetTextExtentPoint32(hDc, s, _tcslen(s), &sz)) {
-            if(sz.cx > max_width)
+        const TCHAR* text;
+        void* tag;
+
+        _source->GetAt(i, &text, &tag);
+
+        if(::GetTextExtentPoint32(hDc, text, _tcslen(text), &sz)) {
+            if(sz.cx > max_width) {
                 max_width = sz.cx;
+            }
         }
     }
+
+    LogLog(_T("文本最大宽度值：%d"), max_width);
 
     SelectFont(hDc, hOldFont);
     ::ReleaseDC(_hwnd, hDc);
 
     int vsw = ::GetSystemMetrics(SM_CXVSCROLL);
+    int width = padding * 2 + max_width + vsw;
 
-    ::SendMessage(_hwnd, CB_SETDROPPEDWIDTH, padding + max_width + vsw, 0);
+    LogLog(_T("最终设置宽度值：%d"), width);
+
+    ::SendMessage(_hwnd, CB_SETDROPPEDWIDTH, width, 0);
 }
 
 void ComboBox::drawit(DRAWITEMSTRUCT* dis)
@@ -233,6 +249,9 @@ void ComboBox::reload()
 
         add_string(text, tag);
     }
+
+    // 默认自动更新下拉宽度
+    adjust_droplist_width();
 }
 
 }
