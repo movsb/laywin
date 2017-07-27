@@ -89,6 +89,7 @@
     <ClCompile Include="..\test\test_combobox.cpp" />
     <ClCompile Include="..\test\test_edit.cpp" />
     <ClCompile Include="..\test\test_listview.cpp" />
+    <ClCompile Include="..\test\test_menu.cpp" />
     <ClCompile Include="..\test\test_progress.cpp" />
     <ClCompile Include="..\test\test_tabctrl.cpp" />
     <ClCompile Include="..\test\test_webview.cpp" />

@@ -75,8 +75,8 @@ protected:
     Sibling* _create_sib(string sid, Sibling* parent, HMENU owner, Sibling* prev);
     void _create_items(HMENU hMenu, parser::PARSER_OBJECT* c, Sibling* rel);
     void _insert_sep(HMENU hMenu, UINT id) const;
-    void _insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enalbed = true);
-    void _insert_str(HMENU hMenu, UINT id, const string& s, bool enabled = true);
+    void _insert_popup(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enalbed = true);
+    void _insert_str(HMENU hMenu, UINT id, const string& s, bool enabled = true, const string& key = _T(""));
 
 protected:
     Sibling* _alloc_sib();

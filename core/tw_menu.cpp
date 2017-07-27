@@ -12,6 +12,7 @@ using namespace taowin::parser;
 
 namespace taowin {
 
+// 全局菜单ID分配
 int MenuManager::_id = 0x0f;
 
 MenuManager::Sibling* MenuManager::_create_sib(string sid, Sibling* parent, HMENU owner, Sibling* prev)
@@ -48,25 +49,26 @@ void MenuManager::_create_items(HMENU hMenu, PARSER_OBJECT* c, Sibling* rel)
     _dummy_child.next = nullptr;
 
     c->dump_children([&](PARSER_OBJECT* c) {
-        auto sid = c->get_attr(_T("i"));
-        auto s = c->get_attr(_T("s"));
-        auto e= c->get_attr(_T("d")) != _T("1");
+        auto sid    = c->get_attr(_T("id"));
+        auto text   = c->get_attr(_T("text"));
+        auto enable = c->get_attr(_T("disabled")) != _T("1");
+        auto key    = c->get_attr(_T("key"));
 
         auto sib = _create_sib(sid, rel, hMenu, prev_child);
 
         prev_child = sib;
 
         if(c->tag == _T("item")) {
-            _insert_str(hMenu, sib->id, s, e);
+            _insert_str(hMenu, sib->id, text, enable, key);
         }
         else if(c->tag == _T("sep")) {
             _insert_sep(hMenu, sib->id);
         }
-        else if(c->tag == _T("sub")) {
+        else if(c->tag == _T("popup")) {
             HMENU hSubMenu = ::CreatePopupMenu();
             sib->self = hSubMenu;
             _create_items(hSubMenu, c, sib);
-            _insert_sub(hMenu, hSubMenu, sib->id, s, e);
+            _insert_popup(hMenu, hSubMenu, sib->id, text, enable);
         }
     });
 
@@ -86,7 +88,7 @@ void MenuManager::_insert_sep(HMENU hMenu, UINT id) const
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
 }
 
-void MenuManager::_insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enabled)
+void MenuManager::_insert_popup(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enabled)
 {
     MENUITEMINFO m {0};
     m.cbSize        = sizeof(m);
@@ -101,7 +103,7 @@ void MenuManager::_insert_sub(HMENU hMenu, HMENU hSubMenu, UINT id, const string
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
 }
 
-void MenuManager::_insert_str(HMENU hMenu, UINT id, const string& s, bool enabled)
+void MenuManager::_insert_str(HMENU hMenu, UINT id, const string& text, bool enabled, const string& key)
 {
     MENUITEMINFO m {0};
     m.cbSize        = sizeof(m);
@@ -109,7 +111,11 @@ void MenuManager::_insert_str(HMENU hMenu, UINT id, const string& s, bool enable
 
     m.wID           = id;
     m.fType         = MFT_STRING;
-    m.dwTypeData    = const_cast<LPTSTR>(s.c_str());
+
+    // has hotkey
+    string text_all = key.size() == 0 ? text : text + _T("\t") + key;
+    m.dwTypeData    = const_cast<LPTSTR>(text_all.c_str());
+
     m.fState        = enabled ? MFS_ENABLED : MFS_GRAYED;
 
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
