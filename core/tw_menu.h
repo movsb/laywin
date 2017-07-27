@@ -32,8 +32,33 @@ protected:
 class MenuManager
 {
 public:
-    struct Sibling
+    class Sibling
     {
+        friend class MenuManager;
+
+    public:
+        // 如果是弹出菜单，清空其内容
+        void clear();
+
+        // 判断是否是弹出菜单
+        bool is_popup();
+
+        // 是否启用
+        bool is_enabled();
+
+        // 启用与禁用
+        void enable(int enable);
+
+        // 是否打勾
+        bool is_checked();
+
+        // 打勾与取消
+        void check(int check);
+
+        // 从父结点中删除此菜单
+        void remove();
+
+    protected:
         Sibling* parent;
         Sibling* prev;
         Sibling* next;
@@ -60,23 +85,28 @@ public:
 public:
     void create(const TCHAR* xml);
     void destroy();
+
     void track(const POINT* pt = nullptr, HWND owner = ::GetActiveWindow());
+
     std::vector<string> get_ids(int id) const;
-    void enable(const string& ids, bool b);
+
     Sibling* get_popup(int id) const;
     Sibling* match_popup(const string& ids, HMENU popup);
-    void clear_popup(Sibling* sib);
+
     Sibling* find_sib(const string& ids);
-    void insert_str(Sibling* popup, string sid, const string& s, bool enabled = true);
+
+    void insert_str(Sibling* popup, string sid, const string& s, bool enabled = true, const string& key = _T(""), bool checked = false);
     void insert_sep(Sibling* popup);
-    void set_check(string sid, bool check);
+
+    void enable(const string& ids, int enable);
+    void check(const string& sid, int check);
 
 protected:
     Sibling* _create_sib(string sid, Sibling* parent, HMENU owner, Sibling* prev);
     void _create_items(HMENU hMenu, parser::PARSER_OBJECT* c, Sibling* rel);
     void _insert_sep(HMENU hMenu, UINT id) const;
     void _insert_popup(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enalbed = true);
-    void _insert_str(HMENU hMenu, UINT id, const string& s, bool enabled = true, const string& key = _T(""));
+    void _insert_str(HMENU hMenu, UINT id, const string& s, bool enabled, const string& key, bool checked);
 
 protected:
     Sibling* _alloc_sib();

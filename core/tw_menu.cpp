@@ -49,17 +49,18 @@ void MenuManager::_create_items(HMENU hMenu, PARSER_OBJECT* c, Sibling* rel)
     _dummy_child.next = nullptr;
 
     c->dump_children([&](PARSER_OBJECT* c) {
-        auto sid    = c->get_attr(_T("id"));
-        auto text   = c->get_attr(_T("text"));
-        auto enable = c->get_attr(_T("disabled")) != _T("1");
-        auto key    = c->get_attr(_T("key"));
+        auto sid        = c->get_attr(_T("id"));
+        auto text       = c->get_attr(_T("text"));
+        auto enable     = c->get_attr(_T("disabled")) != _T("1");
+        auto key        = c->get_attr(_T("key"));
+        auto checked    = c->get_attr(_T("checked")) == _T("1");
 
         auto sib = _create_sib(sid, rel, hMenu, prev_child);
 
         prev_child = sib;
 
         if(c->tag == _T("item")) {
-            _insert_str(hMenu, sib->id, text, enable, key);
+            _insert_str(hMenu, sib->id, text, enable, key, checked);
         }
         else if(c->tag == _T("sep")) {
             _insert_sep(hMenu, sib->id);
@@ -103,7 +104,7 @@ void MenuManager::_insert_popup(HMENU hMenu, HMENU hSubMenu, UINT id, const stri
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
 }
 
-void MenuManager::_insert_str(HMENU hMenu, UINT id, const string& text, bool enabled, const string& key)
+void MenuManager::_insert_str(HMENU hMenu, UINT id, const string& text, bool enabled, const string& key, bool checked)
 {
     MENUITEMINFO m {0};
     m.cbSize        = sizeof(m);
@@ -116,7 +117,9 @@ void MenuManager::_insert_str(HMENU hMenu, UINT id, const string& text, bool ena
     string text_all = key.size() == 0 ? text : text + _T("\t") + key;
     m.dwTypeData    = const_cast<LPTSTR>(text_all.c_str());
 
-    m.fState        = enabled ? MFS_ENABLED : MFS_GRAYED;
+    m.fState        = 0;
+    m.fState       |= enabled ? MFS_ENABLED : MFS_GRAYED;
+    m.fState       |= checked ? MFS_CHECKED : MFS_UNCHECKED;
 
     ::InsertMenuItem(hMenu, -1, TRUE, &m);
 }
@@ -159,11 +162,11 @@ MenuManager::Sibling* MenuManager::find_sib(const string& ids_)
     return p;
 }
 
-void MenuManager::insert_str(Sibling* popup, string sid, const string& s, bool enabled)
+void MenuManager::insert_str(Sibling* popup, string sid, const string& s, bool enabled, const string& key, bool checked)
 {
     if(!popup) popup = &_root;
     auto sib = _create_sib(sid, popup, popup->self, nullptr);
-    _insert_str(popup->self, sib->id, s, enabled);
+    _insert_str(popup->self, sib->id, s, enabled, key, checked);
 }
 
 void MenuManager::insert_sep(Sibling* popup)
@@ -173,11 +176,10 @@ void MenuManager::insert_sep(Sibling* popup)
     _insert_sep(popup->self, 0);
 }
 
-void MenuManager::set_check(string ids, bool check)
+void MenuManager::check(const string& ids, int check)
 {
-    auto sib = find_sib(ids);
-    if(sib->parent && sib->parent->self) {
-        ::CheckMenuItem(sib->parent->self, sib->id, MF_BYCOMMAND | (check ? MF_CHECKED : MF_UNCHECKED));
+    if(auto sib = find_sib(ids)) {
+        sib->check(check);
     }
 }
 
@@ -231,10 +233,10 @@ std::vector<string> MenuManager::get_ids(int id) const
     return std::move(ids);
 }
 
-void MenuManager::enable(const string& ids, bool b)
+void MenuManager::enable(const string& ids, int enable)
 {
     if(auto sib = find_sib(ids)) {
-        ::EnableMenuItem(sib->owner, sib->id, b ? MF_ENABLED : MF_GRAYED);
+        sib->enable(enable);
     }
 }
 
@@ -242,6 +244,10 @@ MenuManager::Sibling * MenuManager::get_popup(int id) const
 {
     auto it = _idmap.find(id);
     if(it == _idmap.cend())
+        return nullptr;
+
+    auto sib = it->second;
+    if(!sib->is_popup())
         return nullptr;
 
     return it->second;
@@ -255,16 +261,67 @@ MenuManager::Sibling* MenuManager::match_popup(const string& ids, HMENU popup)
     return nullptr;
 }
 
-void MenuManager::clear_popup(Sibling* sib)
+void MenuManager::Sibling::clear()
 {
-    if(sib && sib->self) {
-        int count = ::GetMenuItemCount(sib->self);
+    if(is_popup()) {
+        int count = ::GetMenuItemCount(self);
         if(count != -1 && count > 0) {
             while(--count >= 0) {
-                ::DeleteMenu(sib->self, count, MF_BYPOSITION);
+                ::DeleteMenu(self, count, MF_BYPOSITION);
             }
         }
     }
+}
+
+bool MenuManager::Sibling::is_popup()
+{
+    return self != nullptr;
+}
+
+bool MenuManager::Sibling::is_enabled()
+{
+    MENUITEMINFO mii = {0};
+    mii.cbSize = sizeof(mii);
+    mii.fMask = MIIM_STATE;
+    if(::GetMenuItemInfo(owner, id, FALSE, &mii)) {
+        return !(mii.fState & MFS_DISABLED);
+    }
+    return false;
+}
+
+void MenuManager::Sibling::enable(int enable)
+{
+    if(enable == -1) enable = is_enabled() ? 0 : 1;
+    int state = enable == 1 ? MF_ENABLED : MF_GRAYED;
+    ::EnableMenuItem(owner, id, state);
+}
+
+bool MenuManager::Sibling::is_checked()
+{
+    MENUITEMINFO mii = {0};
+    mii.cbSize = sizeof(mii);
+    mii.fMask = MIIM_STATE;
+    if(::GetMenuItemInfo(owner, id, FALSE, &mii)) {
+        return !!(mii.fState & MFS_CHECKED);
+    }
+    return false;
+}
+
+void MenuManager::Sibling::check(int check)
+{
+    if(is_popup()) {
+        return;
+    }
+
+    if(check == -1) check = is_checked() ? 0 : 1;
+    int state = check == 1 ? MF_CHECKED : MF_UNCHECKED;
+
+    ::CheckMenuItem(parent->self, id, MF_BYCOMMAND | state);
+}
+
+void MenuManager::Sibling::remove()
+{
+    ::DeleteMenu(owner, id, MF_BYCOMMAND);
 }
 
 }
