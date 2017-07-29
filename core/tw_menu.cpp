@@ -13,22 +13,15 @@ using namespace taowin::parser;
 namespace taowin {
 
 // 全局菜单ID分配
-int MenuManager::_id = 0x0f;
+int MenuItem::_id = 0x0f;
 
-MenuManager::Sibling* MenuManager::_create_sib(string sid, Sibling* parent, HMENU owner, Sibling* prev)
+MenuItem* MenuItem::_create_sib(string sid)
 {
-    auto sib = _alloc_sib();
+    auto sib = new MenuItem();
 
-    sib->parent = parent;
-    sib->owner  = owner;
-    sib->self   = nullptr;
-    sib->child  = nullptr;
-    sib->next   = nullptr;
-    sib->prev   = prev;
+    sib->parent = this;
+    sib->owner  = self;
     sib->sid    = sid;
-    sib->ud     = nullptr;
-
-    if(prev) prev->next = sib;
 
     auto id = ++_id;
     sib->id = id;
@@ -37,14 +30,10 @@ MenuManager::Sibling* MenuManager::_create_sib(string sid, Sibling* parent, HMEN
     return sib;
 }
 
-void MenuManager::_create_items(HMENU hMenu, PARSER_OBJECT* c, Sibling* rel)
+void MenuItem::_create_items(PARSER_OBJECT* c)
 {
-    rel->prev = nullptr;
-    rel->next = nullptr;
-    rel->child = nullptr;
-
-    Sibling _dummy_child;
-    Sibling* prev_child = &_dummy_child;
+    MenuItem _dummy_child;
+    MenuItem* prev_child = &_dummy_child;
 
     _dummy_child.next = nullptr;
 
@@ -55,29 +44,31 @@ void MenuManager::_create_items(HMENU hMenu, PARSER_OBJECT* c, Sibling* rel)
         auto key        = c->get_attr(_T("key"));
         auto checked    = c->get_attr(_T("checked")) == _T("1");
 
-        auto sib = _create_sib(sid, rel, hMenu, prev_child);
+        auto sib = _create_sib(sid);
 
+        prev_child->next = sib;
+        sib->prev = prev_child;
         prev_child = sib;
 
         if(c->tag == _T("item")) {
-            _insert_str(hMenu, sib->id, text, enable, key, checked);
+            _insert_str(-1, sib->id, text, enable, key, checked);
         }
         else if(c->tag == _T("sep")) {
-            _insert_sep(hMenu, sib->id);
+            _insert_sep(-1, sib->id);
         }
         else if(c->tag == _T("popup")) {
             HMENU hSubMenu = ::CreatePopupMenu();
             sib->self = hSubMenu;
-            _create_items(hSubMenu, c, sib);
-            _insert_popup(hMenu, hSubMenu, sib->id, text, enable);
+            sib->_create_items(c);
+            _insert_popup(hSubMenu, -1, sib->id, text, enable);
         }
     });
 
-    rel->child = _dummy_child.next;
-    if(rel->child) rel->child->prev = nullptr;
+    child = _dummy_child.next;
+    if(child) child->prev = nullptr;
 }
 
-void MenuManager::_insert_sep(HMENU hMenu, UINT id) const
+void MenuItem::_insert_sep(UINT rid, UINT id) const
 {
     MENUITEMINFO m {0};
     m.cbSize        = sizeof(m);
@@ -86,10 +77,10 @@ void MenuManager::_insert_sep(HMENU hMenu, UINT id) const
     m.wID           = id;
     m.fType         = MFT_SEPARATOR;
 
-    ::InsertMenuItem(hMenu, -1, TRUE, &m);
+    ::InsertMenuItem(self, rid, rid == -1, &m);
 }
 
-void MenuManager::_insert_popup(HMENU hMenu, HMENU hSubMenu, UINT id, const string& s, bool enabled)
+void MenuItem::_insert_popup(HMENU hSubMenu, UINT rid, UINT id, const string& s, bool enabled)
 {
     MENUITEMINFO m {0};
     m.cbSize        = sizeof(m);
@@ -101,10 +92,10 @@ void MenuManager::_insert_popup(HMENU hMenu, HMENU hSubMenu, UINT id, const stri
     m.hSubMenu      = hSubMenu;
     m.fState        = enabled ? MFS_ENABLED : MFS_GRAYED;
 
-    ::InsertMenuItem(hMenu, -1, TRUE, &m);
+    ::InsertMenuItem(self, -1, TRUE, &m);
 }
 
-void MenuManager::_insert_str(HMENU hMenu, UINT id, const string& text, bool enabled, const string& key, bool checked)
+void MenuItem::_insert_str(UINT rid, UINT id, const string& text, bool enabled, const string& key, bool checked)
 {
     MENUITEMINFO m {0};
     m.cbSize        = sizeof(m);
@@ -121,20 +112,10 @@ void MenuManager::_insert_str(HMENU hMenu, UINT id, const string& text, bool ena
     m.fState       |= enabled ? MFS_ENABLED : MFS_GRAYED;
     m.fState       |= checked ? MFS_CHECKED : MFS_UNCHECKED;
 
-    ::InsertMenuItem(hMenu, -1, TRUE, &m);
+    ::InsertMenuItem(self, rid, rid == -1, &m);
 }
 
-MenuManager::Sibling* MenuManager::_alloc_sib()
-{
-    return new Sibling;
-}
-
-void MenuManager::_dealloc_sib(Sibling* sib)
-{
-    delete sib;
-}
-
-MenuManager::Sibling* MenuManager::find_sib(const string& ids_)
+MenuItem* MenuItem::find_sib(const string& ids_)
 {
     string ids = ids_ + _T('\0');
 #ifdef _UNICODE
@@ -144,7 +125,7 @@ MenuManager::Sibling* MenuManager::find_sib(const string& ids_)
 #endif
     ids = std::regex_replace(ids, re, string(1, 0));
 
-    auto p = &_root;
+    auto p = this;
     const TCHAR* s = ids.c_str();
 
     while(*s) {
@@ -162,61 +143,76 @@ MenuManager::Sibling* MenuManager::find_sib(const string& ids_)
     return p;
 }
 
-void MenuManager::insert_str(Sibling* popup, string sid, const string& s, bool enabled, const string& key, bool checked)
+void MenuItem::insert_str(const string& ref, const string& sid, const string& s, bool enabled, const string& key, bool checked)
 {
-    if(!popup) popup = &_root;
-    auto sib = _create_sib(sid, popup, popup->self, nullptr);
-    _insert_str(popup->self, sib->id, s, enabled, key, checked);
+    _insert_item(ref, sid, [&](UINT rid, UINT id) {
+        _insert_str(rid, id, s, enabled, key, checked);
+    });
 }
 
-void MenuManager::insert_sep(Sibling* popup)
+void MenuItem::insert_sep(const string& ref, const string& sid)
 {
-    if(!popup) popup = &_root;
-    auto sib = _create_sib(_T(""), popup, popup->self, nullptr);
-    _insert_sep(popup->self, 0);
+    _insert_item(ref, sid, [&](UINT rid, UINT id) {
+        _insert_sep(rid, id);
+    });
 }
 
-void MenuManager::check(const string& ids, int check)
+void MenuItem::_init()
 {
-    if(auto sib = find_sib(ids)) {
-        sib->check(check);
+    parent = nullptr;
+    prev = nullptr;
+    next = nullptr;
+    child = nullptr;
+    id = 0;
+    owner = nullptr;
+    ud = 0;
+}
+
+void MenuItem::_link(MenuItem* p1, MenuItem* p2, MenuItem* p3)
+{
+    if(p1 != nullptr) {
+        p1->next = p2;
+    }
+
+    p2->prev = p1;
+    p2->next = p3;
+
+    if(p3 != nullptr) {
+        p3->prev = p2;
     }
 }
 
-void MenuManager::create(const TCHAR* xml)
+void MenuItem::_insert_item(const string& ref, const string& sid, std::function<void(UINT, UINT)> callback)
 {
-    PARSER_OBJECT* root = parser::parse(xml, nullptr);
-    if(!root || root->tag != _T("MenuTree")) return;
-
-    _hmenu = ::CreatePopupMenu();
-    _root.parent = nullptr;
-    _root.owner = nullptr;
-    _root.self = _hmenu;
-    _root.sid = root->get_attr(_T("i"));
-    _create_items(_hmenu, root, &_root);
-}
-
-void MenuManager::destroy()
-{
-    if(_hmenu) {
-        ::DestroyMenu(_hmenu);
-        _hmenu = nullptr;
+        if(ref == _T("")) {
+        auto sib = _create_sib(sid);
+        if(child) {
+            auto next = child->next;
+            while(next && next->next)
+                next = next->next;
+            _link(next, sib, nullptr);
+            _insert_sep(-1, sib->id);
+            callback(-1, sib->id);
+        }
+        else {
+            child = sib;
+            callback(-1, sib->id);
+        }
+    }
+    else {
+        auto rsib = find_sib(ref);
+        if(rsib != nullptr) {
+            auto sib = _create_sib(sid);
+            if(rsib->prev == nullptr) {
+                child = sib;
+            }
+            _link(rsib->prev, sib, rsib);
+            callback(rsib->id, sib->id);
+        }
     }
 }
 
-void MenuManager::track(const POINT* pt_, HWND owner)
-{
-    POINT pt;
-    POINT const *ppt = pt_;
-    if(!ppt) {
-        ::GetCursorPos(&pt);
-        ppt = &pt;
-    }
-
-    ::TrackPopupMenu(_hmenu, TPM_LEFTBUTTON | TPM_LEFTALIGN, ppt->x, ppt->y, 0, owner, nullptr);
-}
-
-std::vector<string> MenuManager::get_ids(int id) const
+std::vector<string> MenuItem::get_ids(int id) const
 {
     std::vector<string> ids;
 
@@ -233,14 +229,7 @@ std::vector<string> MenuManager::get_ids(int id) const
     return std::move(ids);
 }
 
-void MenuManager::enable(const string& ids, int enable)
-{
-    if(auto sib = find_sib(ids)) {
-        sib->enable(enable);
-    }
-}
-
-MenuManager::Sibling * MenuManager::get_popup(int id) const
+MenuItem* MenuItem::get_popup(int id) const
 {
     auto it = _idmap.find(id);
     if(it == _idmap.cend())
@@ -253,7 +242,7 @@ MenuManager::Sibling * MenuManager::get_popup(int id) const
     return it->second;
 }
 
-MenuManager::Sibling* MenuManager::match_popup(const string& ids, HMENU popup)
+MenuItem* MenuItem::match_popup(const string& ids, HMENU popup)
 {
     auto sib = find_sib(ids);
     if(sib && sib->self == popup)
@@ -261,7 +250,38 @@ MenuManager::Sibling* MenuManager::match_popup(const string& ids, HMENU popup)
     return nullptr;
 }
 
-void MenuManager::Sibling::clear()
+MenuItem* MenuItem::create(const TCHAR* xml)
+{
+    PARSER_OBJECT* root = parser::parse(xml, nullptr);
+    if(!root || root->tag != _T("MenuTree")) {
+        return nullptr;
+    }
+
+    auto sib = new MenuItem();
+    sib->self = ::CreatePopupMenu();
+    sib->sid = root->get_attr(_T("id"));
+    sib->_create_items(root);
+
+    return sib;
+}
+
+void MenuItem::track(const POINT* pt_, HWND owner)
+{
+    if(!is_popup()) {
+        return;
+    }
+
+    POINT pt;
+    POINT const *ppt = pt_;
+    if(!ppt) {
+        ::GetCursorPos(&pt);
+        ppt = &pt;
+    }
+
+    ::TrackPopupMenu(self, TPM_LEFTBUTTON | TPM_LEFTALIGN, ppt->x, ppt->y, 0, owner, nullptr);
+}
+
+void MenuItem::clear()
 {
     if(is_popup()) {
         int count = ::GetMenuItemCount(self);
@@ -273,12 +293,12 @@ void MenuManager::Sibling::clear()
     }
 }
 
-bool MenuManager::Sibling::is_popup()
+bool MenuItem::is_popup()
 {
     return self != nullptr;
 }
 
-bool MenuManager::Sibling::is_enabled()
+bool MenuItem::is_enabled()
 {
     MENUITEMINFO mii = {0};
     mii.cbSize = sizeof(mii);
@@ -289,14 +309,14 @@ bool MenuManager::Sibling::is_enabled()
     return false;
 }
 
-void MenuManager::Sibling::enable(int enable)
+void MenuItem::enable(int enable)
 {
     if(enable == -1) enable = is_enabled() ? 0 : 1;
     int state = enable == 1 ? MF_ENABLED : MF_GRAYED;
     ::EnableMenuItem(owner, id, state);
 }
 
-bool MenuManager::Sibling::is_checked()
+bool MenuItem::is_checked()
 {
     MENUITEMINFO mii = {0};
     mii.cbSize = sizeof(mii);
@@ -307,7 +327,7 @@ bool MenuManager::Sibling::is_checked()
     return false;
 }
 
-void MenuManager::Sibling::check(int check)
+void MenuItem::check(int check)
 {
     if(is_popup()) {
         return;
@@ -319,7 +339,7 @@ void MenuManager::Sibling::check(int check)
     ::CheckMenuItem(parent->self, id, MF_BYCOMMAND | state);
 }
 
-void MenuManager::Sibling::remove()
+void MenuItem::remove()
 {
     ::DeleteMenu(owner, id, MF_BYCOMMAND);
 }

@@ -136,7 +136,7 @@ namespace taowin{
             else {
                 if(code == 0) {
                     for(int i = 0; i < _menus.size(); ++i) {
-                        MenuIds ids = _menus[i]->get_ids(id);
+                        MenuIDs ids = _menus[i]->get_ids(id);
                         if(!ids->empty()) {
                             return on_menu(ids);
                         }

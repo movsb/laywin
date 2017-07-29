@@ -34,14 +34,14 @@ namespace taowin{
         virtual ~WindowCreator();
 
         void subclass_control(SystemControl* ctl);
-        void add_menu(const MenuManager* menu) { _menus.add(menu); }
+        void add_menu(const MenuItem* menu) { _menus.add(menu); }
 
 	protected:
 		virtual LPCTSTR get_skin_xml() const;
 		virtual LRESULT handle_message(UINT umsg, WPARAM wparam, LPARAM lparam);
 		virtual LRESULT control_message(SystemControl* ctl, UINT umsg, WPARAM wparam, LPARAM lparam);
         virtual SystemControl* filter_control(HWND hwnd) { return nullptr; }
-		virtual LRESULT on_menu(const MenuIds& ids) { return 0; }
+		virtual LRESULT on_menu(const MenuIDs& ids) { return 0; }
         virtual LRESULT on_accel(int id) { return 0; }
 		virtual LRESULT on_notify(HWND hwnd, Control* pc, int code, NMHDR* hdr) { return 0; }
 
@@ -58,7 +58,7 @@ namespace taowin{
         WindowContainer* _window;
         RootControl*   _root;
         ResourceManager          _mgr;
-        Array<const MenuManager*> _menus;
+        Array<const MenuItem*> _menus;
 	};
 
     void init();
