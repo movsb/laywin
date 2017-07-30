@@ -114,6 +114,7 @@ namespace taowin{
 	{
 		Window* pThis = reinterpret_cast<Window*>(::GetWindowLongPtr(hwnd, 4));
 
+        // 窗口创建的第一条消息
 		if(umsg == WM_NCCREATE) {
 			LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lparam);
 			pThis = static_cast<Window*>(lpcs->lpCreateParams);
@@ -123,6 +124,7 @@ namespace taowin{
 			pThis->on_first_message();
             return TRUE; // must
 		}
+        // 窗口被销毁的最后一条消息（不包括投递的消息）
         else if(umsg == WM_NCDESTROY) {
             ::SetWindowLongPtr(pThis->_hwnd, 4, 0);
             ::DefWindowProc(hwnd, umsg, wparam, lparam);
@@ -145,10 +147,15 @@ namespace taowin{
 	}
 
     void Window::get_metas(WindowMeta* metas) {
+        // 默认的窗口标题与窗口类名
         metas->caption = _T("taowin");
         metas->classname = _T("taowin::Window");
+
+        // 默认的窗口风格
         metas->style = WS_OVERLAPPEDWINDOW;
         metas->exstyle = WS_EX_APPWINDOW;
+
+        // 默认的窗口标志
         metas->flags = WindowFlag::center;
     }
 
@@ -158,6 +165,8 @@ namespace taowin{
         wc.cbSize = sizeof(wc);
         wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
         wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+
+        // TODO 这个ICON是乱写的
         wc.hIcon = wc.hIconSm = (HICON)::LoadImage(::GetModuleHandle(nullptr), (LPCTSTR)101, IMAGE_ICON, 32, 32, 0);
         wc.hInstance = ::GetModuleHandle(nullptr);
         wc.lpfnWndProc = &Window::__window_procedure;
