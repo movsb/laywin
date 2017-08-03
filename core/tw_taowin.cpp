@@ -285,6 +285,33 @@ namespace taowin{
 
             break;
         }
+        case WM_CTLCOLOREDIT:
+        {
+            auto hDC = (HDC)wparam;
+            auto hWnd = (HWND)lparam;
+
+            SystemControl* pc = (SystemControl*)::GetWindowLongPtr(hWnd, GWL_USERDATA);
+            if (pc != nullptr) {
+                TextBox* tb = static_cast<TextBox*>(pc);
+                return (LRESULT)tb->handle_ctlcoloredit(hDC);
+            }
+
+            break;
+        }
+        case WM_CTLCOLORSTATIC:
+        {
+            auto hDC = (HDC)wparam;
+            auto hWnd = (HWND)lparam;
+
+            SystemControl* pc = (SystemControl*)::GetWindowLongPtr(hWnd, GWL_USERDATA);
+            if (pc != nullptr) {
+                if (TextBox* tb = dynamic_cast<TextBox*>(pc)) {
+                    return (LRESULT)tb->handle_ctlcoloredit(hDC);
+                }
+            }
+
+            break;
+        }
 		}
 
 		return handle_message(umsg, wparam, lparam);

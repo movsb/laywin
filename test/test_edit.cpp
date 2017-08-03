@@ -21,7 +21,8 @@ protected:
     </Resource>
     <Root>
         <Vertical padding="5,5,5,5">
-            <TextBox name="c" />
+            <TextBox name="c" foreground="#00FF00" background="#FF0000"/>
+            <TextBox name="c" foreground="#0000FF" background="#00FFFF" text="asd" style="readonly"/>
         </Vertical>
     </Root>
 </Window>

@@ -5,6 +5,12 @@ namespace taowin {
 class TextBox : public SystemControl
 {
 public:
+    TextBox();
+
+    // TODO RichEdit inherits from this, make it virtual
+    ~TextBox();
+
+public:
     void set_text(const TCHAR* text) {
         ::SetWindowText(_hwnd, text);
     }
@@ -28,14 +34,22 @@ public:
     void append(const TCHAR* s);
     int size() const;
 
+    HBRUSH handle_ctlcoloredit(HDC hdc);
+
     void on_change(OnNotify callback) { _on_change = callback; }
 
 protected:
     virtual void get_metas(SystemControlMetas& metas, std::map<string, string>& attrs) override;
+    virtual void set_attr(const TCHAR* name, const TCHAR* value) override;
     virtual bool filter_notify(int code, NMHDR* hdr, LRESULT* lr) override;
 
 private:
     OnNotify    _on_change;
+
+private:
+    COLORREF    _crTextColor;
+    COLORREF    _crBackgroundColor;
+    HBRUSH      _hBrushBackground;
 };
 
 }

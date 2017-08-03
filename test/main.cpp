@@ -10,7 +10,7 @@ TaoLogger g_taoLogger(providerGuid);
 #endif
 */
 
-#define pmain test_menu
+#define pmain test_edit
 
 
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
