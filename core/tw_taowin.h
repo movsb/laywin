@@ -38,7 +38,7 @@ namespace taowin{
         void subclass_control(SystemControl* ctl);
 
         // 添加一个菜单，用于自动分发菜单消息
-        void add_menu(const MenuItem* menu) { _menus.add(menu); }
+        void add_menu(const PopupMenu* menu) { _menus.add(menu); }
 
 	protected:
         // 获取皮肤 XML 文件
@@ -85,7 +85,7 @@ namespace taowin{
         WindowContainer*        _window;            // 窗口容器，用于容纳界面元素
         RootControl*            _root;              // 界面元素根控件
         ResourceManager         _mgr;               // 本窗口的资源管理器
-        Array<const MenuItem*>  _menus;             // 本窗口的菜单集
+        Array<const PopupMenu*> _menus;             // 本窗口的菜单集
 	};
 
     // 全局初始化函数

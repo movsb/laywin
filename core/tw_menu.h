@@ -124,4 +124,6 @@ protected:
     void*    ud;        // 用户数据
 };
 
+typedef MenuItem PopupMenu;
+
 }
