@@ -191,7 +191,6 @@ void MenuItem::_insert_item(const string& ref, const string& sid, std::function<
             while(next && next->next)
                 next = next->next;
             _link(next, sib, nullptr);
-            _insert_sep(-1, sib->id);
             callback(-1, sib->id);
         }
         else {
@@ -290,6 +289,7 @@ void MenuItem::clear()
                 ::DeleteMenu(self, count, MF_BYPOSITION);
             }
         }
+        child = nullptr;
     }
 }
 

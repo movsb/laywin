@@ -91,6 +91,8 @@ protected:
 )==";
             _menu = taowin::MenuItem::create(menustr);
 
+            add_menu(_menu);
+
             return 0;
         }
         }
@@ -100,6 +102,12 @@ protected:
     virtual taowin::SystemControl* filter_control(HWND hwnd) override
     {
         return nullptr;
+    }
+
+    virtual LRESULT on_menu(const taowin::MenuIDs& ids) override
+    {
+        msgbox(ids[0] + _T("->") + ids[1]);
+        return 0;
     }
 
     taowin::MenuItem* _menu;
