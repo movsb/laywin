@@ -215,15 +215,29 @@ std::vector<string> MenuItem::get_ids(int id) const
 {
     std::vector<string> ids;
 
-    auto it = _idmap.find(id);
-    if(it != _idmap.cend()) {
-        auto s = it->second;
+    std::function<void(const PopupMenu*, int)> search_popup = [&ids, &search_popup](const PopupMenu* popup, int id) {
+        auto it = popup->_idmap.find(id);
+        if(it != popup->_idmap.cend()) {
+            auto s = it->second;
 
-        while(s) {
-            ids.emplace_back(s->sid);
-            s = s->parent;
+            while(s) {
+                ids.emplace_back(s->sid);
+                s = s->parent;
+            }
         }
-    }
+        else {
+            for(auto p = popup->child; p != nullptr; p = p->next) {
+                if(p->is_popup()) {
+                    search_popup(p, id);
+                    if(ids.size() > 0) {
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
+    search_popup(this, id);
 
     return std::move(ids);
 }

@@ -78,13 +78,13 @@ protected:
             });
 
             auto menustr = LR"==(
-<MenuTree>
+<MenuTree id="main">
     <item id="item1" text="menu1" key="Ctrl+A"/>
     <item id="item2" text="menu1" key="Ctrl+A"/>
     <popup id="item3" text="submenu1">
-        <item text="menu1" key="Ctrl+A"/>
-        <item text="menu1" key="Ctrl+A"/>
-        <item text="menu1" key="Ctrl+A"/>
+        <item id="sub1" text="menu1" key="Ctrl+A"/>
+        <item id="sub2" text="menu1" key="Ctrl+A"/>
+        <item id="sub3" text="menu1" key="Ctrl+A"/>
     </popup>
     <item id="item4" text="menu4" />
 </MenuTree>
@@ -106,7 +106,7 @@ protected:
 
     virtual LRESULT on_menu(const taowin::MenuIDs& ids) override
     {
-        msgbox(ids[0] + _T("->") + ids[1]);
+        msgbox(ids[0] + _T("->") + ids[1] + _T("->") + ids[2]);
         return 0;
     }
 
