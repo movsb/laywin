@@ -263,7 +263,7 @@ MenuItem* MenuItem::match_popup(const string& ids, HMENU popup)
     return nullptr;
 }
 
-MenuItem* MenuItem::create(const TCHAR* xml)
+MenuItem* MenuItem::create(const TCHAR* xml, bool main)
 {
     PARSER_OBJECT* root = parser::parse(xml, nullptr);
     if(!root || root->tag != _T("MenuTree")) {
@@ -271,7 +271,7 @@ MenuItem* MenuItem::create(const TCHAR* xml)
     }
 
     auto sib = new MenuItem();
-    sib->self = ::CreatePopupMenu();
+    sib->self = main ? ::CreateMenu() : ::CreatePopupMenu();
     sib->sid = root->get_attr(_T("id"));
     sib->_create_items(root);
 

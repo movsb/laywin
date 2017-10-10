@@ -89,7 +89,7 @@ protected:
     <item id="item4" text="menu4" />
 </MenuTree>
 )==";
-            _menu = taowin::MenuItem::create(menustr);
+            _menu = taowin::MenuItem::create(menustr, false);
 
             add_menu(_menu);
 

@@ -63,8 +63,8 @@ public:
 
     MenuItem * match_popup(const string & ids, HMENU popup);
 
-    // 从 xml 创建弹出菜单
-    static MenuItem* create(const TCHAR* xml);
+    // 从 xml 创建菜单
+    static MenuItem* create(const TCHAR* xml, bool main);
 
     // 弹出此菜单
     void track(const POINT* pt = nullptr, HWND owner = ::GetActiveWindow());
@@ -95,6 +95,9 @@ public:
     // ref 为位置参考点
     // sid 为插入项的sid
     void insert_sep(const string& ref, const string& sid);
+
+    // 取得句柄
+    HMENU get_handle() const { return self; }
 
 protected:
     void _init();
