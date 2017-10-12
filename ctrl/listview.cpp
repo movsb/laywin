@@ -45,8 +45,10 @@ bool ListView::filter_notify(int code, NMHDR* hdr, LRESULT* lr)
         auto pdi = reinterpret_cast<NMLVDISPINFO*>(hdr);
         int item = pdi->item.iItem;
         int subitem = pdi->item.iSubItem;
-        pdi->item.pszText = _data != nullptr ? const_cast<LPTSTR>(_data->get(item, subitem)) : _T("");
-        return true;
+        if(item >= 0) {
+            pdi->item.pszText = _data != nullptr ? const_cast<LPTSTR>(_data->get(item, subitem)) : _T("");
+            return true;
+        }
     }
     else if(code == NM_DBLCLK) {
         auto nmlv = reinterpret_cast<NMITEMACTIVATE*>(hdr);
