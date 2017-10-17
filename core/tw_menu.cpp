@@ -358,4 +358,14 @@ void MenuItem::remove()
     ::DeleteMenu(owner, id, MF_BYCOMMAND);
 }
 
+void MenuItem::set_text(const string& s)
+{
+    MENUITEMINFO mii = { 0 };
+    mii.cbSize = sizeof(mii);
+    mii.fMask = MIIM_TYPE;
+    mii.fType = MFT_STRING;
+    mii.dwTypeData = const_cast<LPTSTR>(s.c_str());
+    ::SetMenuItemInfo(owner, id, MF_BYCOMMAND, &mii);
+}
+
 }

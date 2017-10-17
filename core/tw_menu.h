@@ -90,6 +90,9 @@ public:
     // 从父结点中删除此菜单
     void remove();
 
+    // 改变文本
+    void set_text(const string& s);
+
     // 插入一个分隔符
     // pos 指定插入位置关系
     // ref 为位置参考点
